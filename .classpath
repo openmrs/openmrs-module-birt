@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="client/|api/" kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="web/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/chartengineapi.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/coreapi.jar"/>
+	<classpathentry kind="lib" path="lib/dataadapterapi.jar"/>
+	<classpathentry kind="lib" path="lib/dteapi.jar"/>
+	<classpathentry kind="lib" path="lib/engineapi.jar"/>
+	<classpathentry kind="lib" path="lib/flute.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/modelapi.jar"/>
+	<classpathentry kind="lib" path="lib/scriptapi.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.common_2.2.1.v200702131851.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore_2.2.2.v200702131851.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore.xmi_2.2.2.v200702131851.jar"/>
+	<classpathentry kind="lib" path="lib/org.w3c.css.sac_1.3.0.v200706111724.jar"/>
+	<classpathentry kind="lib" path="lib/axis.jar"/>
+	<classpathentry kind="lib" path="lib/axis-ant.jar"/>
+	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/viewservlets.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/velocity-1.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/hibernate325.jar"/>
+	<classpathentry kind="lib" path="lib/com.ibm.icu_3.6.1.v20070906.jar"/>
+	<classpathentry kind="lib" path="lib/modelodaapi.jar"/>
+	<classpathentry kind="lib" path="lib/odadesignapi.jar"/>
+	<classpathentry kind="lib" path="lib/org.apache.commons.codec_1.3.0.v200706111738.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.datatools.sqltools.parsers.sql.query_1.0.0.200711281.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.datatools.sqltools.sql_1.0.0.200706111.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/antlr/antlr_2.7.6.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm-attrs.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/cglib/cglib-2.1_3.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/dom4j/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/jta/jta.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/mail/activation.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/mail/mail.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/simple/simple-xml-1.6.1-mod.jar" sourcepath="/Simple-xml-stream-clean/src"/>
+	<classpathentry kind="lib" path="lib-common/log4j.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.3.0.00.4211.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.3.0.00.4211.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.3.0.00.4211.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
