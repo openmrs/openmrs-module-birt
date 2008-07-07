@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
+
+<module configVersion="1.0">
+	
+	<!-- Base Module Properties -->
+	<id>birtapi</id>
+	<name>BIRT Report API Module</name>
+	<version>1.5.1</version>
+	<package>org.openmrs.module.birtapi</package>
+	<!-- <package>org.openmrs.module.@MODULE_ID@</package> -->
+	<author>Justin Miranda</author>
+	<description>BIRT Report API Module (contains BIRT runtime and design libraries)</description>
+	<activator>org.openmrs.module.birt.BirtApiModuleActivator</activator>
+	<!-- <activator>@MODULE_PACKAGE@.BirtApiModuleActivator</activator>-->
+	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
+	<require_version>1.1.10.2505</require_version>
+	<!-- /Base Module Properties -->
+		
+</module>
+
