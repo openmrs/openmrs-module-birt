@@ -36,8 +36,6 @@
 	<classpathentry kind="lib" path="lib/modelodaapi.jar"/>
 	<classpathentry kind="lib" path="lib/odadesignapi.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.codec_1.3.0.v200706111738.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.datatools.sqltools.parsers.sql.query_1.0.0.200711281.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.datatools.sqltools.sql_1.0.0.200706111.jar"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm.jar"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm-attrs.jar"/>

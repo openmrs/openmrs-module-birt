@@ -257,10 +257,15 @@ public class BirtReportServiceImpl implements BirtReportService {
 							
 							// TODO Refactor to use a better query parser ... 
 							// this one does not handle more complex queries 
+							log.info("Data set query [BEFORE]:\n" + datasetHandle.getQueryText());
+
+							// Create the query object and change the table name
 							BirtDataSetQuery datasetQuery = new BirtDataSetQuery(datasetHandle.getQueryText());					
-							datasetQuery.setDataset(dataset.getName());
+							datasetQuery.setTable(dataset.getName());
+							
+							
 							datasetHandle.setQueryText(datasetQuery.getQueryText());
-							log.info("Data set: " + datasetHandle.getDataSource().getName() + ": " + datasetHandle.getQueryText());
+							log.info("Data set query [AFTER]:\n" + datasetHandle.getQueryText());
 						} 
 						
 						// SQL data set (set username/password properties)
@@ -378,8 +383,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 	    	task.run();
 
 	    	// Add errors to the report object
-	    	if (task.getErrors() != null && !task.getErrors().isEmpty())
+	    	if (task.getErrors() != null && !task.getErrors().isEmpty()) {
 	    		report.setErrors(task.getErrors());
+	    	}
 	    
 	    	// Close the task 
 	    	task.close();

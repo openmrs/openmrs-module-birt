@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -13,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,7 +100,7 @@ public class BirtReportUtil {
 	 * @param format	the format of the report
 	 * @return	the full path to the report output file
 	 */
-	public static String generateOutputFilename(String name, String format) { 
+	public static String getOutputFilename(String name, String format) { 
 		
 		log.info("Name: " + name + " " + format);
 		
@@ -106,8 +108,7 @@ public class BirtReportUtil {
 				format.toLowerCase() : BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT;
 		
 		StringBuffer buffer = new StringBuffer().
-			append(BirtConstants.OUTPUT_DIR).
-			append(File.separator).
+			append(getOutputDirectory()).append(File.separator).
 			append(name.replace(" ", "_")).
 			append("-").append(BirtConstants.DATE_FORMATTER.format(new Date())).
 			append(".").append(extension);
@@ -115,6 +116,17 @@ public class BirtReportUtil {
 		return buffer.toString();
 		
 	}
+		
+	
+	/**
+	 * Returns the report output directory.
+	 * 
+	 * @return
+	 */
+	public static String getOutputDirectory() { 
+		return new StringBuffer().append(BirtConstants.OUTPUT_DIR).toString();		
+	}
+	
 	
 	/**
 	 * Create a temporary directory with the given prefix and a random suffix

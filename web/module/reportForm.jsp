@@ -190,6 +190,7 @@ h4 {
 		<li><a id="reportDesignTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Design</a></li>
 		<li><a id="reportPreviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Preview</a></li>
 		<li><a id="reportDataTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Data</a></li>	
+		<li><a id="reportRunTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Run</a></li>	
 	</ul>
 </div>
 
@@ -247,7 +248,7 @@ h4 {
 													&nbsp;${token}&nbsp;
 												</c:forTokens>
 											 --%>
-											<input type="button" class="smallButton" name="Properties" value="View Report" onClick="javascript:toggleProperties('reportDesign', this);"/>
+											<input type="button" class="smallButton" name="Properties" value="View" onClick="javascript:toggleProperties('reportDesign', this);"/>
 											<input type="submit" class="smallButton" name="downloadReport" value="<spring:message code="birt.reportDesign.download"/>">
 										</spring:bind>									
 									</c:when>
@@ -520,11 +521,12 @@ h4 {
 							</spring:bind>
 
 							<c:if test="${!empty report.reportDefinition.dataExport.reportObjectId}">
-								<input type="button" class="smallButton" value="View Dataset" 
+								<input type="button" class="smallButton" value="View" 
 									onClick="javascript:toggleProperties('dataset', this);"/>	
-									
+								<!-- 
 								<input type="submit" class="smallButton" name="downloadDataset" 
 									value="<spring:message code="birt.reportDesign.download"/>">
+								-->
 							</c:if>
 						</td>
 					</tr>	

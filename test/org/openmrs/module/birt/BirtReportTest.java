@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,23 +21,15 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
-import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
-import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
-import org.eclipse.birt.report.engine.api.IParameterSelectionChoice;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
-import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
-import org.eclipse.birt.report.model.api.CascadingParameterGroupHandle;
 import org.eclipse.birt.report.model.api.DesignFileException;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
-import org.eclipse.birt.report.model.api.ScalarParameterHandle;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 
 import org.openmrs.Cohort;
@@ -52,9 +42,7 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.impl.BirtReportServiceImpl;
 import org.openmrs.module.birt.impl.BirtConfiguration;
 import org.openmrs.module.birt.model.ParameterDefinition;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.PatientSearch;
+import org.openmrs.module.birt.util.BirtQueryUtil;
 import org.openmrs.reporting.report.ReportDefinition;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.core.io.FileSystemResource;
@@ -142,10 +130,50 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	
 	
 	
+	/**
+	 * Tests the query parser.
+	 */
+	public void testQueryTextUtil() throws Exception { 
+
+		// As of BIRT 2.2, the query text contains the SQL-like syntax with extra column information
+		// "select columns from table : { extra column info }
+		String fullQueryText = "select \"Patient Id\", \"ART Register Number\", \"Birthdate\", \"Age\", \"Health Center\", \"First Encounter Date\", \"last Encounter Date\", \"Current ARVs\", \"Earliest ARV start\", \"HIV Program enrollment date\", \"ANTIRETROVIRAL TREATMENT STATUS\", \"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\", \"BASELINE CD4\", \"BASELINE CD4_obsDatetime\", \"CD4 COUNT\", \"CD4 COUNT_obsDatetime\", \"CD4 COUNT_(1)\", \"CD4 COUNT_obsDatetime_(1)\", \"CD4 COUNT_(2)\", \"CD4 COUNT_obsDatetime_(2)\", \"WEIGHT (KG)\", \"PREGNANCY STATUS\", \"PREGNANCY STATUS_obsDatetime\", \"TRANSFER IN FROM\", \"TRANSFER IN FROM_obsDatetime\", \"MEDICATIONS DISPENSED\", \"MEDICATIONS DISPENSED_obsDatetime\", \"MEDICATIONS DISPENSED_(1)\", \"MEDICATIONS DISPENSED_obsDatetime_(1)\", \"MEDICATIONS DISPENSED_(2)\", \"MEDICATIONS DISPENSED_obsDatetime_(2)\", \"TREATMENT STATUS\", \"TREATMENT STATUS_obsDatetime\", \"Deceased\", \"HIV Program\", \"Gender\" from HAHPCO_Dataset_en_us-16-Jul-2008-145234.csv : {\"Patient Id\",\"Patient Id\",STRING;\"ART Register Number\",\"ART Register Number\",STRING;\"Birthdate\",\"Birthdate\",DATE;\"Age\",\"Age\",INT;\"Health Center\",\"Health Center\",STRING;\"First Encounter Date\",\"First Encounter Date\",DATE;\"last Encounter Date\",\"last Encounter Date\",DATE;\"Current ARVs\",\"Current ARVs\",STRING;\"Earliest ARV start\",\"Earliest ARV start\",DATE;\"HIV Program enrollment date\",\"HIV Program enrollment date\",DATE;\"ANTIRETROVIRAL TREATMENT STATUS\",\"ANTIRETROVIRAL TREATMENT STATUS\",STRING;\"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\",\"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\",DATE;\"BASELINE CD4\",\"BASELINE CD4\",STRING;\"BASELINE CD4_obsDatetime\",\"BASELINE CD4_obsDatetime\",DATE;\"CD4 COUNT\",\"CD4 COUNT\",STRING;\"CD4 COUNT_obsDatetime\",\"CD4 COUNT_obsDatetime\",DATE;\"CD4 COUNT_(1)\",\"CD4 COUNT_(1)\",STRING;\"CD4 COUNT_obsDatetime_(1)\",\"CD4 COUNT_obsDatetime_(1)\",DATE;\"CD4 COUNT_(2)\",\"CD4 COUNT_(2)\",STRING;\"CD4 COUNT_obsDatetime_(2)\",\"CD4 COUNT_obsDatetime_(2)\",DATE;\"WEIGHT (KG)\",\"WEIGHT (KG)\",STRING;\"PREGNANCY STATUS\",\"PREGNANCY STATUS\",STRING;\"PREGNANCY STATUS_obsDatetime\",\"PREGNANCY STATUS_obsDatetime\",DATE;\"TRANSFER IN FROM\",\"TRANSFER IN FROM\",STRING;\"TRANSFER IN FROM_obsDatetime\",\"TRANSFER IN FROM_obsDatetime\",DATE;\"MEDICATIONS DISPENSED\",\"MEDICATIONS DISPENSED\",STRING;\"MEDICATIONS DISPENSED_obsDatetime\",\"MEDICATIONS DISPENSED_obsDatetime\",DATE;\"MEDICATIONS DISPENSED_(1)\",\"MEDICATIONS DISPENSED_(1)\",STRING;\"MEDICATIONS DISPENSED_obsDatetime_(1)\",\"MEDICATIONS DISPENSED_obsDatetime_(1)\",DATE;\"MEDICATIONS DISPENSED_(2)\",\"MEDICATIONS DISPENSED_(2)\",STRING;\"MEDICATIONS DISPENSED_obsDatetime_(2)\",\"MEDICATIONS DISPENSED_obsDatetime_(2)\",DATE;\"TREATMENT STATUS\",\"TREATMENT STATUS\",STRING;\"TREATMENT STATUS_obsDatetime\",\"TREATMENT STATUS_obsDatetime\",DATE;\"Deceased\",\"Deceased\",BOOLEAN;\"HIV Program\",\"HIV Program\",STRING;\"Gender\",\"Gender\",STRING}";
+		
+		// Before BIRT 2.2, the query text was simple SQL 
+		// i.e. "select columns from table"
+		String shortQueryText = "select \"Patient Id\", \"ART Register Number\", \"Birthdate\", \"Age\", \"Health Center\", \"First Encounter Date\", \"last Encounter Date\", \"Current ARVs\", \"Earliest ARV start\", \"HIV Program enrollment date\", \"ANTIRETROVIRAL TREATMENT STATUS\", \"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\", \"BASELINE CD4\", \"BASELINE CD4_obsDatetime\", \"CD4 COUNT\", \"CD4 COUNT_obsDatetime\", \"CD4 COUNT_(1)\", \"CD4 COUNT_obsDatetime_(1)\", \"CD4 COUNT_(2)\", \"CD4 COUNT_obsDatetime_(2)\", \"WEIGHT (KG)\", \"PREGNANCY STATUS\", \"PREGNANCY STATUS_obsDatetime\", \"TRANSFER IN FROM\", \"TRANSFER IN FROM_obsDatetime\", \"MEDICATIONS DISPENSED\", \"MEDICATIONS DISPENSED_obsDatetime\", \"MEDICATIONS DISPENSED_(1)\", \"MEDICATIONS DISPENSED_obsDatetime_(1)\", \"MEDICATIONS DISPENSED_(2)\", \"MEDICATIONS DISPENSED_obsDatetime_(2)\", \"TREATMENT STATUS\", \"TREATMENT STATUS_obsDatetime\", \"Deceased\", \"HIV Program\", \"Gender\" from HAHPCO_Dataset_en_us-16-Jul-2008-145234.csv";
+
+		
+		String expectedColumnsInfo = "\"Patient Id\",\"Patient Id\",STRING;\"ART Register Number\",\"ART Register Number\",STRING;\"Birthdate\",\"Birthdate\",DATE;\"Age\",\"Age\",INT;\"Health Center\",\"Health Center\",STRING;\"First Encounter Date\",\"First Encounter Date\",DATE;\"last Encounter Date\",\"last Encounter Date\",DATE;\"Current ARVs\",\"Current ARVs\",STRING;\"Earliest ARV start\",\"Earliest ARV start\",DATE;\"HIV Program enrollment date\",\"HIV Program enrollment date\",DATE;\"ANTIRETROVIRAL TREATMENT STATUS\",\"ANTIRETROVIRAL TREATMENT STATUS\",STRING;\"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\",\"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\",DATE;\"BASELINE CD4\",\"BASELINE CD4\",STRING;\"BASELINE CD4_obsDatetime\",\"BASELINE CD4_obsDatetime\",DATE;\"CD4 COUNT\",\"CD4 COUNT\",STRING;\"CD4 COUNT_obsDatetime\",\"CD4 COUNT_obsDatetime\",DATE;\"CD4 COUNT_(1)\",\"CD4 COUNT_(1)\",STRING;\"CD4 COUNT_obsDatetime_(1)\",\"CD4 COUNT_obsDatetime_(1)\",DATE;\"CD4 COUNT_(2)\",\"CD4 COUNT_(2)\",STRING;\"CD4 COUNT_obsDatetime_(2)\",\"CD4 COUNT_obsDatetime_(2)\",DATE;\"WEIGHT (KG)\",\"WEIGHT (KG)\",STRING;\"PREGNANCY STATUS\",\"PREGNANCY STATUS\",STRING;\"PREGNANCY STATUS_obsDatetime\",\"PREGNANCY STATUS_obsDatetime\",DATE;\"TRANSFER IN FROM\",\"TRANSFER IN FROM\",STRING;\"TRANSFER IN FROM_obsDatetime\",\"TRANSFER IN FROM_obsDatetime\",DATE;\"MEDICATIONS DISPENSED\",\"MEDICATIONS DISPENSED\",STRING;\"MEDICATIONS DISPENSED_obsDatetime\",\"MEDICATIONS DISPENSED_obsDatetime\",DATE;\"MEDICATIONS DISPENSED_(1)\",\"MEDICATIONS DISPENSED_(1)\",STRING;\"MEDICATIONS DISPENSED_obsDatetime_(1)\",\"MEDICATIONS DISPENSED_obsDatetime_(1)\",DATE;\"MEDICATIONS DISPENSED_(2)\",\"MEDICATIONS DISPENSED_(2)\",STRING;\"MEDICATIONS DISPENSED_obsDatetime_(2)\",\"MEDICATIONS DISPENSED_obsDatetime_(2)\",DATE;\"TREATMENT STATUS\",\"TREATMENT STATUS\",STRING;\"TREATMENT STATUS_obsDatetime\",\"TREATMENT STATUS_obsDatetime\",DATE;\"Deceased\",\"Deceased\",BOOLEAN;\"HIV Program\",\"HIV Program\",STRING;\"Gender\",\"Gender\",STRING;";
+		String expectedQuery = "select \"Patient Id\", \"ART Register Number\", \"Birthdate\", \"Age\", \"Health Center\", \"First Encounter Date\", \"last Encounter Date\", \"Current ARVs\", \"Earliest ARV start\", \"HIV Program enrollment date\", \"ANTIRETROVIRAL TREATMENT STATUS\", \"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\", \"BASELINE CD4\", \"BASELINE CD4_obsDatetime\", \"CD4 COUNT\", \"CD4 COUNT_obsDatetime\", \"CD4 COUNT_(1)\", \"CD4 COUNT_obsDatetime_(1)\", \"CD4 COUNT_(2)\", \"CD4 COUNT_obsDatetime_(2)\", \"WEIGHT (KG)\", \"PREGNANCY STATUS\", \"PREGNANCY STATUS_obsDatetime\", \"TRANSFER IN FROM\", \"TRANSFER IN FROM_obsDatetime\", \"MEDICATIONS DISPENSED\", \"MEDICATIONS DISPENSED_obsDatetime\", \"MEDICATIONS DISPENSED_(1)\", \"MEDICATIONS DISPENSED_obsDatetime_(1)\", \"MEDICATIONS DISPENSED_(2)\", \"MEDICATIONS DISPENSED_obsDatetime_(2)\", \"TREATMENT STATUS\", \"TREATMENT STATUS_obsDatetime\", \"Deceased\", \"HIV Program\", \"Gender\" from HAHPCO_Dataset_en_us-16-Jul-2008-145234.csv";
+		String expectedColumns = "\"Patient Id\", \"ART Register Number\", \"Birthdate\", \"Age\", \"Health Center\", \"First Encounter Date\", \"last Encounter Date\", \"Current ARVs\", \"Earliest ARV start\", \"HIV Program enrollment date\", \"ANTIRETROVIRAL TREATMENT STATUS\", \"ANTIRETROVIRAL TREATMENT STATUS_obsDatetime\", \"BASELINE CD4\", \"BASELINE CD4_obsDatetime\", \"CD4 COUNT\", \"CD4 COUNT_obsDatetime\", \"CD4 COUNT_(1)\", \"CD4 COUNT_obsDatetime_(1)\", \"CD4 COUNT_(2)\", \"CD4 COUNT_obsDatetime_(2)\", \"WEIGHT (KG)\", \"PREGNANCY STATUS\", \"PREGNANCY STATUS_obsDatetime\", \"TRANSFER IN FROM\", \"TRANSFER IN FROM_obsDatetime\", \"MEDICATIONS DISPENSED\", \"MEDICATIONS DISPENSED_obsDatetime\", \"MEDICATIONS DISPENSED_(1)\", \"MEDICATIONS DISPENSED_obsDatetime_(1)\", \"MEDICATIONS DISPENSED_(2)\", \"MEDICATIONS DISPENSED_obsDatetime_(2)\", \"TREATMENT STATUS\", \"TREATMENT STATUS_obsDatetime\", \"Deceased\", \"HIV Program\", \"Gender\"";
+		String expectedTable = "HAHPCO_Dataset_en_us-16-Jul-2008-145234.csv";
+		
+		// Test the full syntax
+		assert(BirtQueryUtil.getColumnsInfo(fullQueryText).equals(expectedColumnsInfo));
+		assert(BirtQueryUtil.getQuery(fullQueryText).equals(expectedQuery));
+		assert(BirtQueryUtil.getColumns(fullQueryText).equals(expectedColumns));		
+		assert(BirtQueryUtil.getTable(fullQueryText).equals(expectedTable));
+		
+		// Test the short syntax
+		assert(BirtQueryUtil.getQuery(shortQueryText).equals(expectedQuery));
+		assert(BirtQueryUtil.getColumns(shortQueryText).equals(expectedColumns));		
+		assert(BirtQueryUtil.getTable(shortQueryText).equals(expectedTable));
+		
+		// Changing the query 
+		BirtDataSetQuery datasetQuery = new BirtDataSetQuery(fullQueryText);					
+		datasetQuery.setTable(expectedTable + "_changed");	
+		
+		log.info("New Query: " + datasetQuery.getQueryText());
+		
+
+	}
 	
 	
 	
-	
+	/**
+	 * 
+	 */
 	public void testGenerateImageTestReport() throws Exception { 
 		
 		String reportDesign = 

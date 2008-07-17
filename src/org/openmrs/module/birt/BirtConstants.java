@@ -9,7 +9,16 @@ import org.openmrs.module.birt.impl.BirtConfiguration;
 
 public class BirtConstants { 
 	
-	/* */
+	/* Constants used for parsing the BIRT ODA query text */
+	public static final char QUERY_TEXT_DELIMITER = ':';
+	public static final char COLUMNSINFO_BEGIN_DELIMITER = '{';
+	public static final char COLUMNSINFO_END_DELIMITER = '}';
+	public final static String QUERY_BEGIN_DELIMITER = "SELECT";
+	public final static String TABLE_BEGIN_DELIMITER = " FROM "; 
+	public final static String COLUMN_DELIMITER = ",";	
+	public final static String WHITESPACE = " ";
+	
+	/* Common constants used throughout the module */
 	public static final String INVALID_COHORT_KEY = "0";
 	public static final String ALL_REPORTS = "all";
 	public static final String PATIENT_REPORTS = "patient";
@@ -17,14 +26,15 @@ public class BirtConstants {
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	public static final String REPORT_DESIGN_EXTENSION = "rptdesign";
 	
-	
+	/* Constants that represent the output formats supported */
 	public static final String PARAM_OUTPUT_FORMAT = "outputFormat";
 	public static final String HTML_FORMAT = "html";
 	public static final String PDF_FORMAT = "pdf";
 	public static final String DOC_FORMAT = "doc";
 	public static final String XLS_FORMAT = "xls";
 	
-	/* Required BIRT module properties.  Names correspond to global properties in the database */
+	/* Required BIRT module properties.  
+	 * Names correspond to global properties in the database */
 	public static final String PROPERTY_LOGGING_DIR 			= 	"birt.loggingDir";
 	public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";
 	public static final String PROPERTY_REPORT_DIR				= 	"birt.reportDir";

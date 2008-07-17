@@ -83,6 +83,7 @@ public class BirtConfiguration {
 
 	/**
 	 * Gets the configuration for the BIRT design engine.
+	 * 
 	 * @return
 	 */
 	public synchronized static DesignConfig getDesignConfig() { 
@@ -201,7 +202,7 @@ public class BirtConfiguration {
 		
 		// Setting the report output file name
 		String name = report.getReportDefinition().getName();
-		String filename = BirtReportUtil.generateOutputFilename(name, report.getOutputFormat());
+		String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
 		report.setOutputFilename(filename);
 
 		log.info("Setting report output filename " + filename);
