@@ -6,13 +6,13 @@
 	
 	<openmrs:hasPrivilege privilege="Manage Reports">
 
-		<li <c:if test="<%= request.getRequestURI().contains("birt/report.list") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("birt/report.list") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/birt/report.list">
 				<spring:message code="birt.list.title"/>
 			</a>
 		</li>
 
-		<li <c:if test="<%= request.getRequestURI().contains("birt/report.form") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("birt/report.form") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/birt/report.form">
 				<spring:message code="birt.create.title"/>
 			</a>
