@@ -93,9 +93,11 @@
 			<fileset dir="" includes="log4j.xml" />
 		</copy>
 		
+				
+		
 		<!-- Copy module web data -->
 		<copy todir="build/web/module/">
-			<fileset dir="web/module/" includes="**/*" />
+			<fileset dir="web/module/" includes="**/*" excludes="resources/**/*" />
 			<filterset refid="variables.to.replace" />
 		</copy>
 		
@@ -103,6 +105,7 @@
 		<!-- (lib should only contain this module's required -->
 		<!-- libraries that OpenMRS doesn't contain already) -->
 		<copy todir="build/lib" failonerror="false">
+			<fileset dir="web/module/" includes="resources/**/*" />
 			<fileset dir="lib" includes="**/*" />
 		</copy>
 		
