@@ -14,7 +14,7 @@
 	</description>
 	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
-	<require_version>1.3.0.00.4211</require_version>   
+	<require_version>1.3.0</require_version>   
 	<!-- /Base Module Properties -->
 	
 	<!-- Required Modules -->

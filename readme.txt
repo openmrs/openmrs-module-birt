@@ -1,5 +1,6 @@
 birtreport.omod Dependencies 
 ========================================================
+BIRT Report Module 1.8.2 requires BIRT Runtime 2.2.2
 BIRT Report Module 1.6.1 requires BIRT Runtime 2.2.2
 BIRT Report Module 1.6 requires BIRT Runtime 2.2.2
 BIRT Report Module 1.5 requires BIRT Runtime 2.2.2
