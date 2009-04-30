@@ -16,6 +16,8 @@ package org.openmrs.module.birt.scheduler.tasks;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,16 +53,17 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.scheduler.tasks.AbstractTask;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  *  Implementation of a task that generates and sends an email 
  *  with a PDF/HTML report attachment.
  *
  */
-public class SendReportEmailTask extends AbstractTask { 
+public class GenerateAndEmailReportTask extends AbstractTask { 
 	
 	// Logger 
-	private Log log = LogFactory.getLog(SendReportEmailTask.class);
+	private Log log = LogFactory.getLog(GenerateAndEmailReportTask.class);
 	
 	/** 
 	 * Generates the given report and sends it over email to the appropriate people.
@@ -143,7 +146,24 @@ public class SendReportEmailTask extends AbstractTask {
     			// We need to remove the parameter prefix ("report.param.")
     			String paramName = key.substring(BirtConstants.REPORT_PARAM_PREFIX.length());
     			String paramValue = taskDefinition.getProperty(key);
-    			parameters.put(paramName, paramValue);
+    			Object paramObject = null;
+				try { 
+					if (paramValue.startsWith("dateTime:")) { 
+    					paramObject = 
+    						Context.getDateFormat().parse(paramValue.substring("dateTime:".length()));    				
+	    			} else if (paramValue.startsWith("date:")) { 
+	    				paramObject = 
+	    					java.sql.Date.valueOf(paramValue.substring("date:".length()));
+	    			} else if (paramValue.startsWith("integer:")) { 
+	    				paramObject = Integer.parseInt(paramValue.substring("integer:".length())); 
+	    			} else { 
+	    				paramObject = paramValue;
+	    			}					
+				} catch (ParseException e) { 
+					throw new BirtReportException(e); 
+				}    					
+    			
+    			parameters.put(paramName, paramObject);
     		}
     	}    	
     	return parameters;	

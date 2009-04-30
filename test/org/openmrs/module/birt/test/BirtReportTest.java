@@ -8,6 +8,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,6 +132,15 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 		Platform.shutdown();
 	}	
 	
+	
+	public void testExpectedDateFormat() { 
+		try { 
+			Date date = Context.getDateFormat().parse("01/01/2009 00:00:00");				
+			log.info("date: " + date);
+		} catch (ParseException e) {
+			fail("Unable to parse date because string is not valid");
+		}
+	}
 
 	/**
 	 * Tests the generate-and-email-report functionality.
