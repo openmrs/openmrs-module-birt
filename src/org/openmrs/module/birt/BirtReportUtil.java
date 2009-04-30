@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,6 +55,25 @@ public class BirtReportUtil {
 		
 		return createDirectory(reportDirectory);
 	}
+	
+	
+	/**
+	 * 
+	 * @param date
+	 * @param daysToAdd
+	 * @return
+	 */
+	public static Date addDays(Date date, int daysToAdd) { 
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DAY_OF_MONTH, daysToAdd);		
+		return calendar.getTime();			
+	}
+	
 	
 	/**
 	 * Convenience method used to return report design path.

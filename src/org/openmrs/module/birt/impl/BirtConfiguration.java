@@ -105,10 +105,6 @@ public class BirtConfiguration {
 		if (reportEngine == null) {
 			try { 
 				
-				// Added platform.startup
-				
-				log.info("Creating instance of the BIRT Report Engine using BIRT_HOME = " + BirtConstants.BIRT_HOME);
-				
 				log.info("Creating instance of the BIRT Report Engine Factory " 
 						+ IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 				

@@ -26,10 +26,7 @@ import org.eclipse.birt.report.model.api.ReportDesignHandle;
 public class BirtReport implements Serializable {
 	
 	/* Serial version UID */
-	private static final long serialVersionUID = -3597505787229438074L;
-
-	/* Date Formatter */
-	
+	private static final long serialVersionUID = -3597505787229438074L;	
 
     /* Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -63,7 +60,11 @@ public class BirtReport implements Serializable {
 	 	
 	/* Report errors */
 	private List errors = null;
-	 	
+
+	/* Email properties */
+	private Map<String,String> emailProperties = new HashMap<String,String>();
+	
+	
 	/**
 	 * Public default constructor.
 	 *
@@ -177,7 +178,6 @@ public class BirtReport implements Serializable {
 	
 	/**
 	 * Gets the default values for all parameters.
-	 * 
 	 * @return
 	 */
 	public Map<String, Object> getParameterValues() { 
@@ -187,6 +187,16 @@ public class BirtReport implements Serializable {
 		}
 		return parameterValues;
 	}
+	
+	
+	/**
+	 * Gets the properties used to send an email.
+	 * @return
+	 */
+	public Map<String,String> getEmailProperties() { 
+		return emailProperties;
+	}
+	
 	
 	/**
 	 * Set the report identifier.
@@ -258,21 +268,20 @@ public class BirtReport implements Serializable {
 	
 	
 	/**
-	 * Sets the report parameters.
-	 * 
-	 * @param map
+	 * Adds the report parameters.
+	 * @param parameters
 	 */
-	public void setParameters(List<ParameterDefinition> parameters) { 
-		this.parameters = parameters;
+	public void addParameters(List<ParameterDefinition> parameters) { 
+		parameters.addAll(parameters);
 	}
 		
 	/**
 	 * Adds the given parameters to the report.
 	 * @param parameters
 	 */
-	public void addParameters(Map<String, String> parameters) { 
+	public void addParameters(Map<String, Object> parameters) { 
 		for (String name : parameters.keySet()) {
-			String value = parameters.get(name);			
+			Object value = parameters.get(name);			
 			addParameter(name, value);			
 		}
 	}
@@ -285,6 +294,16 @@ public class BirtReport implements Serializable {
 	public void addParameter(String name, Object value) { 
 		parameters.add(new ParameterDefinition(name, value));
 	}
+	
+	/**
+	 * Sets the properties for sending a report via email.
+	 * 
+	 * @param emailProperties
+	 */
+	public void setEmailProperties(Map<String,String> emailProperties) { 
+		this.emailProperties = emailProperties;
+	}
+	
 	
 	
 	/**

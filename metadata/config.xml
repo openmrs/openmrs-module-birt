@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
-
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
 	<id>birt</id>
 	<name>BIRT Report Module</name>
-	<version>1.8.3</version>
+	<version>1.8.4</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Justin Miranda</author>
 	<description>
@@ -46,27 +45,27 @@
 	<!-- Required Global Properties -->
 	<globalProperty>
 		<property>@MODULE_ID@.birtHome</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path to the BIRT Report Engine.  Should include ReportEngine subdirectory. (ex. C:/birt-runtime-2_2_0/ReportEngine)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.loggingDir</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path for log files written by BIRT Engine.  (ex. C:/tmp/logs)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.reportDir</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path where report design files are uploaded.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.outputDir</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path to the report output file when reports are generated. (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.datasetDir</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path to the reports dataset directory (for CSV/XML data sources). (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/datasets)</description>
 	</globalProperty>
 	<globalProperty>
@@ -76,12 +75,12 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.reportOutputFile</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path to the reports output file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportOutput.pdf)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.reportPreviewFile</property>
-		<defaultValue></defaultValue>
+		<defaultValue/>
 		<description>Specifies the absolute path to the report preview file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportPreview.pdf)</description>
 	</globalProperty>
 	<globalProperty>
@@ -143,4 +142,3 @@
 	-->
 	
 </module>
-

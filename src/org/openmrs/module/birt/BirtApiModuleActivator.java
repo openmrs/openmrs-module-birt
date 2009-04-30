@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Activator;
 
-public class BirtApiModuleActivator implements Activator {
+public class BirtApiModuleActivator  {
 
 	private Log log = LogFactory.getLog(BirtApiModuleActivator.class);
 

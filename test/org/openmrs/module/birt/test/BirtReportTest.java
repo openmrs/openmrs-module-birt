@@ -1,4 +1,4 @@
-package org.openmrs.module.birt;
+package org.openmrs.module.birt.test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,6 +37,8 @@ import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
 import org.openmrs.cohort.CohortDefinitionItemHolder;
+import org.openmrs.module.birt.BirtConstants;
+import org.openmrs.module.birt.BirtDataSetQuery;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
@@ -128,6 +131,46 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 		Platform.shutdown();
 	}	
 	
+
+	/**
+	 * Tests the generate-and-email-report functionality.
+	 * @throws Exception
+	 */
+	public void testGenerateAndEmailReport() throws Exception { 
+
+		try { 
+			BirtReportService service = 
+				(BirtReportService) Context.getService(BirtReportService.class);
+	
+			
+			Map<String,Object> reportParameters = new HashMap<String,Object>();
+			reportParameters.put("DateParameter", java.sql.Date.valueOf("2008-10-01"));
+			reportParameters.put("DatetimeParameter", new Date());
+
+			Map<String,String> emailProperties = new HashMap<String,String>();
+			emailProperties.put(BirtConstants.REPORT_EMAIL_FROM, "justin.miranda@gmail.com");
+			emailProperties.put(BirtConstants.REPORT_EMAIL_TO, "justin.miranda@gmail.com");
+			//emailProperties.put(BirtConstants.REPORT_EMAIL_CC, "");
+			//emailProperties.put(BirtConstants.REPORT_EMAIL_BCC, "");
+			emailProperties.put(BirtConstants.REPORT_EMAIL_SUBJECT, "Testing subject");
+			emailProperties.put(BirtConstants.REPORT_EMAIL_BODY, "Testing body");
+					
+			BirtReport report = service.getReport(new Integer(285));		
+			report.setOutputFormat(BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT);
+			report.setCohort(new Cohort());
+			report.setEmailProperties(emailProperties);
+			report.addParameters(reportParameters);
+			report.addParameter("startDate", new Date());
+			report.addParameter("endDate", new Date());
+
+			service.generateAndEmailReport(report);
+			
+			
+		} catch (Exception e) { 
+			fail("Unable to generate and email report");
+		}
+		
+	}
 	
 	
 	/**

@@ -13,111 +13,160 @@
  */
 package org.openmrs.module.birt.scheduler.tasks;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.activation.URLDataSource;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.birt.report.engine.api.EngineException;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
 
 /**
- *  Implementation of the stateful task that sends an email.
+ *  Implementation of a task that generates and sends an email 
+ *  with a PDF/HTML report attachment.
  *
  */
 public class SendReportEmailTask extends AbstractTask { 
 	
 	// Logger 
-	private Log log = LogFactory.getLog( SendReportEmailTask.class );
-
-	private final static String REPORT_ID = "reportId";	
-	private final static String COHORT_ID = "cohortId";	
-	private final static String TODAY = "today";
-	private final static String OUTPUT_FORMAT = "outputFormat";
-
+	private Log log = LogFactory.getLog(SendReportEmailTask.class);
+	
 	/** 
-	 *  Process the next form entry in the database and then remove the form entry from the database.
-	 *
-	 *
+	 * Generates the given report and sends it over email to the appropriate people.
 	 */
 	public void execute() {		
-		log.info("****************************** SEND REPORT EMAIL TASK:  Executing task ...");
-		if (!Context.isAuthenticated()) { 
+		log.debug("Executing send report email task ...");
+		if (!Context.isAuthenticated()) 
 			authenticate();
-		}
-		Integer reportId = Integer.parseInt(taskDefinition.getProperty(REPORT_ID));
-		
-		
-		BirtReportService service = (BirtReportService) Context.getService(BirtReportService.class);
-	
-		BirtReport report = service.getReport(reportId);	
+					
+		try { 
 
-		// Add task properties as parameters to report
-		report.addParameters(taskDefinition.getProperties());
-		
-		// Add today's date as a parameter
-		report.addParameter(TODAY, new Date());
-		
-		// Set the output format based on the given property 
-		if (taskDefinition.getProperty(OUTPUT_FORMAT)!=null) { 
-			report.setOutputFormat(taskDefinition.getProperty(OUTPUT_FORMAT));
-		} else { 
+			// Get access to the birt report service
+			BirtReportService service = 
+				(BirtReportService) Context.getService(BirtReportService.class);
+			
+			// Get the parameters need to identify the report 
+			Integer reportId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.REPORT_ID));			
+					
+			// Get report and populate parameters
+			BirtReport report = service.getReport(reportId);	
+			report.addParameters(getReportParameters());
 			report.setOutputFormat(BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT);
-		}
-
-		try { 
-			// Set the desired cohort [optional] 
-			Integer cohortId = Integer.parseInt(taskDefinition.getProperty(COHORT_ID));		
-			report.setCohort(new Cohort(cohortId));
-		} 
-		catch (NumberFormatException e) { 
-			// Not important and we'll most likely see a lot of these 
-			log.debug("Unable to parse the cohortId task property " + e.getMessage());
-		}
+			report.setEmailProperties(getEmailProperties());
+	
+			// Add default start date parameter
+			Integer daysFromStartDate = Integer.parseInt(
+					taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_START_DATE));
+			report.addParameter("startDate", BirtReportUtil.addDays(new Date(), daysFromStartDate));
+			
+			// Add default end date parameter
+			Integer daysFromEndDate = Integer.parseInt( 
+					taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_END_DATE));			
+			report.addParameter("endDate", BirtReportUtil.addDays(new Date(), daysFromEndDate));
+			
+			try { 
+				Integer cohortId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.COHORT_ID));		
+				report.setCohort(new Cohort(cohortId));
+			} 
+			catch (NumberFormatException e) { 
+				log.warn("Unable to parse the cohort task property " + e.getMessage());
+			}
+			
+			// Override the output format if the task defines one 
+			if (taskDefinition.getProperty(BirtConstants.REPORT_FORMAT)!=null) { 
+				report.setOutputFormat(taskDefinition.getProperty(BirtConstants.REPORT_FORMAT));
+			}
+			
 		
-		try { 
-			service.generateReport(report);
-		} 
+			service.generateAndEmailReport(report);		
+		
+		}			
 		catch (BirtReportException e) { 
 			log.error("Unable to send email due to BIRT API exception: " + e.getMessage(), e);			
+		}			
+		catch (Exception e) { 
+			log.warn("Unable to generate report " + e.getMessage());			
 		}
-			
-		try { 
-				
-			// TODO Need to add File attachment support
-			Message message = Context.getMessageService().createMessage(
-					taskDefinition.getProperty("recipients"), 
-					taskDefinition.getProperty("sender"), 
-					taskDefinition.getProperty("subject"), 
-					taskDefinition.getProperty("message"), 
-					taskDefinition.getProperty("attachment"), 
-					taskDefinition.getProperty("attachmentContentType"), 
-					taskDefinition.getProperty("attachmentFileName")
-				);
-			
-			Context.getMessageService().sendMessage(message);
-		} 
-		catch (MessageException e) { 
-			log.warn("Unable to send email due to mail API exception: " + e.getMessage());
-		}
-		
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
     public void shutdown() {
-    	log.info("****************************** SEND REPORT EMAIL TASK:  Shutting down task ...");
+    	log.debug("Shutting down send report email task ...");
     }
-	
-	
+
+
+    
+    /**
+     * Get report parameters from the task definition properties.
+     * @return	a map of report parameters
+     */
+    private Map<String,Object> getReportParameters() { 
+    	Map<String,Object> parameters = new HashMap<String,Object>();
+    	
+    	// If the task property is a report parameter, then we add it to the 
+    	// report parameter map 
+    	for (String key : taskDefinition.getProperties().keySet()) { 
+    		if (key.startsWith(BirtConstants.REPORT_PARAM_PREFIX)) {    			
+    			// We need to remove the parameter prefix ("report.param.")
+    			String paramName = key.substring(BirtConstants.REPORT_PARAM_PREFIX.length());
+    			String paramValue = taskDefinition.getProperty(key);
+    			parameters.put(paramName, paramValue);
+    		}
+    	}    	
+    	return parameters;	
+    }
+    
+
+    /**
+     * Get properties needed to send the email to the appropriate people.
+     * @return
+     */
+    private Map<String,String> getEmailProperties() { 
+    	Map<String,String> properties = new HashMap<String,String>();
+    	
+    	// If the task property is a report parameter, then we add it to the 
+    	// report parameter map 
+    	for (String key : taskDefinition.getProperties().keySet()) { 
+    		if (key.startsWith(BirtConstants.REPORT_EMAIL_PREFIX)) {    			
+    			properties.put(key, taskDefinition.getProperty(key));
+    		}
+    	}    	
+    	return properties;
+    }	
+    	
+    	
+    
 }

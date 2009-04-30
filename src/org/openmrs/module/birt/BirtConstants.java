@@ -33,6 +33,32 @@ public class BirtConstants {
 	public static final String DOC_FORMAT = "doc";
 	public static final String XLS_FORMAT = "xls";
 	
+	// Report constants
+	public final static String REPORT_ID = "report.reportId";	
+	public final static String COHORT_ID = "report.cohortId";	
+	public final static String REPORT_FORMAT = "report.format";
+
+	// Report parameter constants
+	public final static String REPORT_PARAM_PREFIX = "report.param.";
+	public final static String REPORT_PARAM_START_DATE = "report.param.startDate";	
+	public final static String REPORT_PARAM_END_DATE = "report.param.endDate";	
+
+	// Report period constants
+	public final static String REPORT_PERIOD = "report.period";	
+	public final static String REPORT_PERIOD_DAYS_FROM_START_DATE = "report.period.daysFromStartDate";
+	public final static String REPORT_PERIOD_DAYS_FROM_END_DATE = "report.period.daysFromEndDate";
+	
+	// Report email constants
+	public final static String REPORT_EMAIL_PREFIX = "report.email.";
+	public final static String REPORT_EMAIL_HOST = "report.email.host";
+	public final static String REPORT_EMAIL_FROM = "report.email.from";	
+	public final static String REPORT_EMAIL_TO = "report.email.to";
+	public final static String REPORT_EMAIL_CC = "report.email.cc";
+	public final static String REPORT_EMAIL_BCC = "report.email.bcc";
+	public final static String REPORT_EMAIL_SUBJECT = "report.email.subject";	
+	public final static String REPORT_EMAIL_BODY = "report.email.body";	
+	public final static String REPORT_EMAIL_BODY_URL = "report.email.body.url";		
+	
 	/* Required BIRT module properties.  
 	 * Names correspond to global properties in the database */
 	public static final String PROPERTY_LOGGING_DIR 			= 	"birt.loggingDir";

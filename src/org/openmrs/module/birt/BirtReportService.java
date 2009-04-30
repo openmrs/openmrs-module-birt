@@ -180,8 +180,12 @@ public interface BirtReportService {
 	@Transactional(readOnly=true)
 	public List<CohortDefinitionItemHolder> getCohortDefinitions();
 	
-	
 
+	/**
+	 * Generate and email report to users.
+	 * @param report
+	 */
+	public void generateAndEmailReport(BirtReport report);
 	
 	
 	
