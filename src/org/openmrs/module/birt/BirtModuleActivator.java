@@ -6,19 +6,14 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Activator;
 import org.openmrs.module.ModuleException;
+import org.openmrs.module.birt.impl.BirtConfiguration;
+import org.openmrs.util.OpenmrsUtil;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
-import org.eclipse.birt.report.engine.api.EngineConfig;
-import org.eclipse.birt.report.engine.api.IReportEngine;
-import org.eclipse.birt.report.engine.api.IReportEngineFactory;
-
-import org.openmrs.module.birt.impl.BirtConfiguration;
-import org.openmrs.util.OpenmrsUtil;
 
 
 public class BirtModuleActivator implements Activator {
@@ -38,10 +33,7 @@ public class BirtModuleActivator implements Activator {
 			BirtConstants.PROPERTY_LOGGING_DIR, 
 			BirtConstants.PROPERTY_REPORT_DIR, 
 			BirtConstants.PROPERTY_REPORT_OUTPUT_FORMAT, 
-			BirtConstants.PROPERTY_REPORT_OUTPUT_FILE, 
-			BirtConstants.PROPERTY_REPORT_PREVIEW_FILE, 
 			BirtConstants.PROPERTY_OUTPUT_DIR,
-			BirtConstants.PROPERTY_DEFAULT_REPORT_DESIGN_FILE
 		};
 				
 		String [] directoryProperties = { 
@@ -50,7 +42,11 @@ public class BirtModuleActivator implements Activator {
 			BirtConstants.PROPERTY_REPORT_DIR, 
 			BirtConstants.PROPERTY_OUTPUT_DIR				
 		};
-		String [] deprecatedProperties = { /* none */ };
+		String [] deprecatedProperties = { 
+			BirtConstants.PROPERTY_REPORT_OUTPUT_FILE, 
+			BirtConstants.PROPERTY_REPORT_PREVIEW_FILE, 
+			BirtConstants.PROPERTY_DEFAULT_REPORT_DESIGN_FILE
+		};
 
 		// Warn implementers about deprecated properties
 		validateDeprecatedProperties(deprecatedProperties);
@@ -61,8 +57,8 @@ public class BirtModuleActivator implements Activator {
 			log.info("Starting BIRT Report Engine ... ");
 			Platform.startup( BirtConfiguration.getEngineConfig());
 		} 
-		catch (BirtException be) {
-			throw new IllegalArgumentException("Failure starting BIRT platform", be);
+		catch (BirtException e) {
+			throw new ModuleException("Failure starting BIRT platform: " + e.getMessage(), e);
 		}
 		
 	}

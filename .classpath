@@ -31,7 +31,7 @@
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.4.jar"/>
-	<classpathentry kind="lib" path="lib-common/hibernate325.jar"/>
+	<classpathentry kind="lib" path="lib-common/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
 	<classpathentry kind="lib" path="lib/com.ibm.icu_3.6.1.v20070906.jar"/>
 	<classpathentry kind="lib" path="lib/modelodaapi.jar"/>
 	<classpathentry kind="lib" path="lib/odadesignapi.jar"/>

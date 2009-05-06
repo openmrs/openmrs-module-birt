@@ -272,7 +272,7 @@ public class BirtReport implements Serializable {
 	 * @param parameters
 	 */
 	public void addParameters(List<ParameterDefinition> parameters) { 
-		parameters.addAll(parameters);
+		this.parameters.addAll(parameters);
 	}
 		
 	/**
@@ -292,7 +292,7 @@ public class BirtReport implements Serializable {
 	 * @param value
 	 */
 	public void addParameter(String name, Object value) { 
-		parameters.add(new ParameterDefinition(name, value));
+		this.parameters.add(new ParameterDefinition(name, value));
 	}
 	
 	/**
