@@ -5,15 +5,13 @@
 	<!-- Base Module Properties -->
 	<id>birt</id>
 	<name>BIRT Report Module</name>
-	<version>1.8.5</version>
+	<version>1.9.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Justin Miranda</author>
-	<description>
-		BIRT Reporting Module
-	</description>
+	<description>BIRT Reporting Module</description>
 	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
-	<require_version>1.3.4</require_version>   
+	<require_version>1.4.0</require_version>   
 	<!-- /Base Module Properties -->
 	
 	<!-- Required Modules -->

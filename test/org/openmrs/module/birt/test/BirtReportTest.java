@@ -1,24 +1,17 @@
 package org.openmrs.module.birt.test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -33,7 +26,11 @@ import org.eclipse.birt.report.model.api.DesignFileException;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
-
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
@@ -43,8 +40,8 @@ import org.openmrs.module.birt.BirtDataSetQuery;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.module.birt.impl.BirtReportServiceImpl;
 import org.openmrs.module.birt.impl.BirtConfiguration;
+import org.openmrs.module.birt.impl.BirtReportServiceImpl;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.module.birt.util.BirtQueryUtil;
 import org.openmrs.reporting.report.ReportDefinition;
@@ -55,7 +52,7 @@ import org.springframework.core.io.Resource;
 import com.ibm.icu.util.ULocale;
 
 /**
- * Test BIRT Reporting capabilities.  
+ * Test cases for BIRT Report Module capabilities.  
  * 
  * @author Justin Miranda
  */
@@ -71,45 +68,16 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	// BIRT design engine
 	private static IDesignEngine designEngine;	
 
-	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
-		authenticate();
-	}	
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDown()
+	/**
+	 * Public constructor
 	 */
-	@Override
-	public void onSetUp() throws Exception { 
-		super.onSetUp();
-		startupReportEngine();
-	}
+	public BirtReportTest() { }
 	
-	/* (non-Javadoc)
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDown()
-	 */
-	@Override
-	protected void onTearDown() throws Exception {
-		// TODO Auto-generated method stub
-		super.onTearDown();
-		shutdownReportEngine();
-	}
-
-	@Override
-	public Boolean useInMemoryDatabase() {
-		return false;
-	}
-
-
-	public BirtReportTest() { 
-		setDependencyCheck(false);
-	}
-
 	/**
 	 * Initializes all BIRT resources.
 	 */
-	public void startupReportEngine() {
+	@BeforeClass
+	public static void oneTimeSetup() throws Exception {
 		try {
 			Platform.startup( BirtConfiguration.getEngineConfig());
 			reportEngine = BirtConfiguration.getReportEngine();
@@ -121,24 +89,45 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 			log.error("Error starting BIRT ", be);
 			throw new IllegalArgumentException("Failure starting BIRT platform", be);
 		}		
+
+	}	
+
+	/**
+	 * Destroys the BIRT report engine used in the tests.
+	 */
+	@AfterClass
+	public static void oneTimeTearDown() throws Exception {
+		Platform.shutdown();
+	}
+
+	/**
+	 * Initialization method called before each test case.
+	 * @throws Exception
+	 */
+	@Before
+	public void onSetup() throws Exception { 
+		authenticate();		
 	}
 	
 	
 	/**
-	 * Destroys the BIRT report engine used in the tests.
+	 * Indicates whether to use the in-memory database.
 	 */
-	public void shutdownReportEngine() {
-		logger.info("Shutting down BIRT report engine");	
-		Platform.shutdown();
-	}	
+	@Override
+	public Boolean useInMemoryDatabase() {
+		return false;
+	}
+
 	
-	
-	public void testExpectedDateFormat() { 
+	/**
+	 * Tests the default date formatter.
+	 */
+	@Test
+	public void shouldParseDateCorrectly() { 
 		try { 
-			Date date = Context.getDateFormat().parse("01/01/2009 00:00:00");				
-			log.info("date: " + date);
+			Context.getDateFormat().parse("01/01/2009 00:00:00");				
 		} catch (ParseException e) {
-			fail("Unable to parse date because string is not valid");
+			Assert.fail("Unable to parse date because string is not valid");
 		}
 	}
 
@@ -146,7 +135,8 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	 * Tests the generate-and-email-report functionality.
 	 * @throws Exception
 	 */
-	public void testGenerateAndEmailReport() throws Exception { 
+	@Test
+	public void shouldGenerateAndEmailReport() throws Exception { 
 
 		try { 
 			BirtReportService service = 
@@ -177,7 +167,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 			
 			
 		} catch (Exception e) { 
-			fail("Unable to generate and email report");
+			Assert.fail("Unable to generate and email report");
 		}
 		
 	}
@@ -186,7 +176,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	/**
 	 * Tests the query parser.
 	 */
-	public void testQueryTextUtil() throws Exception { 
+	public void shouldBuildValidQuery() throws Exception { 
 
 		// As of BIRT 2.2, the query text contains the SQL-like syntax with extra column information
 		// "select columns from table : { extra column info }
@@ -225,27 +215,33 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	
 	
 	/**
-	 * 
+	 * Generate a report with an embedded image.
+	 * FIXME This test case needs to be re-written.
 	 */
-	public void testGenerateImageTestReport() throws Exception { 
+	@Ignore
+	public void shouldGenerateImageTestReport() throws Exception { 
 		
 		String reportDesign = 
 			"c:/Documents and Settings/Justin Miranda/My Documents/My Workspace/BirtReportModule/test/" + 
 			"org/openmrs/module/birt/include/ImageTest.rptdesign";
 		
-		File file = new File(reportDesign);
-
-		
-		log.info("File: " + file.getAbsolutePath());
-		if (file.exists()) { 
+		File file = new File(reportDesign);		
+		if (file.exists()) 
 			generateReport(file.getAbsolutePath(), "pdf");
-		}
+		
 		else { 
 			throw new FileNotFoundException("Unable to find '" + reportDesign + "'!");
 		}
 	}
 	
 	
+	/**
+	 * Convenience method to help find a report design on the file system.
+	 * @param reportDesign
+	 * @return
+	 * @throws Exception
+	 */
+	@Ignore
 	public File getReportDesign(String reportDesign) throws Exception { 
 		File file = new File(reportDesign);
 		
@@ -325,10 +321,12 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	
 	 
 	/**
-	 * Gets all cohort definitions.
+	 * Retrieves and evaluates all cohort definitions.
+	 * FIXME Needs to be rewritten as an actual test case. 
 	 * @throws Exception
 	 */
-	public void testGetCohorts() throws Exception { 
+	@Test
+	public void shouldGetAllCohorts() throws Exception { 
 		
 		List<CohortDefinitionItemHolder> cohorts = 
 			Context.getCohortService().getAllCohortDefinitions();
@@ -339,7 +337,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 					Context.getCohortService().getCohortDefinition(item.getKey());
 				
 				log.info("Cohort: " + item);
-				assertNotNull(definition);
+				Assert.assertNotNull(definition);
 								
 				Cohort cohort = Context.getCohortService().evaluate(definition, null);
 				log.info("Cohort " + definition.getClass() + " has " + cohort.getSize() + " patients ");
@@ -356,6 +354,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	 * Test the Duplicate Report use case.
 	 * @throws Exception
 	 */
+	@Test
 	public void testDuplicateReport() throws Exception { 
 		
 		String oldPath = 
@@ -380,13 +379,14 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testCreateAndDeleteReportDefinition() throws Exception { 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("JUnit Test Report");
 		Context.getReportObjectService().createReportObject(reportDefinition);
 	
 		log.info("Created Report: " + reportDefinition.getReportObjectId() + " " + reportDefinition.getName());
-		assertNotNull(reportDefinition.getReportElements());
+		Assert.assertNotNull(reportDefinition.getReportElements());
 		Integer reportToDelete = reportDefinition.getReportObjectId();
 		
 		// Delete the report
@@ -407,6 +407,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	/**
 	 * 
 	 */
+	@Test
 	public void testGetReportDesign() { 
 		
 		try { 
@@ -421,6 +422,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 		
 	}
 	
+	@Test
 	public void testFillReportParameters() { 
 
 		try { 
@@ -459,6 +461,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	}	
 	
 	
+	@Test
 	public void testParseParameters() throws Exception { 		
 
 		BirtReportService service = new BirtReportServiceImpl();
@@ -524,6 +527,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 
 	
 
+	@Test
 	public void testValidateParameters() throws Exception { 
 		
 		IRunAndRenderTask task = null;
@@ -590,6 +594,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	
+	@Test
 	public void testReportDesignPath() throws Exception { 
 		
 		String path = BirtReportUtil.getReportDesignPath("test");

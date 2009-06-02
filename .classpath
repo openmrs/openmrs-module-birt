@@ -43,23 +43,20 @@
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/jta/jta.jar"/>
-	<classpathentry kind="lib" path="/openmrs-trunk/lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
-	<classpathentry kind="lib" path="/openmrs-trunk/lib/mail/activation.jar"/>
-	<classpathentry kind="lib" path="/openmrs-trunk/lib/mail/mail.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
-	<classpathentry kind="lib" path="/openmrs-trunk/lib/simple/simple-xml-1.6.1-mod.jar" sourcepath="/Simple-xml-stream-clean/src"/>
 	<classpathentry kind="lib" path="lib-common/log4j.jar"/>
 	<classpathentry kind="lib" path="metadata"/>
-	<classpathentry kind="lib" path="/openmrs-trunk/lib/mysql-connector-java/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm-1.5.3.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.3.4.00.6954.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.3.4.00.6954.jar"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.3.4.00.6954.jar"/>
 	<classpathentry kind="lib" path="lib-common/activation.jar"/>
 	<classpathentry kind="lib" path="lib-common/mail.jar"/>
 	<classpathentry kind="lib" path="lib-common/simple-xml-1.6.1-mod.jar"/>
-	<classpathentry kind="lib" path="lib-common/mysql-connector-java-3.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.2.01.8165.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.2.01.8165.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.2.01.8165.jar"/>
+	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar"/>
+	<classpathentry kind="lib" path="lib-common/junit-4.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
