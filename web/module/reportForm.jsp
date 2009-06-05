@@ -176,7 +176,14 @@ h4 {
 }
 </style>
 
-<h2><spring:message code="birt.update.title"/></h2>
+<h2>
+	<c:choose>
+		<c:when test="${empty report.reportDefinition.reportObjectId}">
+			<spring:message code="birt.create.title"/>
+		</c:when>
+		<c:otherwise><spring:message code="birt.update.title"/></c:otherwise>
+	</c:choose>
+</h2>
 
 <spring:hasBindErrors name="report">
 	<spring:message code="fix.error"/>
@@ -187,10 +194,12 @@ h4 {
 <div id="patientTabs">
 	<ul>
 		<li><a id="reportDefinitionTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Definition</a></li>
+<!-- 
 		<li><a id="reportDesignTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Design</a></li>
 		<li><a id="reportPreviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Preview</a></li>
 		<li><a id="reportDataTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Data</a></li>	
 		<li><a id="reportRunTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus">Run</a></li>	
+ -->
 	</ul>
 </div>
 
@@ -198,7 +207,9 @@ h4 {
 
 <b class="boxHeader">
 	<c:choose>
-		<c:when test="${report.reportDefinition.reportObjectId}==null"><spring:message code="birt.create.title"/></c:when>
+		<c:when test="${empty report.reportDefinition.reportObjectId}">
+			<spring:message code="birt.create.title"/>
+		</c:when>
 		<c:otherwise><spring:message code="birt.update.title"/></c:otherwise>
 	</c:choose>
 </b>
@@ -209,7 +220,7 @@ h4 {
 				
 				<table border="0" width="100%">
 				
-				<c:if test="${!(report.reportDefinition.reportObjectId == null)}">
+				<c:if test="${!(empty report.reportDefinition.reportObjectId)}">
 					<tr>		
 						<th class="headerCell" align="right"><spring:message code="general.id"/></th>
 						<td class="inputCell" colspan="5">

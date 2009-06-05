@@ -106,7 +106,7 @@ public class UploadReportController extends SimpleFormController {
 
 					}
 					else {
-						throw new BirtReportException("Upload failed because report design does not exits");
+						throw new BirtReportException("Upload failed because report design does not exist");
 					}
 					
 				}
