@@ -34,6 +34,7 @@ import org.eclipse.birt.report.engine.api.impl.ParameterDefn;
 import org.eclipse.birt.report.engine.api.script.IReportContext;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleException;
 import org.openmrs.module.birt.impl.BirtConfiguration;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.util.OpenmrsUtil;
@@ -192,27 +193,26 @@ public class BirtReportUtil {
 	 * @return
 	 */
 	public static File createDirectory(String directory) { 
+		
+		if (directory == null) 
+			throw new ModuleException("The specified directory cannot be null or empty");
+		
 		File folder = new File(directory);
-	
-		// File could not be created 
-		// TODO Test to make sure this will ever happen
-		if (folder == null) {
-			log.warn("The specified directory could not be created " + directory);
-			throw new BirtReportException("The specified directory could not be created " + directory);
-		}
 		
 		// Create folder structure
 		if (!folder.exists()) {
 			log.info("The specified directory doesn't exist, creating... " + folder.getAbsolutePath());
-			if (!folder.exists()) {
-				log.warn(folder.getAbsolutePath() + " doesn't exist.  Creating report directories now.");
-				folder.mkdirs();
+			folder.mkdirs();
+			if (!folder.exists()) { 
+				throw new ModuleException("The specified directory " + folder.getAbsolutePath() + " could not be created");
 			}
-		}
-	
-		// Folder exists, but is not a directory
-		if (!folder.isDirectory()) {
-			throw new BirtReportException("The specified directory exists, but is not a directory at: " + folder.getAbsolutePath());
+		}		
+		// If folder does exist
+		else { 
+			// Folder exists, but is not a directory
+			if (!folder.isDirectory()) {
+				throw new ModuleException("The specified directory exists, but is not a directory at: " + folder.getAbsolutePath());
+			}
 		}
 		return folder;
 	}	

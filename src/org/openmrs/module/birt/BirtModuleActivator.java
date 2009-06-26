@@ -58,7 +58,12 @@ public class BirtModuleActivator implements Activator {
 			Platform.startup( BirtConfiguration.getEngineConfig());
 		} 
 		catch (BirtException e) {
-			throw new ModuleException("Failure starting BIRT platform: " + e.getMessage(), e);
+			throw new ModuleException(
+					"Failure starting BIRT platform with error '" + e.getMessage() + "'.  " + 
+					"This is usually an indication that your 'birt.birtHome' is invalid.  Please update your implementation's 'birt.birtHome' global property." + 
+					"\n\nMake yours look like mine ... " + 
+					"\n\tYours: 'birt.birtHome' = '" + BirtConstants.BIRT_HOME + "'. " + 
+					"\n\tMine: 'birt.birtHome' = '/path/to/birt-runtime-x_y_z/ReportEngine'\n\n", e);
 		}
 		
 	}
