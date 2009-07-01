@@ -372,7 +372,6 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 
 
-
 	/**
 	 * Generate a report based on the attributes of the given report object.
 	 * 
@@ -380,6 +379,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public void generateReport(BirtReport report) {
 		log.info("Generating output for report " + report + ", hashcode " + report.hashCode());
+		IRunAndRenderTask task = null;
 		try {     		
 			// Prepares the dataset for use within the BIRT engine 
 			// (i.e. exports csv file, sets username/password for JDBC dataset)
@@ -393,28 +393,16 @@ public class BirtReportServiceImpl implements BirtReportService {
 				engine.openReportDesign(report.getReportDesignPath());
 
 			// Create a report rendering task
-			IRunAndRenderTask task = 
-				engine.createRunAndRenderTask(reportRunnable);
-
-			// Set parameter values from 
+			task = engine.createRunAndRenderTask(reportRunnable);
 			task.setParameterValues(report.getParameterValues());
-
-			// Validate the parameter values
 			task.validateParameters();    		
-
-			// Set the rendering options
 			task.setRenderOption(BirtConfiguration.getRenderOption(report));
-
-			// Generate the report in the output format specified
 			task.run();
 
 			// Add errors to the report object
 			if (task.getErrors() != null && !task.getErrors().isEmpty()) {
 				report.setErrors(task.getErrors());
 			}
-
-			// Close the task 
-			task.close();
 
 			// Set the output file 
 			report.setOutputFile(new File(report.getOutputFilename()));	    	
@@ -424,7 +412,10 @@ public class BirtReportServiceImpl implements BirtReportService {
 		catch (EngineException e) { 
 			log.error("Unable to generate report due to a BIRT Exception: " + e.getMessage(), e);
 			throw new BirtReportException("Unable to generate report due to a BIRT Exception: " + e.getMessage(), e);
-		}		
+		}
+		finally { 
+			if (task != null) task.close();
+		}
 	}
 
 	/**
@@ -435,35 +426,34 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public void previewReport(BirtReport report) {
 
+		IRunAndRenderTask task = null;
 		try { 
 			// Fill the report parameters
 			//fillReportParameters(report);			
 
 			//Open the report design
 			log.info("Opening report design file to be generated: " + report.getReportDesignPath());
-			IReportRunnable design = reportEngine.openReportDesign(report.getReportDesignPath()); 
+			IReportRunnable reportRunnable = reportEngine.openReportDesign(report.getReportDesignPath()); 
 
-
-			//Create task to run and render the report,
-			IRunAndRenderTask task = reportEngine.createRunAndRenderTask(design); 							
+			//Create task to run and render the report
+			task = reportEngine.createRunAndRenderTask(reportRunnable); 							
 			//task.setAppContext( BirtConfiguration.getRenderContext() );
 			//task.setParameterValues( report.getReportParameters() );
 			task.validateParameters();
-
-			// Set the render option to render the report in HTML/PDF
 			task.setRenderOption( BirtConfiguration.getRenderOption(report) );
-
-			// Execute the report and cleanup resources
-			task.run();
-			task.close();
+			task.run();			
 
 			// TODO Need to pass the file name as input to set render option
 			report.setOutputFile(new File(BirtConstants.REPORT_OUTPUT_FILE));	
 
 
-		} catch (Exception e) { 
+		} 
+		catch (Exception e) { 
 			log.warn("Unable to preview report due to a BIRT Exception: " + e.getMessage(), e);
 			throw new BirtReportException("Unable to preview report due to a BIRT Exception: " + e.getMessage(), e);
+		} 
+		finally { 
+			if (task != null) task.close();
 		}
 	}
 
@@ -473,17 +463,20 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param report
 	 */
 	public void fillReportParameters(BirtReport report) { 
+		log.info("Filling report parameters for " + report.getReportDefinition().getName());
+		IGetParameterDefinitionTask task = null;
+
 		try { 
-			log.info("Filling report parameters for " + report.getReportDefinition().getName());
-
+		
 			List<ParameterDefinition> parameters = new ArrayList<ParameterDefinition>();
-
+			
 			// Get the executable report  
-			IReportRunnable design = reportEngine.openReportDesign(report.getReportDesignPath()); 
+			IReportRunnable reportRunnable = reportEngine.openReportDesign(report.getReportDesignPath()); 
 
-			if (design != null) {
+			if (reportRunnable != null) {
+				
 				//Create task to get parameter definitions for report
-				IGetParameterDefinitionTask task = reportEngine.createGetParameterDefinitionTask(design);
+				task = reportEngine.createGetParameterDefinitionTask(reportRunnable);
 
 				Collection parameterDefns = task.getParameterDefns(true);   // IParameterDefnBase
 
@@ -502,14 +495,14 @@ public class BirtReportServiceImpl implements BirtReportService {
 						Iterator iterator = group.getContents( ).iterator( );
 						while ( iterator.hasNext( ) ) {
 							IScalarParameterDefn scalar = (IScalarParameterDefn) iterator.next( );
-							parameter = getParameter(task, scalar, design, group);							
+							parameter = getParameter(task, scalar, reportRunnable, group);							
 							parameters.add(parameter);
 						}
 					}
 					// Scalar Parameter
 					else if (param instanceof IScalarParameterDefn) {
 						IScalarParameterDefn scalar = (IScalarParameterDefn) param;
-						parameter = getParameter( task, scalar, design, null);
+						parameter = getParameter( task, scalar, reportRunnable, null);
 						parameters.add(parameter);                   
 					} 
 					// Other types (not supported yet)
@@ -527,6 +520,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 			// Explicitly suppression exception because report designs do not always exist when this method
 			// is called, thus BIRT might throw an exception here.
 			log.warn("Unable to fill report with parameters due to a BIRT exception: " + e.getMessage());
+			
+		} finally { 
+			if (task != null) task.close();
 		}
 	}
 
@@ -543,7 +539,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	public ParameterDefinition getParameter(
 			IGetParameterDefinitionTask task, 
 			IScalarParameterDefn scalar,
-			IReportRunnable report, 
+			IReportRunnable reportRunnable, 
 			IParameterGroupDefn group) {   
 
 		// Initialize and populate the parameter
@@ -568,9 +564,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 		parameter.setDataType(dataType);
 
 
-		//Get report design and find default value, prompt text and data set expression using the DE API
-		ReportDesignHandle reportHandle = ( ReportDesignHandle ) report.getDesignHandle( );
-		ScalarParameterHandle parameterHandle = ( ScalarParameterHandle ) reportHandle.findParameter( scalar.getName() );
+		// Get report design and find default value, prompt text and data set expression using the DE API
+		ReportDesignHandle reportHandle = (ReportDesignHandle) reportRunnable.getDesignHandle( );
+		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle.findParameter(scalar.getName());
 		parameter.setDefaultValue(parameterHandle.getDefaultValue());
 		parameter.setPromptText(parameterHandle.getPromptText());
 
