@@ -68,7 +68,7 @@
 				function(report) { return '<a href="javascript:downloadReport(' + report.id + ', \'xsl\', \'' + report.description + '\', true);"><img src="moduleResources/birt/xls.jpg" border=0" alt="XLS"/></a>';},
 				function(report) { return '<a href="javascript:downloadReport(' + report.id + ', \'doc\', \'' + report.description + '\', true);"><img src="moduleResources/birt/doc.jpg" border=0" alt="DOC"/></a>';},
 				function(report) { return '<a href="javascript:downloadReport(' + report.id + ', \'\', \'' + report.description + '\', false);"><img src="moduleResources/birt/lookup.gif" border=0" alt="Show Form"/></a>';}
-			]);
+			], {'escapeHtml':false});
 		}
 	}
 	
