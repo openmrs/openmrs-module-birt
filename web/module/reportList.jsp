@@ -11,8 +11,8 @@
 <br />
 
 <style>
-
 #reportList { 
+	font-size: 1.1em; 
 	padding: 0px; 
 }
 
@@ -44,18 +44,14 @@
 <b class="boxHeader"><spring:message code="birt.list.title"/></b>
 <div class="box">
 	<div id="reportList">
-	
 		<table id="reportFilterTable" width="100%" cellpadding="5" cellspacing="5">		
 			<tr>
 				<td align="center">
-
-
 					<form method="get">				
 						<input type="text" name="filter" size="40"/>
 						<input type="submit" value="Filter" /> 
 						<a href="report.list">Show all reports</a>
-					</form>
-					
+					</form>					
 				</td>
 			</tr>
 		</table>
@@ -65,9 +61,9 @@
 			<c:forEach var="report" items="${reportList}" varStatus="varStatus">
 				<c:if test="${varStatus.first}">
 					<tr class="evenRow">		
-						<th align="left"><spring:message code="general.name" /></th>
 						<th align="center">Run<!--<spring:message code="Report.generate"/>--></th>
 						<th align="center">Edit<!-- <spring:message code="Report.edit"/> --></th>
+						<th align="left"><spring:message code="general.name" /></th>
 						<!-- <th align="center">Delete</th>-->
 						<!--  <th align="left">Data Set</th> -->				
 						<%--<th align="center">Report Design (.rptdesign)</th>--%>
@@ -78,6 +74,18 @@
 					<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>
 				</c:set>
 				<tr class="${rowClass}">
+
+					<td valign="middle" align="center" width="3%">					
+						<a href="generateReport.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/play.gif" 
+								border="0" 
+								alt="<spring:message code="Report.generate"/>" /></a>						
+					</td>
+					<td valign="middle" align="center" width="3%">
+						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/edit.gif" 
+								border="0" 
+								alt="<spring:message code="Report.edit"/>" /></a>
+					</td>					
+
 					<td valign="middle" align="left">
 						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}">
 							${report.reportDefinition.name}
@@ -95,21 +103,6 @@
 						</a>
 					</td>
 					 -->
-					<td valign="middle" align="center" width="10%">					
-						&nbsp;
-						<a href="generateReport.form?reportId=${report.reportDefinition.reportObjectId}">
-							<img src="${pageContext.request.contextPath}/images/play.gif" 
-								border="0" 
-								alt="<spring:message code="Report.generate"/>" />
-						</a>						
-					</td>
-					<td valign="middle" align="center" width="10%">
-						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}">
-							<img src="${pageContext.request.contextPath}/images/edit.gif" 
-								border="0" 
-								alt="<spring:message code="Report.edit"/>" />	
-						</a>
-					</td>					
 						<%--
 						<a href="report.form?delete=true&reportId=${report.reportDefinition.reportObjectId}">
 							<img src="${pageContext.request.contextPath}/images/trash.gif" border="0" alt="<spring:message code="Report.delete"/>" />

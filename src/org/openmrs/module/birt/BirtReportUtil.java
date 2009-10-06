@@ -123,7 +123,7 @@ public class BirtReportUtil {
 	 */
 	public static String getOutputFilename(String name, String format) { 
 		
-		log.info("Name: " + name + " " + format);
+		log.debug("Name: " + name + " " + format);
 		
 		String extension = (format != null) ? 
 				format.toLowerCase() : BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT;
@@ -201,7 +201,7 @@ public class BirtReportUtil {
 		
 		// Create folder structure
 		if (!folder.exists()) {
-			log.info("The specified directory doesn't exist, creating... " + folder.getAbsolutePath());
+			log.debug("The specified directory doesn't exist, creating... " + folder.getAbsolutePath());
 			folder.mkdirs();
 			if (!folder.exists()) { 
 				throw new ModuleException("The specified directory " + folder.getAbsolutePath() + " could not be created");
@@ -265,7 +265,7 @@ public class BirtReportUtil {
 	
 	
 	public static final String getDataType(int dataType) { 
-		log.info("Get data type: " + dataType);
+		log.debug("Get data type: " + dataType);
 		switch (dataType) {
 		
 			case IScalarParameterDefn.TYPE_STRING:  
@@ -292,7 +292,7 @@ public class BirtReportUtil {
 	}
 	
 	public static final String getControlType(int controlType) { 
-		log.info("Get control type: " + controlType);
+		log.debug("Get control type: " + controlType);
 		switch (controlType) {
 			case IScalarParameterDefn.TEXT_BOX:  
 				return ParameterDefinition.TEXT_BOX; 

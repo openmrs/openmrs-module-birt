@@ -60,16 +60,16 @@ public class GenerateReportController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-    	log.info("initBinder");
+    	log.debug("initBinder");
 		try {
-			log.info("super.initBinder");
+			log.debug("super.initBinder");
 			super.initBinder(request, binder);
 
-			log.info("bind customer integer editor");
+			log.debug("bind customer integer editor");
 			binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));	        
 	        
 	        // Register default date parameter
-			log.info("bind customer date editor");
+			log.debug("bind customer date editor");
 	        SimpleDateFormat format = new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT);
 	        format.setLenient(true);
 	        binder.registerCustomEditor(Date.class, new CustomDateEditor(format, true));        
@@ -90,7 +90,7 @@ public class GenerateReportController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
-    	log.info("onSubmit");
+    	log.debug("onSubmit");
 		try {   
 			
 			// We only want to generate the report IFF there's the form has been submitted
@@ -106,7 +106,7 @@ public class GenerateReportController extends SimpleFormController {
 			// Get command object
 			BirtReport report = (BirtReport) object;
 			
-			log.info("Report = " + report + ", hashcode " + report.hashCode());
+			log.debug("Report = " + report + ", hashcode " + report.hashCode());
 			
 			// Get BIRT report service
 			BirtReportService reportService = 
@@ -141,7 +141,7 @@ public class GenerateReportController extends SimpleFormController {
     		report.setOutputFormat(request.getParameter(BirtConstants.PARAM_OUTPUT_FORMAT));
     		
     		// Preparing report parameters
-    		log.info(" ***** Checking parameters: " + report.getParameters());
+    		log.debug(" ***** Checking parameters: " + report.getParameters());
 
     		if (report.getParameters() != null ) { 
 	    	
@@ -149,7 +149,7 @@ public class GenerateReportController extends SimpleFormController {
 	    			
 	    			// Get object from the request
 	    			String value = request.getParameter(parameter.getName());	    			
-	    			log.info(" ***** Parameter " + parameter.getName() + " = " + value);
+	    			log.debug(" ***** Parameter " + parameter.getName() + " = " + value);
 	    			parameter.setValue(value);
 	    			
 	    			// If the user didn't provide a value, use the default
@@ -161,9 +161,9 @@ public class GenerateReportController extends SimpleFormController {
 	    			else { 
 	    				try { 
 		    				// Convert value to appropriate 
-		    				log.info(" ***** Using user-specified value " + value);	
+		    				log.debug(" ***** Using user-specified value " + value);	
 		    				Object finalValue = BirtReportUtil.parseParameterValue(parameter.getDataType(), value);
-		    				log.info(" ***** Setting user-specified value " + finalValue);	
+		    				log.debug(" ***** Setting user-specified value " + finalValue);	
 		    				parameter.setValue(finalValue);
 	    				} 
 	    				catch (ParseException e) { 
@@ -182,7 +182,7 @@ public class GenerateReportController extends SimpleFormController {
     		}
     		
     		// Generate report output
-    		log.info("Report = " + report + ", hashcode " + report.hashCode());
+    		log.debug("Report = " + report + ", hashcode " + report.hashCode());
 			reportService.generateReport(report);
 			
 			// Handle any errors that were encountered on the BIRT side
@@ -241,7 +241,7 @@ public class GenerateReportController extends SimpleFormController {
 	 * @return	a map containing data used in the presentation layer
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
-    	log.info("referenceData");
+    	log.debug("referenceData");
 		Map<Object, Object> data = new HashMap<Object, Object>();
 		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
@@ -258,7 +258,7 @@ public class GenerateReportController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-    	log.info("formBackingObject");
+    	log.debug("formBackingObject");
 
 		BirtReport report = null;
 		
@@ -283,7 +283,7 @@ public class GenerateReportController extends SimpleFormController {
      */
     @Override
     protected boolean isFormSubmission(HttpServletRequest request) { 
-    	log.info("isFormSubmission");
+    	log.debug("isFormSubmission");
     	return true;
     }
 }

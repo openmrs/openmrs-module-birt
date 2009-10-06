@@ -71,12 +71,12 @@ public class ReportFormController extends SimpleFormController {
 		BirtReport report = (BirtReport)obj;
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		log.info("Birt report object: " + report);
+		log.debug("Birt report object: " + report);
 		try { 
 
 			// Save the report definition to the database
 			if (request.getParameter("save") != null) { 
-				log.info("Saving report " + report);
+				log.debug("Saving report " + report);
 
 				Integer id = report.getReportDefinition().getReportObjectId();
 				reportService.saveReport(report);
@@ -87,14 +87,14 @@ public class ReportFormController extends SimpleFormController {
 			}
 			// Delete the report definition from the database
 			else if (request.getParameter("delete") != null) { 
-				log.info("Deleting report " + report);
+				log.debug("Deleting report " + report);
 				reportService.deleteReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.deleteReport.success");
 
 			}
 			// Generate a quick preview of the report 
 			else if (request.getParameter("preview") != null) {				
-				log.info("Previewing report " + report);
+				log.debug("Previewing report " + report);
 				reportService.previewReport(report);
 				
 				File file = report.getOutputFile();			
@@ -102,7 +102,7 @@ public class ReportFormController extends SimpleFormController {
 					try { 
 						InputStream fileInputStream = new FileInputStream(file);
 						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
-						log.info("Report preview mime type: " + mimeType);
+						log.debug("Report preview mime type: " + mimeType);
 						response.setContentType(mimeType);
 						String filename = 
 							report.getReportDefinition().getReportObjectId() + ".pdf";
@@ -209,85 +209,3 @@ public class ReportFormController extends SimpleFormController {
     
 }
 
-
-// Generate a final version of the report 
-/*
-else if (request.getParameter("generate") != null) {
-	log.info("Generating report for " + report);
-	
-	try { 
-		// TODO This needs to be taken care of within Spring by using the Spring's bind mechanism
-    	String reportId = request.getParameter("reportId");			    	
-		report = reportService.getReport(Integer.valueOf(reportId));
-		
-		// Make sure there's a cohort specified, otherwise we just use default cohort
-    	String cohortId = request.getParameter("cohortId");
-		if (cohortId != null && !"".equals(cohortId)) 
-		{ 
-    		Cohort cohort = Context.getCohortService().getCohort(Integer.valueOf(cohortId));
-			report.setCohort(cohort);
-		}
-
-		// Create a parameter map to pass to BIRT
-		Map reportParameters = new HashMap();
-		if (report.getReportDesign().getFlattenParameters() != null ) { 
-    		for (Object param : report.getReportDesign().getFlattenParameters()) { 
-    			ScalarParameterHandle paramHandle = (ScalarParameterHandle) param; 
-    			String value = request.getParameter(paramHandle.getName());
-    			if (value == null) value = paramHandle.getDefaultValue();
-    			
-    			reportParameters.put(paramHandle.getName(), value);
-    		}
-		}
-		report.setReportParameters(reportParameters);
-		
-		// Generate report
-		reportService.generateReport(report);
-
-		
-		// Send output to browser
-		File file = report.getOutputFile();
-		if ( file != null && file.exists()) { 			
-			try { 
-				DateFormat formatter = new SimpleDateFormat("yyMMddHHmmssZ");
-				InputStream fileInputStream = new FileInputStream(file);
-				String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
-				log.info("Report mime type: " + mimeType);
-				response.setContentType(mimeType);
-				String filename = 
-					report.getReportDefinition().getName() + "-" + formatter.format(new Date()) + ".pdf";
-				response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
-			} catch (Exception e) { 
-				log.error("An error occurred while writing file to response" );
-			} 
-		} 
-		request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.generateReport.success");
-	} catch (Exception e) { 
-		request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.generateReport.error");				
-		log.error("Could not generate report for report " + report.getReportDefinition().getName(), e);
-		errors.reject(e.getMessage());
-		return showForm(request, response, errors);
-	}
-	
-}
-
-// Export data set to the browser as CSV
-else if (request.getParameter("export") != null) {				
-	log.info("Downloading data export");
-	// TODO - remove, only used for testing
-	DataExportReportObject dataExport = report.getReportDefinition().getDataExport();
-	
-	// Export the data
-	File file = reportService.exportDataset(dataExport);
-	
-	if ( file != null && file.exists()) { 				
-		InputStream fileInputStream = new FileInputStream(file);					
-		response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-		FileCopyUtils.copy(fileInputStream, response.getOutputStream());
-		return null;				
-	} 
-	
-} 
-
-*/

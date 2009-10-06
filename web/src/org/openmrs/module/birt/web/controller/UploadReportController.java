@@ -47,7 +47,7 @@ public class UploadReportController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
-		log.info("Uploading report design file");
+		log.debug("Uploading report design file");
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
 		String reportId = null;
@@ -91,7 +91,7 @@ public class UploadReportController extends SimpleFormController {
 						// TODO Handle a zip report upload 
 				        
 				        // Copy report design file to 
-				        log.info("Content type: " + contentType);
+				        log.debug("Content type: " + contentType);
 				        
 						File reportDirectory = BirtReportUtil.getReportRepository();
 				        String reportFilename = reportDirectory.getAbsolutePath() + System.getProperty("file.separator")

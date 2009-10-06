@@ -12,7 +12,7 @@ public class BirtApiModuleActivator  {
 	 * @see org.openmrs.module.Activator#startup()
 	 */
 	public void startup() {
-		log.info("Starting BIRT API Reporting Module");
+		log.debug("Starting BIRT API Reporting Module");
 
 	}
 
@@ -20,7 +20,7 @@ public class BirtApiModuleActivator  {
 	 *  @see org.openmrs.module.Activator#shutdown()
 	 */
 	public void shutdown() {
-		log.info("Shutting down BIRT API Reporting Module");	
+		log.debug("Shutting down BIRT API Reporting Module");	
 	}
 	
 	

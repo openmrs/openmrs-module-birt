@@ -92,16 +92,16 @@ public class DatasetFormController extends SimpleFormController {
 		BirtReport report = (BirtReport)obj;
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		log.info("Birt report object: " + report);
+		log.debug("Birt report object: " + report);
 		try { 
 
 			// Save the report definition to the database
 			if (request.getParameter("save") != null) { 
-				log.info("Saving report " + report);
+				log.debug("Saving report " + report);
 
 				// TODO Save parameters to report definition
 				/*List<ParameterDefinition> params = report.getParameters();
-				log.info("Adding parameters: " + params);				
+				log.debug("Adding parameters: " + params);				
 				if (!params.isEmpty()) { 					
 					//report.getReportDefinition().getParameters().addAll(params);
 				}*/
@@ -114,14 +114,14 @@ public class DatasetFormController extends SimpleFormController {
 			}
 			// Delete the report definition from the database
 			else if (request.getParameter("delete") != null) { 
-				log.info("Deleting report " + report);
+				log.debug("Deleting report " + report);
 				reportService.deleteReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.deleteReport.success");
 
 			}
 			// Generate a quick preview of the report 
 			else if (request.getParameter("preview") != null) {				
-				log.info("Previewing report " + report);
+				log.debug("Previewing report " + report);
 				reportService.previewReport(report);
 				
 				File file = report.getOutputFile();			
@@ -129,7 +129,7 @@ public class DatasetFormController extends SimpleFormController {
 					try { 
 						InputStream fileInputStream = new FileInputStream(file);
 						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
-						log.info("Report preview mime type: " + mimeType);
+						log.debug("Report preview mime type: " + mimeType);
 						response.setContentType(mimeType);
 						String filename = 
 							report.getReportDefinition().getReportObjectId() + ".pdf";
@@ -146,11 +146,11 @@ public class DatasetFormController extends SimpleFormController {
 			// NOTE: Binding to BirtReport.parameters because we needed to use a LazyList
 			// implementation to make the list function properly with no values in the list.
 			else if (request.getParameter("addParameter")!=null) { 
-				log.info("Adding parameters to the report definition");
+				log.debug("Adding parameters to the report definition");
 				report.getReportDefinition().getParameters().clear();
 				
 				for(ParameterDefinition parameter : report.getParameters()) { 
-					log.info("\n\n ****** Add Parameter = " + parameter);
+					log.debug("\n\n ****** Add Parameter = " + parameter);
 					report.getReportDefinition().getParameters().add(parameter);
 					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.addParameter.success");
 				}
@@ -159,7 +159,7 @@ public class DatasetFormController extends SimpleFormController {
 			} 
 			// Removes a parameters from the report definition
 			else if (request.getParameter("removeParameter")!=null) { 
-				log.info("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
+				log.debug("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
 				if (request.getParameter("parameterIndex")!=null) { 
 					int parameterIndex = Integer.valueOf(request.getParameter("parameterIndex"));
 					report.getReportDefinition().getParameters().remove(parameterIndex);
@@ -172,7 +172,7 @@ public class DatasetFormController extends SimpleFormController {
 				formRedirect = true;
 			}			
 			else if (request.getParameter("removeAllParameters")!=null) { 
-				log.info("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
+				log.debug("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
 				report.getReportDefinition().getParameters().clear();
 				reportService.saveReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.parameterRemoved.success");
@@ -199,7 +199,7 @@ public class DatasetFormController extends SimpleFormController {
 			
 		} catch (Exception e) { 
 			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.general.error");			
-			log.error(e);
+			log.error("An unexpected error occurred: ", e);
 		}
 
 		// For posts that should be redirected to the form

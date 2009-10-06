@@ -24,7 +24,7 @@ public class BirtModuleActivator implements Activator {
 	 * @see org.openmrs.module.Activator#startup()
 	 */
 	public void startup() {
-		log.info("Starting BIRT Reporting Module ...");
+		log.debug("Starting BIRT Reporting Module ...");
 
 		// Define global properties
 		String [] globalProperties = { 
@@ -54,7 +54,7 @@ public class BirtModuleActivator implements Activator {
 		createDirectories(directoryProperties);
 		
 		try {					
-			log.info("Starting BIRT Report Engine ... ");
+			log.debug("Starting BIRT Report Engine ... ");
 			Platform.startup( BirtConfiguration.getEngineConfig());
 		} 
 		catch (BirtException e) {
@@ -72,7 +72,7 @@ public class BirtModuleActivator implements Activator {
 	 *  @see org.openmrs.module.Activator#shutdown()
 	 */
 	public void shutdown() {
-		log.info("Shutting down BIRT Reporting Module ...");	
+		log.debug("Shutting down BIRT Reporting Module ...");	
 		Platform.shutdown();
 	}
 	
@@ -120,7 +120,7 @@ public class BirtModuleActivator implements Activator {
 		for (String propertyName : directoryProperties) {
 			String propertyValue = Context.getAdministrationService().getGlobalProperty(propertyName, ""); 
 
-			log.info("Attempting to create directory " + propertyValue);
+			log.debug("Attempting to create directory " + propertyValue);
 			BirtReportUtil.createDirectory(propertyValue);
 		}
 	}

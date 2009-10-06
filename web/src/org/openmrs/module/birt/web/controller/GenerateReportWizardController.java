@@ -55,7 +55,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 	 *
 	 */
     public GenerateReportWizardController() { 
-    	log.info("Setting up pages");
+    	log.debug("Setting up pages");
 		setPages(new String[] {
 			"/module/birt/chooseReport",
 			"/module/birt/chooseCohort", 
@@ -69,7 +69,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
      * 
      */
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-    	log.info("Initializing binders");
+    	log.debug("Initializing binders");
     	binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT), false));
 		binder.registerCustomEditor(AbstractReportObject.class, new AbstractReportObjectEditor());
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
@@ -80,11 +80,11 @@ public class GenerateReportWizardController extends AbstractWizardFormController
      * 
      */
     protected void validatePage(Object command, Errors errors, int page) {
-    	log.info("Validating page " + page);
+    	log.debug("Validating page " + page);
             
         BirtReport report = (BirtReport) command;
 
-        log.info("Validating report object " + report);
+        log.debug("Validating report object " + report);
         
     	//validator = (DefaultBeanValidator) getValidator();
         //   	validator = new CustomerSignupValidator();
@@ -117,26 +117,26 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 		// Get report from session
 		BirtReport report = (BirtReport) request.getSession().getAttribute("report");
 		if (report == null) {
-			log.info("Could not find report in session, checking request parameter reportId");
+			log.debug("Could not find report in session, checking request parameter reportId");
 			// Get report from database			
 			String reportId = request.getParameter("reportId");
 			if (reportId != null) { 
 				try {
 					report = reportService.getReport(Integer.valueOf(reportId));
 				} catch (NumberFormatException e) { 
-					log.info("Invalid report ID : Could not find report with id " + reportId);
+					log.debug("Invalid report ID : Could not find report with id " + reportId);
 				}
 			}				
 		}			
 		// Last resort, instantiate new report object for Create Report use case
 		if ( report == null ) { 
-			log.info("Could not find report at all, instantiating new report bean");
+			log.debug("Could not find report at all, instantiating new report bean");
 			report = new BirtReport();
 		}*/
 		
 		
 		BirtReport report = new BirtReport();
-		log.info("Form backing object: " + report);
+		log.debug("Form backing object: " + report);
 		
 		return report;
 	}
@@ -146,7 +146,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 	 * 
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors, int page) {
-    	log.info("Getting reference data for page " + page);
+    	log.debug("Getting reference data for page " + page);
 		Map<Object, Object> data = new HashMap<Object, Object>();
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
@@ -191,7 +191,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
     /**
      * Get the next form view in the wizard.
 	protected int getTargetPage(HttpServletRequest request, Object command, Errors errors, int currentPage) {
-    	log.info("Getting next page...");
+    	log.debug("Getting next page...");
 		return currentPage+1;
 	}
      */

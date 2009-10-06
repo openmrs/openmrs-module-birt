@@ -172,7 +172,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public void initialize() {     	
 		try { 			
-			log.info("Initializing the BIRT report engine");
+			log.debug("Initializing the BIRT report engine");
 			Platform.startup( BirtConfiguration.getEngineConfig());
 			reportEngine = BirtConfiguration.getReportEngine();
 			designEngine = BirtConfiguration.getDesignEngine();		
@@ -216,7 +216,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			ReportDefinition reportDefinition = (ReportDefinition) obj;
 			if (BirtConstants.ALL_REPORTS.equalsIgnoreCase(searchTerm.toLowerCase()) || 
 					reportDefinition.getName().toLowerCase().contains(searchTerm.toLowerCase())) { 
-				reports.add(getReport(reportDefinition));
+				reports.add(getReportWithoutParameters(reportDefinition));
 			}
 		}
 		sortByName(reports);
@@ -267,23 +267,23 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 						// Flat File data set (reset the HOME property) 
 						if ("org.eclipse.datatools.connectivity.oda.flatfile.dataSet".equals(datasetHandle.getExtensionID())) { 
-							log.info("Setting the properties for the Flat File data set");
+							log.debug("Setting the properties for the Flat File data set");
 
 							if (!report.hasFlatfileDataSet()) {
 								throw new BirtReportException("Report is missing the '" + datasetHandle.getName() + "' dataset.  Please update the report to include this dataset.");
 							}
 
-							log.info("Export dataset for report " + datasetHandle.getName());							
+							log.debug("Export dataset for report " + datasetHandle.getName());							
 							File dataset = exportFlatfileDataset(report);
 
-							log.info("Dataset " + datasetHandle.getExtensionID() + " = " + dataset.getParentFile().getAbsolutePath());
+							log.debug("Dataset " + datasetHandle.getExtensionID() + " = " + dataset.getParentFile().getAbsolutePath());
 
 							// First we need to set the data source to the dataset's current directory
 							datasetHandle.getDataSource().setProperty("HOME", dataset.getParentFile().getAbsolutePath());
 
 							// TODO Refactor to use a better query parser ... 
 							// this one does not handle more complex queries 
-							log.info("Data set query [BEFORE]:\n" + datasetHandle.getQueryText());
+							log.debug("Data set query [BEFORE]:\n" + datasetHandle.getQueryText());
 
 							// Create the query object and change the table name
 							BirtDataSetQuery datasetQuery = new BirtDataSetQuery(datasetHandle.getQueryText());					
@@ -291,12 +291,12 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 
 							datasetHandle.setQueryText(datasetQuery.getQueryText());
-							log.info("Data set query [AFTER]:\n" + datasetHandle.getQueryText());
+							log.debug("Data set query [AFTER]:\n" + datasetHandle.getQueryText());
 						} 
 
 						// SQL data set (set username/password properties)
 						else if ("org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet".equals(datasetHandle.getExtensionID())) { 
-							log.info("Setting the JDBC properties for the jdbc data set");
+							log.debug("Setting the JDBC properties for the jdbc data set");
 
 
 							String jdbcUser = Context.getRuntimeProperties().getProperty("connection.username");
@@ -318,7 +318,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 				reportDesign.checkReport();
 				reportDesign.save();			
 			} else { 
-				log.info("Report design " + report.getReportDesignPath() + " does not exists");
+				log.debug("Report design " + report.getReportDesignPath() + " does not exists");
 			}			
 		}
 		catch (SemanticException e) { 		
@@ -338,7 +338,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * 				
 	 * @return
 	public Object parseParameterValue(String paramType, String paramValue) throws BirtReportException {
-		log.info("Parsing parameter value " + paramValue + " as " + paramType);
+		log.debug("Parsing parameter value " + paramValue + " as " + paramType);
 		return BirtReportUtil.parseParameterValue(paramType, paramValue);
 
 	}
@@ -378,7 +378,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param	report	the report to generate
 	 */
 	public void generateReport(BirtReport report) {
-		log.info("Generating output for report " + report + ", hashcode " + report.hashCode());
+		log.debug("Generating output for report " + report + ", hashcode " + report.hashCode());
 		IRunAndRenderTask task = null;
 		try {     		
 			// Prepares the dataset for use within the BIRT engine 
@@ -407,7 +407,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			// Set the output file 
 			report.setOutputFile(new File(report.getOutputFilename()));	    	
 
-			log.info("Output file: " + report.getOutputFile().getAbsolutePath());
+			log.debug("Output file: " + report.getOutputFile().getAbsolutePath());
 		} 
 		catch (EngineException e) { 
 			log.error("Unable to generate report due to a BIRT Exception: " + e.getMessage(), e);
@@ -432,7 +432,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			//fillReportParameters(report);			
 
 			//Open the report design
-			log.info("Opening report design file to be generated: " + report.getReportDesignPath());
+			log.debug("Opening report design file to be generated: " + report.getReportDesignPath());
 			IReportRunnable reportRunnable = reportEngine.openReportDesign(report.getReportDesignPath()); 
 
 			//Create task to run and render the report
@@ -449,7 +449,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 		} 
 		catch (Exception e) { 
-			log.warn("Unable to preview report due to a BIRT Exception: " + e.getMessage(), e);
+			log.error("Unable to preview report due to a BIRT Exception: " + e.getMessage(), e);
 			throw new BirtReportException("Unable to preview report due to a BIRT Exception: " + e.getMessage(), e);
 		} 
 		finally { 
@@ -463,7 +463,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param report
 	 */
 	public void fillReportParameters(BirtReport report) { 
-		log.info("Filling report parameters for " + report.getReportDefinition().getName());
+		log.debug("Filling report parameters for " + report.getReportDefinition().getName());
 		IGetParameterDefinitionTask task = null;
 
 		try { 
@@ -597,7 +597,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 						IParameterSelectionChoice sI = (IParameterSelectionChoice) sl.next( );
 						Object value = sI.getValue( );
 						Object label = sI.getLabel( );
-						log.info( label + "--" + value);
+						log.debug( label + "--" + value);
 						dynamicList.put(value,(String) label);
 
 					}         
@@ -625,7 +625,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			}
 		}
 
-		log.info("*** Parameter = " + parameter);
+		log.debug("*** Parameter = " + parameter);
 
 
 		return parameter;
@@ -711,12 +711,40 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 
 	/**
-	 * Gets the report with the given report definition.
+	 * Gets the birt report associated with the given report definition, along 
+	 * with the report design and report parameters.
 	 * 
-	 * @param reportId
-	 * @return	a report definitions
+	 * @param reportDefinition	the report definition
+	 * @return	a birt report object
 	 */
 	public BirtReport getReport(ReportDefinition reportDefinition) { 
+		return getReport(reportDefinition, true);
+	}
+	
+	/**
+	 * Gets the birt report associated with the given report definition, minus
+	 * the parameters for the report.
+	 * 
+	 * @param reportDefinition	the report definition
+	 * @return	a birt report object
+	 */
+	public BirtReport getReportWithoutParameters(ReportDefinition reportDefinition) { 
+		return getReport(reportDefinition, false);
+	}
+
+	
+	
+	/**
+	 * Gets the birt report associated with the given report definition.  This method
+	 * will return a BIRT report object that contains the BIRT report design along 
+	 * with the report parameters that were defined by the user within the report design
+	 * if the given includeParameters parameter is specified as true.
+	 * 
+	 * @param reportDefinition	the report definition
+	 * @param includeParameters	if true, inspect the report design to get parameters 
+	 * @return	a birt report object
+	 */
+	public BirtReport getReport(ReportDefinition reportDefinition, boolean includeParameters) { 
 
 		BirtReport report = new BirtReport();
 		try { 
@@ -734,7 +762,8 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 			// TODO This should probably only be called for Generate Report use case. 
 			// Fill the report parameters to a report
-			fillReportParameters(report);
+			if (includeParameters) 
+				fillReportParameters(report);
 
 
 		} catch (Exception e) { 
@@ -751,7 +780,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param definition
 	 */
 	public void saveReport(BirtReport report) { 
-		log.info("Saving report " + report);
+		log.debug("Saving report " + report);
 		if (report == null || report.getReportDefinition() == null) 
 			throw new BirtReportException("Cannot create empty report");
 
@@ -769,10 +798,10 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public void deleteReport(BirtReport report) { 
 		try { 
-			log.info("Deleting report " + report);
+			log.debug("Deleting report " + report);
 			ReportDefinition reportDefinition = report.getReportDefinition();
 			if (reportDefinition != null) { 
-				log.info("Deleting report definition " + reportDefinition);
+				log.debug("Deleting report definition " + reportDefinition);
 
 				getReportObjectService().deleteReport(reportDefinition);
 				deleteReportDesign(report.getReportDesignPath());
@@ -885,7 +914,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			// that EXIST but were not found.  Not sure why/how the report design was not found.
 
 			/*if (handle==null) { 
-	    		log.info("Could not open report design " + reportPath);
+	    		log.debug("Could not open report design " + reportPath);
 	    		handle = createReportDesign(reportPath);
 	    	}*/
 
@@ -929,7 +958,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 		} 
 		catch (Exception e) { 
-			log.info("Could not locate report " + reportPath + ".  Please upload report design.");
+			log.debug("Could not locate report " + reportPath + ".  Please upload report design.");
 		}
 
 		return reportRunnable;
@@ -966,7 +995,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * 				
 	 */
 	public ReportDesignHandle createReportDesign(String reportPath) { 
-		log.info("Creating new rptdesign file " + reportPath );
+		log.debug("Creating new rptdesign file " + reportPath );
 		ReportDesignHandle handle = null;
 		try { 
 			handle = designEngine.newSessionHandle(ULocale.ENGLISH).createDesign(reportPath);
@@ -1010,7 +1039,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 		}
 		catch (DesignFileException e) { 
 			// Ignore for now
-			log.warn("Could not open report design " + reportPath + ": " + e.getMessage());
+			log.debug("Could not open report design " + reportPath + ": " + e.getMessage());
 			//throw new BirtReportException(e);
 		}
 		return handle;
@@ -1077,14 +1106,14 @@ public class BirtReportServiceImpl implements BirtReportService {
 			try { 	    		
 
 				Cohort cohort = dataExport.generatePatientSet(null);	
-				log.info("Cohort '" + cohort.getName() + "' has " + (cohort != null ? cohort.getSize() : 0) + " patients");
+				log.debug("Cohort '" + cohort.getName() + "' has " + (cohort != null ? cohort.getSize() : 0) + " patients");
 
 				DataExportUtil.generateExport(dataExport, cohort, BirtConstants.COMMA_SEPARATOR, null);
 				File tempExport = DataExportUtil.getGeneratedFile(dataExport);
-				log.info("Data export " + tempExport.getName() + " written to : " + tempExport.getAbsolutePath());
+				log.debug("Data export " + tempExport.getName() + " written to : " + tempExport.getAbsolutePath());
 
 				exportFile = new File(BirtReportUtil.getDataExportPath(tempExport.getName()));
-				log.info("Data export to be used by report: " + exportFile.getAbsolutePath());
+				log.debug("Data export to be used by report: " + exportFile.getAbsolutePath());
 
 				// Copy temporary data export to final version of the data export
 				FileCopyUtils.copy(new FileInputStream(tempExport), new FileOutputStream(exportFile));
@@ -1152,7 +1181,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @throws DesignFileException
 	 */
 	public void duplicateReportDesign(String oldReport, String newReport) throws IOException { 
-		log.info("Duplicating report " + oldReport + " into " + newReport);
+		log.debug("Duplicating report " + oldReport + " into " + newReport);
 		ReportDesignHandle reportDesign = getReportDesign(oldReport);
 		reportDesign.saveAs(newReport);		
 	}
@@ -1233,7 +1262,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 			Transport.send(message);
 
-			log.info("Sent message!");
+			log.debug("Sent message!");
 
 
 		} catch (AddressException e) { 

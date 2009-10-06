@@ -46,7 +46,7 @@ public class RunReportController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {		
 		String view = getFormView();
 		BirtReport report = (BirtReport)obj;
-		log.info("Birt report object: " + report);
+		log.debug("Birt report object: " + report);
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		reportService.generateReport(report);
 		

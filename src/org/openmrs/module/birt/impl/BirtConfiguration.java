@@ -71,7 +71,7 @@ public class BirtConfiguration {
 	 */
 	public synchronized static EngineConfig getEngineConfig() {
 		if (engineConfig == null) {
-			log.info("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
+			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
 			engineConfig = new EngineConfig();
 			engineConfig.setEngineHome(BirtConstants.BIRT_HOME);
 			engineConfig.setLogConfig(BirtConstants.LOGGING_PATH, BirtConstants.LOGGING_LEVEL);	
@@ -88,7 +88,7 @@ public class BirtConfiguration {
 	 */
 	public synchronized static DesignConfig getDesignConfig() { 
 		if (designConfig == null) { 
-			log.info("Creating BIRT design config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
+			log.debug("Creating BIRT design config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
 			designConfig = new DesignConfig( );
 			designConfig.setProperty(Platform.PROPERTY_BIRT_HOME, BirtConstants.BIRT_HOME);
 		}
@@ -105,7 +105,7 @@ public class BirtConfiguration {
 		if (reportEngine == null) {
 			try { 
 				
-				log.info("Creating instance of the BIRT Report Engine Factory " 
+				log.debug("Creating instance of the BIRT Report Engine Factory " 
 						+ IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 				
 				IReportEngineFactory factory = (IReportEngineFactory) 
@@ -201,7 +201,7 @@ public class BirtConfiguration {
 		String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
 		report.setOutputFilename(filename);
 
-		log.info("Setting report output filename " + filename);
+		log.debug("Setting report output filename " + filename);
 
 		
 		
