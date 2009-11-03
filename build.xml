@@ -111,7 +111,13 @@
 		
 		<!-- Create distributable jar file -->
 		<jar destfile="dist/${module.id}-${module.version}.omod">
-			<fileset dir="build" includes="**/*" />
+			<fileset dir="build">
+				<include name="**/*" />
+				<exclude name="**/*Test*.class" />
+				<exclude name="**/CreateInitialDataSet.class" />
+				<exclude name="**/test/**/*" />
+			</fileset>
+			
 		</jar>
 	</target>
 	
@@ -135,7 +141,10 @@
 		<!-- Create distributable jar file -->
 		<jar destfile="dist/${module.id}-${module.version}.jar">
 			<fileset dir="build" >
-				
+				<include name="**/*" />
+				<exclude name="**/*Test*.class" />
+				<exclude name="**/CreateInitialDataSet.class" />
+				<exclude name="**/test/**/*" />				
 			</fileset>
 		</jar>
 	</target>
