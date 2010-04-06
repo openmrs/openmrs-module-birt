@@ -25,6 +25,9 @@
 #reportListTable td { 
 	padding-left: 10px; 
 }
+#reportListTable tr { 
+	height: 30px;
+}
 
 </style>
 
@@ -44,7 +47,7 @@
 <b class="boxHeader"><spring:message code="birt.list.title"/></b>
 <div class="box">
 	<div id="reportList">
-		<table id="reportFilterTable" width="100%" cellpadding="5" cellspacing="5">		
+		<table id="reportFilterTable" width="100%" cellpadding="0" cellspacing="0">		
 			<tr>
 				<td align="center">
 					<form method="get">				
@@ -57,16 +60,13 @@
 		</table>
 	
 	
-		<table id="reportListTable" cellspacing="5" cellpadding="5" border="0">
+		<table id="reportListTable" cellspacing="0" cellpadding="0" border="0">
 			<c:forEach var="report" items="${reportList}" varStatus="varStatus">
 				<c:if test="${varStatus.first}">
 					<tr class="evenRow">		
-						<th align="center">Run<!--<spring:message code="Report.generate"/>--></th>
-						<th align="center">Edit<!-- <spring:message code="Report.edit"/> --></th>
-						<th align="left"><spring:message code="general.name" /></th>
-						<!-- <th align="center">Delete</th>-->
-						<!--  <th align="left">Data Set</th> -->				
-						<%--<th align="center">Report Design (.rptdesign)</th>--%>
+						<th align="center"><spring:message code="birt.generateReport.header"/></th>
+						<th align="center"><spring:message code="birt.editReport.header"/></th>
+						<th align="left"><spring:message code="birt.reportTitle.header" /></th>
 					</tr>
 				</c:if>
 				
@@ -77,19 +77,15 @@
 
 					<td valign="middle" align="center" width="3%">					
 						<a href="generateReport.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/play.gif" 
-								border="0" 
-								alt="<spring:message code="Report.generate"/>" /></a>						
+								border="0" alt="<spring:message code="Report.generate"/>" /></a>						
 					</td>
 					<td valign="middle" align="center" width="3%">
 						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/edit.gif" 
-								border="0" 
-								alt="<spring:message code="Report.edit"/>" /></a>
+								border="0" alt="<spring:message code="Report.edit"/>" /></a>
 					</td>					
 
 					<td valign="middle" align="left">
-						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}">
-							${report.reportDefinition.name}
-						</a>
+						${report.reportDefinition.name}
 					</td>
 					<%-- 
 					<td valign="middle" align="left">

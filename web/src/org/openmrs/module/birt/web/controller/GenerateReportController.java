@@ -143,34 +143,41 @@ public class GenerateReportController extends SimpleFormController {
     		// Preparing report parameters
     		log.debug(" ***** Checking parameters: " + report.getParameters());
 
+    		
+    		// FIXME Need to move parameter handling into a utility class 
     		if (report.getParameters() != null ) { 
 	    	
     			for (ParameterDefinition parameter : report.getParameters()) { 	    			
 	    			
 	    			// Get object from the request
-	    			String value = request.getParameter(parameter.getName());	    			
-	    			log.debug(" ***** Parameter " + parameter.getName() + " = " + value);
-	    			parameter.setValue(value);
+    				// FIXME #1984: Need to be able to support multiple values 
+    				// Error: The type of parameter 'paramName' is expected as Object [], not java.lang.String
+    				// --> handled in BirtReportServiceImpl (decide if that's the proper place to handle this exception)
+	    			//String value = request.getParameter(parameter.getName());
+	    			String [] values = request.getParameterValues(parameter.getName());
 	    			
-	    			// If the user didn't provide a value, use the default
-	    			if (value == null) { 
-	    				log.debug(" ***** Using default value " + parameter.getDefaultValue());
-	    				parameter.setValue( parameter.getDefaultValue() );
-	    			} 
-	    			// Otherwise
-	    			else { 
+	    			log.debug(" ***** Parameter " + parameter.getName() + " = " + values);
+	    			parameter.setValues(values);
+	    			
+	    			// If the user provided values we try to parse them 
+	    			if (values != null && values.length > 0) { 
 	    				try { 
 		    				// Convert value to appropriate 
-		    				log.debug(" ***** Using user-specified value " + value);	
-		    				Object finalValue = BirtReportUtil.parseParameterValue(parameter.getDataType(), value);
-		    				log.debug(" ***** Setting user-specified value " + finalValue);	
-		    				parameter.setValue(finalValue);
+		    				Object [] objectValues = BirtReportUtil.parseParameterValues(parameter.getDataType(), values);
+		    				log.debug(" ***** Using user-specified value " + values);	
+		    				log.debug(" ***** Setting user-specified value " + objectValues);	
+		    				parameter.setValues(objectValues);
 	    				} 
 	    				catch (ParseException e) { 
 	    					log.error(" ***** Parse exception: " + e.getMessage());
 	    					errors.reject("Unable to parse parameter " + parameter.getName() + ": " + e.getMessage());
 	    					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "birt.generateReport.error");
 	    				}
+	    			} 
+	    			// If the user didn't provide a value, use the default
+	    			else { 
+	    				log.debug(" ***** Using default value " + parameter.getDefaultValue());
+	    				parameter.setValue( parameter.getDefaultValue() );
 	    			}	    			
 	    		}
     		}

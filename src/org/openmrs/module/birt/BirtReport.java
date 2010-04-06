@@ -71,9 +71,6 @@ public class BirtReport implements Serializable {
 	 */
 	public BirtReport() { }
 
-	
-	
-
 	/**
 	 * Public default constructor.
 	 * 
@@ -183,6 +180,7 @@ public class BirtReport implements Serializable {
 	public Map<String, Object> getParameterValues() { 
 		Map<String, Object> parameterValues = new HashMap<String,Object>();
 		for (ParameterDefinition parameter : parameters) { 
+			// TODO Need to add support for multiple values
 			parameterValues.put(parameter.getName(), parameter.getValue());
 		}
 		return parameterValues;

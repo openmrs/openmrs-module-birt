@@ -3,7 +3,6 @@
 
 <openmrs:require privilege="Manage Reports" otherwise="/login.htm" redirect="/module/birt/report.list" />
 
-
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
@@ -27,29 +26,19 @@
 	<b class="boxHeader"><spring:message code="birt.generate.title"/></b>	
 	<table class="box" cellpadding="0" cellspacing="0">
 		<tr>
-			<td align="center">
-				<table border="0" cellspacing="2" cellpadding="2">
+			<td align="left">
+				<table border="0" cellspacing="5" cellpadding="5">
 					<tr>
-						<th class="headerCell" align="left" valign="top">Report</th>
-						<td class="inputCell" valign="top" colspan="5">	
-						
-<%-- 
-							<spring:bind path="report.reportDefinition.reportObjectId">
-								<input type="hidden" name="${status.expression}" value="${status.value}"/>
-								<input type="hidden" name="reportId" value="${status.value}"/>
-							</spring:bind>
-
---%>						
+						<th class="headerCell" align="left" valign="top"><spring:message code="birt.generate.report"/></th>
+						<td class="inputCell" valign="top" colspan="5">							
 							<spring:bind path="report.reportDefinition.name">
-								<a href="report.form?reportId=${report.reportDefinition.reportObjectId}">${status.value}</a>
-							</spring:bind>
-							<spring:bind path="report.reportDefinition.reportObjectId">
-								(${status.value}.rptdesign)
+								${status.value} &nbsp;
+								<a href="report.form?reportId=${report.reportDefinition.reportObjectId}">edit report</a>
 							</spring:bind>
 						</td>
 					</tr>
 					<tr>
-						<th class="headerCell" align="left" valign="top"><spring:message code="birt.report.format"/></th>
+						<th class="headerCell" align="left" valign="top"><spring:message code="birt.generate.format"/></th>
 						<td class="inputCell" valign="top" colspan="5">
 							<spring:bind path="report.outputFormat">
 								<select name="${status.expression}">
@@ -57,18 +46,16 @@
 									<option value="html">Web Page (html)</option>
 									<option value="xls">Microsoft Excel (xls) </option>
 									<option value="doc">Microsoft Word (doc) </option>
-									<option value="html">Debug Errors (html) </option>
+									<option value="html">Show Errors (html) </option>
 								</select>
 							</spring:bind>
 						</td>
 					</tr>
-					<tr>
-						<th class="headerCell" align="left" valign="top"><spring:message code="birt.report.dataset"/>s</th>
-						<c:if test="${empty report.reportDefinition.dataExport}">
-							<td class="inputCell" valign="top" colspan="5">None</td>
-						</c:if>
-					</tr>
 					<c:if test="${!empty report.reportDefinition.dataExport}">
+						<tr>
+							<th class="headerCell" align="left" valign="top"><spring:message code="birt.generate.filter"/></th>
+							<td class="inputCell" valign="top" colspan="5"></td>
+						</tr>
 						<tr>
 							<td class="inputCell" align="left" valign="top">
 								<spring:bind path="report.reportDefinition.dataExport">${status.value.name}</spring:bind>
@@ -85,7 +72,7 @@
 					</c:if>			
 					<c:if test="${!empty report.parameters}">	
 						<tr>
-							<th class="headerCell" align="left" valign="top"><spring:message code="birt.report.parameter"/>s</th>
+							<th class="headerCell" align="left" valign="top"><spring:message code="birt.generate.parameters"/></th>
 							<c:if test="${empty report.parameters}">
 								<td class="inputCell" valign="top" colspan="5">None</td>
 							</c:if>				
@@ -98,16 +85,12 @@
 										<c:otherwise>${parameter.name}</c:otherwise>
 									</c:choose>	
 									
-									<%-- Need to  --%>
 									<c:set var="parameterValue" value="${param[parameter.name]}"/>
 									<c:if test="${empty parameterValue}">
 										<c:set var="parameterValue" value="${parameter.defaultValue}"/>										
 									</c:if>
-									
-
 								</td>
-								<td class="inputCell" valign="top" align="left" colspan="5">				
-								
+								<td class="inputCell" valign="top" align="left" colspan="5">								
 									<c:choose>
 										<%-- Date time parameter --%>
 										<c:when test="${parameter.dataType=='dateTime'}">								
@@ -127,7 +110,7 @@
 												<%-- SELECT LIST --%> 
 												<%-- TODO Mark default value as 'selected' --%>
 												<c:when test="${parameter.controlType=='select'}">											
-													<select name="${parameter.name}">
+													<select name="${parameter.name}" size="5" multiple="true">
 														<c:forEach var="option" items="${parameter.selectionList}" varStatus="row">
 															<c:set var="selectedOption">
 																<c:if test="${option.key==parameterValue}">selected</c:if>
@@ -150,8 +133,9 @@
 					</c:if>											
 					<tr>
 						<td>&nbsp;</td>
-						<td align="left">
-							<input class="smallButton" type="submit" name="generate" value="Generate"/>
+						<td>&nbsp;</td>
+						<td align="right">
+							<input type="submit" name="generate" value="Generate"/>
 						</td>
 					</tr>		
 				</table>
@@ -159,7 +143,6 @@
 		</tr>						
 	</table>
 </form>
-
 <br/>
 
 

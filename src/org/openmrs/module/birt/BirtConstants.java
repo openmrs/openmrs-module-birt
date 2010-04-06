@@ -62,6 +62,7 @@ public class BirtConstants {
 	/* Required BIRT module properties.  
 	 * Names correspond to global properties in the database */
 	public static final String PROPERTY_LOGGING_DIR 			= 	"birt.loggingDir";
+	public static final String PROPERTY_LOGGING_LEVEL		 	=   "birt.loggingLevel";
 	public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";
 	public static final String PROPERTY_REPORT_DIR				= 	"birt.reportDir";
 	public static final String PROPERTY_OUTPUT_DIR 				= 	"birt.outputDir";
@@ -70,6 +71,12 @@ public class BirtConstants {
 	public static final String PROPERTY_REPORT_OUTPUT_FILE 		= 	"birt.reportOutputFile";
 	public static final String PROPERTY_REPORT_PREVIEW_FILE 	= 	"birt.reportPreviewFile";
 
+	/**
+	 * New 
+	 */
+	public static final String PROPERTY_ALWAYS_USE_OPENMRS_JDBC_PROPERTIES 
+																= 	"birt.alwaysUseOpenmrsJdbcProperties";
+	
 	/* OpenMRS properties not used yet */
 	public static final String PROPERTY_DEFAULT_REPORT_DESIGN_FILE	= 	"birt.defaultReportDesignFile";
 
@@ -119,7 +126,7 @@ public class BirtConstants {
 	/* BIRT Logging properties */
 	public static String LOGGING_PATH = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_LOGGING_DIR);
 	
-	public static Level LOGGING_LEVEL = Level.INFO;
+	public static Level LOGGING_LEVEL = Level.parse(BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_LOGGING_LEVEL));
 
 	/* BIRT Engine properties */
 	public static String BIRT_HOME = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_BIRT_HOME);	
@@ -138,6 +145,9 @@ public class BirtConstants {
 	public static String REPORT_OUTPUT_FILE = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_REPORT_OUTPUT_FILE);
 	
 	public static String REPORT_PREVIEW_FILE = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_REPORT_PREVIEW_FILE);	
+	
+	public static Boolean ALWAYS_USE_OPENMRS_JDBC_PROPERTIES = 
+		BirtConfiguration.getBooleanGlobalProperty(BirtConstants.PROPERTY_ALWAYS_USE_OPENMRS_JDBC_PROPERTIES, "false");
 	
 	/* BIRT Image properties */
 	public static String BASE_URL = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_BASE_URL_DEFAULT);

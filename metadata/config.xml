@@ -5,10 +5,10 @@
 	<!-- Base Module Properties -->
 	<id>birt</id>
 	<name>BIRT Report Module</name>
-	<version>2.1.0</version>
+	<version>2.1.0.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Justin Miranda</author>
-	<description>BIRT Reporting Module</description>
+	<description>The BIRT Report Module provides integration between OpenMRS and the BIRT Report and Design Engine APIs.</description>
 	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
 	<require_version>1.4.0</require_version>   
@@ -44,12 +44,17 @@
 	<globalProperty>
 		<property>@MODULE_ID@.birtHome</property>
 		<defaultValue/>
-		<description>Specifies the absolute path to the BIRT Report Engine.  Should include ReportEngine subdirectory. (ex. C:/birt-runtime-2_2_0/ReportEngine)</description>
+		<description>Specifies the absolute path to the BIRT Report Engine.  Should include ReportEngine subdirectory. (ex. C:/birt-runtime-2_2_2/ReportEngine)</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.loggingDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path for log files written by BIRT Engine.  (ex. C:/tmp/logs)</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.loggingLevel</property>
+		<defaultValue>OFF</defaultValue>
+		<description>Specifies the logging level for BIRT Report Engine.  Possible values: OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST and ALL</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.reportDir</property>
@@ -86,6 +91,14 @@
 		<defaultValue>default.rptdesign</defaultValue>
 		<description>Specifies the name of the default report design file.
 		Example: default.rptdesign</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.alwaysUseOpenmrsJdbcProperties</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			If 'true', then the module will always replace the JDBC data source properties with values from OpenMRS runtime properties.  
+			If 'false', then the module will use the JDBC data source properties defined in the report.
+		</description>
 	</globalProperty>
 
 	<!-- /Required Global Properties -->

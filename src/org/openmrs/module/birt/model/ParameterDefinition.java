@@ -1,6 +1,8 @@
 package org.openmrs.module.birt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,16 +46,18 @@ public class ParameterDefinition implements Serializable {
 	private String helpText;
 	private String controlType;
 	private String dataType;
+	private String parameterType = "simple"; // simple, multi-value
 	private Class targetClass; 	
 	private Object defaultValue;
-	private Object value;
+	//private Object value;
+	private List<Object> values = new ArrayList<Object>();
 	private Map<Object, String> selectionList;
 	private String displayFormat;
 	private Boolean required = false;
 	private Boolean allowNull = false;
+	private Boolean allowMultiple = false;
 	private Boolean hidden = false;
 	private Boolean conceal = false;
-	
 	
 	/**
 	 * Default public constructor.
@@ -61,15 +65,26 @@ public class ParameterDefinition implements Serializable {
 	 */
 	public ParameterDefinition() { }
 
+	
+
 	/**
-	 * Public constructor. 
-	 * 
+	 * Public constructor
 	 * @param name
 	 * @param value
 	 */
 	public ParameterDefinition(String name, Object value) { 
 		this.name = name;
-		this.value = value;		
+		this.values.add(value);
+	}
+	
+	/**
+	 * Public constructor. 
+	 * @param name
+	 * @param value
+	 */
+	public ParameterDefinition(String name, Object [] values) { 
+		this.name = name;
+		this.values = Arrays.asList(values);
 	}
 	
 	/**
@@ -134,6 +149,13 @@ public class ParameterDefinition implements Serializable {
 	}
 	
 	/**
+	 * Gets the param type of the column.
+	 */
+	public String getParameterType() { 
+		return this.parameterType;
+	}	
+	
+	/**
 	 * Gets the class of the value.
 	 * @return
 	 */
@@ -156,10 +178,17 @@ public class ParameterDefinition implements Serializable {
     }
 
 	/**
-     * Gets the value
+     * Gets the value, assumes there is only one.
      */
-    public Object getValue() {
-    	return value;
+    public Object getValue() { 
+    	return this.values.get(0);
+    }
+    /**
+     * Gets all values.
+     * @return
+     */
+    public Object [] getValues() {
+    	return values.toArray();
     }
     public boolean getRequired() {
     	return required;
@@ -169,6 +198,9 @@ public class ParameterDefinition implements Serializable {
     }
     public Boolean getAllowNull() { 
     	return allowNull;
+    }
+    public Boolean getAllowMultiple() { 
+    	return allowMultiple;
     }
     public Boolean getHidden() { 
     	return hidden;
@@ -190,6 +222,9 @@ public class ParameterDefinition implements Serializable {
     public void setDataType(String dataType) { 
     	this.dataType = dataType;	
     }
+    public void setParameterType(String parameterType) { 
+    	this.parameterType = parameterType;	
+    }
     public void setDefaultValue(Object value) { 
     	this.defaultValue = value;
     }
@@ -207,9 +242,14 @@ public class ParameterDefinition implements Serializable {
 	}
 	public void setTargetClass(Class targetClass) {
 		this.targetClass = targetClass;
-	}
+	}	
 	public void setValue(Object value) { 
-		this.value = value;
+		this.values.clear();
+		this.values.add(value);
+	}
+	public void setValues(Object[] values) { 
+		this.values.clear();
+		this.values.addAll(Arrays.asList(values));
 	}
 	public void setDisplayFormat(String format) { 
 		this.displayFormat = format;
@@ -219,6 +259,12 @@ public class ParameterDefinition implements Serializable {
 	 */
 	public void setAllowNull(Boolean allowNull) {
 		this.allowNull = allowNull;
+	}
+	/**
+	 * @param allowMultiple the allowMultiple to set
+	 */
+	public void setAllowMultiple(Boolean allowMultiple) {
+		this.allowMultiple = allowMultiple;
 	}
 	/**
 	 * @param conceal the conceal to set
@@ -278,7 +324,7 @@ public class ParameterDefinition implements Serializable {
 			append("name=").append(getName()).
 			append(", dataType=").append(getDataType()).
 			append(", defaultValue=").append(getDefaultValue()).
-			append(", value=").append(getValue()).
+			append(", values=").append(getValues()).
 			append(", controlType=").append(getControlType()).
 			append(", required=").append(getRequired()).
 			append(", helpText=").append(getHelpText()).

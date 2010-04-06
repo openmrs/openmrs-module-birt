@@ -250,11 +250,24 @@ public class BirtConfiguration {
 	
 	/**
 	 * Convenience method for getting global properties.
+	 * 
 	 * @param property	name of the global property
-	 * @return	values of the global property
+	 * @return	value of the global property
 	 */
 	public static String getGlobalProperty(String property) { 
 		return Context.getAdministrationService().getGlobalProperty(property);
+	}
+	
+	
+	/**
+	 * Convenience method to retrieve boolean value for the specified global property.
+	 * 
+	 * @param property		the property name 
+	 * @param defaultValue	the default value to be used
+	 * @return	value of global property or default value
+	 */
+	public static Boolean getBooleanGlobalProperty(String property, String defaultValue) { 
+		return new Boolean(Context.getAdministrationService().getGlobalProperty(property, defaultValue));
 	}
 	
 

@@ -140,61 +140,59 @@ h4 {
 	<div id="reportDetails">
 		<table>
 			<tr>
-				<td align="center">
-					
-					<table border="0" width="100%">
-					
-					<c:if test="${!(empty report.reportDefinition.reportObjectId)}">
-						<tr>		
-							<th class="headerCell" align="right"><spring:message code="general.id"/></th>
-							<td class="inputCell" colspan="5">
-								<spring:bind path="report.reportDefinition.reportObjectId">
-									${status.value}
-								</spring:bind>
-								
-							</td>
-						</tr>
-	
-						<tr>
-							<th class="" align="right" valign="top"><spring:message code="birt.report.reportDesign"/></th>
-							<td class="" valign="top" colspan="5">
-								<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
-									<input type="hidden" name="reportId" value="${report.reportDefinition.reportObjectId}" />
-									<input type="file" name="reportFile" size="40" />
-									<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />				
-								</form>	
-							</td>
-						</tr>
-					
-						<tr>
-							<th class="headerCell" align="right" valign="top"></th>
-							<td class="inputCell" valign="top" colspan="5">								
-								<form id="downloadReportForm" name="downloadReportForm" method="post">
+				<td align="center">					
+					<table border="0" width="100%">					
+						<c:if test="${!(empty report.reportDefinition.reportObjectId)}">
+							<tr>		
+								<th class="headerCell" align="right"><spring:message code="general.id"/></th>
+								<td class="inputCell" colspan="5">
 									<spring:bind path="report.reportDefinition.reportObjectId">
-										<input type="hidden" name="${status.expression}" value="${status.value}">
-									</spring:bind>			
-									<c:choose>
-										<c:when test="${(report.reportDesignExists)}" >
-											<spring:bind path="report.reportDesignPath">
-												<i>${status.value}</i>
-												
-												<%-- 
-													<c:forTokens var="token" items="${status.value}" delims="\\">
-														&nbsp;${token}&nbsp;
-													</c:forTokens>
-												 --%>
-												<input type="button" class="smallButton" name="Properties" value="View" onClick="javascript:toggleProperties('reportDesign', this);"/>
-												<input type="submit" class="smallButton" name="downloadReport" value="<spring:message code="birt.reportDesign.download"/>">
-											</spring:bind>									
-										</c:when>
-										<c:otherwise> 
-											(Upload a .rptdesign file using the Browse button below)
-										</c:otherwise>
-									</c:choose>		
-								</form>		
-							</td>
-						</tr>
-						
+										${status.value}
+									</spring:bind>
+									
+								</td>
+							</tr>
+		
+							<tr>
+								<th class="" align="right" valign="top"><spring:message code="birt.report.reportDesign"/></th>
+								<td class="" valign="top" colspan="5">
+									<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
+										<input type="hidden" name="reportId" value="${report.reportDefinition.reportObjectId}" />
+										<input type="file" name="reportFile" size="40" />
+										<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />				
+									</form>	
+								</td>
+							</tr>
+					
+							<tr>
+								<th class="headerCell" align="right" valign="top"></th>
+								<td class="inputCell" valign="top" colspan="5">								
+									<form id="downloadReportForm" name="downloadReportForm" method="post">
+										<spring:bind path="report.reportDefinition.reportObjectId">
+											<input type="hidden" name="${status.expression}" value="${status.value}">
+										</spring:bind>			
+										<c:choose>
+											<c:when test="${(report.reportDesignExists)}" >
+												<spring:bind path="report.reportDesignPath">
+													<i>${status.value}</i>
+													
+													<%-- 
+														<c:forTokens var="token" items="${status.value}" delims="\\">
+															&nbsp;${token}&nbsp;
+														</c:forTokens>
+													 --%>
+													<input type="button" class="smallButton" name="Properties" value="View" onClick="javascript:toggleProperties('reportDesign', this);"/>
+													<input type="submit" class="smallButton" name="downloadReport" value="<spring:message code="birt.reportDesign.download"/>">
+												</spring:bind>									
+											</c:when>
+											<c:otherwise> 
+												(Upload a .rptdesign file using the Browse button below)
+											</c:otherwise>
+										</c:choose>		
+									</form>		
+								</td>
+							</tr>
+							
 						
 					<c:if test="${report.reportDesignExists}">
 						<tr>
@@ -255,15 +253,11 @@ h4 {
 												</c:forEach>
 											</table>
 										</td>
-									</tr>
-									
+									</tr>									
 									<tr>
-										<td colspan="5">
-										
-											<strong>Data Sources</strong>
-										
-											<table width="100%">
-											
+										<td colspan="5">										
+											<strong>Data Sources</strong>										
+											<table width="100%">											
 												<c:if test="${empty report.reportDesign.allDataSources}">
 													<tr>
 														<td colspan="2" align="left">
@@ -271,8 +265,6 @@ h4 {
 														</td>
 													</tr>
 												</c:if>										
-											
-											
 												<c:forEach var="datasource" items="${report.reportDesign.allDataSources}" varStatus="row">
 													<tr style="background-color: <c:if test="${row.count %2 == 1}">#fff;</c:if>">
 														<td valign="top">${datasource.name}</td>
@@ -406,8 +398,6 @@ h4 {
 							<th class="headerCell" align="right" valign="top">						
 							<td class="inputCell" valign="top" colspan="5">&nbsp;</td>
 						</tr>
-						
-						
 					</c:if><%-- report design exists --%>
 				</c:if>	<%-- report definition exists --%>
 				
@@ -416,7 +406,7 @@ h4 {
 				
 					
 					
-				<form id="reportForm" method="post">			
+					<form id="reportForm" method="post">			
 						<c:if test="${!(report.reportDefinition.reportObjectId == null)}" >
 							<spring:bind path="report.reportDefinition.reportObjectId">
 								<input type="hidden" name="${status.expression}" value="${status.value}">

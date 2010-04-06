@@ -57,8 +57,8 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore_2.4.1.v200808251517.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore.xmi_2.4.1.v200808251517.jar"/>
 	<classpathentry kind="lib" path="lib/org.w3c.css.sac_1.3.0.v200805290154.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.2.01.8165.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.2.01.8165.jar" sourcepath="/openmrs-1.4.x"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.2.01.8165.jar"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.2.01.8165.jar"/>	
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.2.01.8165.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

@@ -31,6 +31,7 @@ public class BirtModuleActivator implements Activator {
 			BirtConstants.PROPERTY_BIRT_HOME, 
 			BirtConstants.PROPERTY_DATASET_DIR, 
 			BirtConstants.PROPERTY_LOGGING_DIR, 
+			BirtConstants.PROPERTY_LOGGING_LEVEL,
 			BirtConstants.PROPERTY_REPORT_DIR, 
 			BirtConstants.PROPERTY_REPORT_OUTPUT_FORMAT, 
 			BirtConstants.PROPERTY_OUTPUT_DIR,
