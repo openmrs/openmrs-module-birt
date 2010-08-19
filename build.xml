@@ -5,7 +5,7 @@
 <!-- ** @author Justin Miranda                              ** -->
 <!-- ** @version 1.0                                        ** -->
 <!-- ********************************************************* -->
-<project name="BirtReportModule" default="package-module">
+<project name="birtmodule-2.3.2" default="package-module">
 		
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
