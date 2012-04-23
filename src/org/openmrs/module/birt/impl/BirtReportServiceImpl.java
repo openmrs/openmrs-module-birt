@@ -5,26 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.URL;
-import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.activation.DataHandler;
@@ -32,42 +19,39 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-
-import com.ibm.icu.util.ULocale;
-
-// OpenMRS Core classes
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.birt.core.framework.Platform;
+import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
+import org.eclipse.birt.report.engine.api.IParameterDefnBase;
+import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
+import org.eclipse.birt.report.engine.api.IReportEngine;
+import org.eclipse.birt.report.engine.api.IReportRunnable;
+import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
+import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
+import org.eclipse.birt.report.model.api.DesignFileException;
+import org.eclipse.birt.report.model.api.IDesignEngine;
+import org.eclipse.birt.report.model.api.OdaDataSetHandle;
+import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.eclipse.birt.report.model.api.SessionHandle;
+import org.eclipse.birt.report.model.api.activity.SemanticException;
 import org.openmrs.Cohort;
-import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinitionItemHolder;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.Report;
-import org.openmrs.reporting.ReportObjectService;
-import org.openmrs.reporting.TableRow;
-import org.openmrs.reporting.data.CohortDefinition;
-import org.openmrs.reporting.data.DatasetDefinition;
-import org.openmrs.reporting.db.ReportObjectDAO;
-import org.openmrs.reporting.export.DataExportReportObject;
-import org.openmrs.reporting.export.DataExportUtil;
-import org.openmrs.reporting.export.ExportColumn;
-import org.openmrs.reporting.report.ReportDefinition;
-import org.openmrs.util.OpenmrsUtil;
-
-// BIRT Module classes
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtDataSetQuery;
 import org.openmrs.module.birt.BirtReport;
@@ -77,44 +61,18 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.notification.MessageException;
-
-// Spring classes
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
+import org.openmrs.reporting.AbstractReportObject;
+import org.openmrs.reporting.ReportObjectService;
+import org.openmrs.reporting.data.DatasetDefinition;
+import org.openmrs.reporting.export.DataExportReportObject;
+import org.openmrs.reporting.export.DataExportUtil;
+import org.openmrs.reporting.export.ExportColumn;
+import org.openmrs.reporting.report.ReportDefinition;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.ServletContextResource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.eclipse.birt.core.framework.Platform;
-import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.HTMLServerImageHandler;
-import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
-import org.eclipse.birt.report.engine.api.IParameterDefn;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
-import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
-import org.eclipse.birt.report.engine.api.IParameterSelectionChoice;
-import org.eclipse.birt.report.engine.api.IRenderOption;
-import org.eclipse.birt.report.engine.api.IReportEngine;
-import org.eclipse.birt.report.engine.api.IReportRunnable;
-import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
-import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
-import org.eclipse.birt.report.model.api.CascadingParameterGroupHandle;
-import org.eclipse.birt.report.model.api.DesignFileException;
-import org.eclipse.birt.report.model.api.IDesignEngine;
-import org.eclipse.birt.report.model.api.ImageHandle;
-import org.eclipse.birt.report.model.api.OdaDataSetHandle;
-import org.eclipse.birt.report.model.api.ReportDesignHandle;
-import org.eclipse.birt.report.model.api.ScalarParameterHandle;
-import org.eclipse.birt.report.model.api.SessionHandle;
-import org.eclipse.birt.report.model.api.activity.SemanticException;
-import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
+import com.ibm.icu.util.ULocale;
 
 
 /**

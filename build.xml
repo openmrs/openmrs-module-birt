@@ -5,7 +5,7 @@
 <!-- ** @author Justin Miranda                              ** -->
 <!-- ** @version 1.0                                        ** -->
 <!-- ********************************************************* -->
-<project name="birtmodule-2.3.2" default="package-module">
+<project name="birtmodule-3.7.2" default="package-module">
 		
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -21,7 +21,7 @@
 			<xmlcatalog refid="common-dtds"/>
 		</xmlproperty>
 				
-		<property name="compile.arguments" value="-target 1.5" />
+		<property name="compile.arguments" value="-target 1.7" />
 		
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_ID" value="${module.id}" />

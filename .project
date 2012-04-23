@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>birtmodule-2.3.2</name>
+	<name>birtmodule-3.7.2</name>
 	<comment></comment>
 	<projects>
-		<project>openmrs-alpha-bugs</project>
+		<project>openmrs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
