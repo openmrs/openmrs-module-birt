@@ -18,6 +18,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.Handler;
 import org.openmrs.module.reporting.common.Localized;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.renderer.RenderingException;
@@ -26,7 +27,7 @@ import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
 /**
  * Report Renderer implementation that supports rendering to a BIRT template
  */
-// @Handler // problems addding...
+@Handler // problems addding...
 @Localized("reporting.BirtTemplateRenderer")
 public class BirtTemplateRenderer extends ReportTemplateRenderer {
 

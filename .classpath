@@ -14,9 +14,7 @@
 	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar"/>
 	<classpathentry kind="lib" path="lib-common/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/mysql-connector-java-5.1.7-bin.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.2.01.8165.jar" sourcepath="/openmrs-1.6.x"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.2.01.8165.jar"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.2.01.8165.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
@@ -109,5 +107,8 @@
 	<classpathentry kind="lib" path="lib/org.w3c.dom.svg_1.1.0.v201011041433.jar"/>
 	<classpathentry kind="lib" path="lib/Tidy.jar"/>
 	<classpathentry kind="lib" path="lib-common/reporting-0.7.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.6.3.19958-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.6.3.19958-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.6.3.19958-dev.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
