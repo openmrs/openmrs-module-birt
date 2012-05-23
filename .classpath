@@ -108,5 +108,6 @@
 	<classpathentry kind="lib" path="lib/org.w3c.dom.smil_1.0.0.v200806040011.jar"/>
 	<classpathentry kind="lib" path="lib/org.w3c.dom.svg_1.1.0.v201011041433.jar"/>
 	<classpathentry kind="lib" path="lib/Tidy.jar"/>
+	<classpathentry kind="lib" path="lib-common/reporting-0.7.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
