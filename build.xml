@@ -21,7 +21,7 @@
 			<xmlcatalog refid="common-dtds"/>
 		</xmlproperty>
 				
-		<property name="compile.arguments" value="-target 1.7" />
+		<property name="compile.arguments" value="-target 1.5" />
 		
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_ID" value="${module.id}" />
