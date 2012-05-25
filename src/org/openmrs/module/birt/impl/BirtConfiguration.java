@@ -197,11 +197,13 @@ public class BirtConfiguration {
 		
 		
 		// Setting the report output file name
-		String name = report.getReportDefinition().getName();
-		String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
-		report.setOutputFilename(filename);
+		if (report.getOutputFilename() == null) { 
+			String name = report.getReportDefinition().getName();
+			String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
+			report.setOutputFilename(filename);
+		}
 
-		log.debug("Setting report output filename " + filename);
+		log.debug("Setting report output filename " + report.getOutputFilename());
 
 		
 		

@@ -356,8 +356,12 @@ public class BirtReportServiceImpl implements BirtReportService {
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);
 			task.setParameterValues(report.getParameterValues());
-			task.validateParameters();    		
 			task.setRenderOption(BirtConfiguration.getRenderOption(report));
+			
+			// Validate runtime parameters
+			task.validateParameters();    
+			
+			// Render report design
 			task.run();
 
 			// Add errors to the report object

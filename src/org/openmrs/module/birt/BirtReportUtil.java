@@ -143,7 +143,13 @@ public class BirtReportUtil {
 		String extension = (format != null) ? 
 				format.toLowerCase() : BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT;
 		
-		StringBuffer buffer = new StringBuffer().
+		log.info("Output directory " + getOutputDirectory());
+		log.info("File separator " + File.separator);
+		log.info("Name: " + name);
+		log.info("Extension: " + extension);
+				
+		StringBuffer buffer = new StringBuffer();
+		buffer.
 			append(getOutputDirectory()).append(File.separator).
 			append(name.replace(" ", "_")).
 			append("-").append(BirtConstants.DATE_FORMATTER.format(new Date())).
@@ -160,7 +166,7 @@ public class BirtReportUtil {
 	 * @return
 	 */
 	public static String getOutputDirectory() { 
-		return new StringBuffer().append(BirtConstants.OUTPUT_DIR).toString();		
+		return BirtConstants.OUTPUT_DIR;
 	}
 	
 	
