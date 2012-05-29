@@ -16,12 +16,10 @@ package org.openmrs.module.birt.report.renderer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +27,6 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
-import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
@@ -44,7 +41,6 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.renderer.RenderingException;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -85,38 +81,41 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
 	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, RenderingException {
-		
-		InputStream inStream = null;
+
+		FileOutputStream fos = null;
 		try {
 			log.debug("Attempting to render report with BirtTemplateRenderer");
-			
+
 			ReportDesign design = getDesign(argument);
-			ReportDesignResource r = getTemplate(design);
-						
-			inStream = new ByteArrayInputStream(r.getContents());
-			String fileName = r.getResourceFilename();
-									
+			ReportDesignResource r = getTemplate(design);			
+
+			String pathDir = "C:\\Users\\Michael\\AppData\\Local\\Temp\\"; 
+
 			BirtReport report = new BirtReport();
 			report.setOutputFilename("c:\\save\\reporte.pdf");
-			
+
+			String pathName = pathDir + r.getResourceFilename();
+			fos = new FileOutputStream(pathName);
+			fos.write(r.getContents());
+
 			//need to get the right prefix for the path to append to fileName
-			report.setReportDesignPath(fileName);
+			report.setReportDesignPath(pathName);
 			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
-			
+
 			report.setOutputFormat("pdf");
 			reportService.generateReport(report);
-			
+
 			// Get a reference to the report output file to be copied to the response
 			InputStream fileInputStream = new FileInputStream(report.getOutputFile());
-						
+
 			FileCopyUtils.copy(fileInputStream, out);
-			
+
 		} catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
 		}
-		   
+
 	}
-	
+
 	/**
 	 * Generate a report based on the attributes of the given report object.
 	 * 
@@ -135,7 +134,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 
 			// Open the report design
 			IReportRunnable reportRunnable =
-				engine.openReportDesign(report.getReportDesignPath());
+					engine.openReportDesign(report.getReportDesignPath());
 
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);
@@ -163,7 +162,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 		}
 	}
 
-	
-	
+
+
 
 }
