@@ -86,22 +86,30 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 */
 	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, RenderingException {
 		
-		//InputStream is = null;
+		InputStream inStream = null;
 		try {
 			log.debug("Attempting to render report with BirtTemplateRenderer");
 			
 			ReportDesign design = getDesign(argument);
 			ReportDesignResource r = getTemplate(design);
 						
-			ByteArrayInputStream inStream = new ByteArrayInputStream(r.getContents());
-						
+			inStream = new ByteArrayInputStream(r.getContents());
+			String fileName = r.getResourceFilename();
+									
 			BirtReport report = new BirtReport();
+			report.setOutputFilename("c:\\save\\reporte.pdf");
+			
+			//need to get the right prefix for the path to append to fileName
+			report.setReportDesignPath(fileName);
 			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
-						
+			
 			report.setOutputFormat("pdf");
-			//reportService.generateReport(report);
+			reportService.generateReport(report);
+			
+			// Get a reference to the report output file to be copied to the response
+			InputStream fileInputStream = new FileInputStream(report.getOutputFile());
 						
-			FileCopyUtils.copy(inStream, out);
+			FileCopyUtils.copy(fileInputStream, out);
 			
 		} catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
