@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.birt.report.renderer;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,10 +38,13 @@ import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.impl.BirtConfiguration;
 import org.openmrs.module.reporting.common.Localized;
 import org.openmrs.module.reporting.report.ReportData;
+import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.renderer.RenderingException;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
+import org.openmrs.module.reporting.report.service.ReportService;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -60,7 +64,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportDefinition, java.lang.String)
 	 */
 	public String getRenderedContentType(ReportDefinition schema, String argument) {
-		return "text/html";
+		return "application/pdf";
 	}
 
 	/**
@@ -74,34 +78,34 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportDefinition)
 	 */
 	public String getFilename(ReportDefinition schema, String argument) {
-		return schema.getName() + ".rptdesign";
+		return schema.getName() + ".pdf";
 	}
 
 	/**
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
 	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, RenderingException {
-
-		log.warn("Attempting to render report with BirtTemplateRenderer");
-		System.out.println("hello world");
-		   
-		// Get BIRT report service
-		   BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
-		   
-		   
-		   BirtReport report = new BirtReport();
-		   report.setCohort(new Cohort());
-		   report.setOutputFilename("c:\\save\\report.pdf");
-		   report.setReportDesignPath("c:\\save\\report.rptdesign");
-		   report.setOutputFormat("pdf");
-		   
-		   reportService.generateReport(report);
-
-		   // Get a reference to the report output file to be copied to the response
-		   InputStream fileInputStream = new FileInputStream(report.getOutputFile());
-		   
-		   // Copy report output to response
-		   FileCopyUtils.copy(fileInputStream, out);		   
+		
+		//InputStream is = null;
+		try {
+			log.debug("Attempting to render report with BirtTemplateRenderer");
+			
+			ReportDesign design = getDesign(argument);
+			ReportDesignResource r = getTemplate(design);
+						
+			ByteArrayInputStream inStream = new ByteArrayInputStream(r.getContents());
+						
+			BirtReport report = new BirtReport();
+			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
+						
+			report.setOutputFormat("pdf");
+			//reportService.generateReport(report);
+						
+			FileCopyUtils.copy(inStream, out);
+			
+		} catch (Exception e) {
+			throw new RenderingException("Unable to render results due to: " + e, e);
+		}
 		   
 	}
 	
