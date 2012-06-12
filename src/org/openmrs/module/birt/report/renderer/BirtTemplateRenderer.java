@@ -13,13 +13,13 @@
  */
 package org.openmrs.module.birt.report.renderer;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,12 +27,17 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
+import org.eclipse.birt.report.model.api.OdaDataSetHandle;
+import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
+import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.impl.BirtConfiguration;
+import org.openmrs.module.birt.impl.BirtReportServiceImpl;
 import org.openmrs.module.reporting.common.Localized;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -42,6 +47,7 @@ import org.openmrs.module.reporting.report.renderer.RenderingException;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
 import org.springframework.util.FileCopyUtils;
+import org.openmrs.module.birt.BirtReportUtil;
 
 /**
  * Report Renderer implementation that supports rendering to a BIRT template
@@ -81,7 +87,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
 	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, RenderingException {
-
+		
 		FileOutputStream fos = null;
 		try {
 			log.debug("Attempting to render report with BirtTemplateRenderer");
@@ -89,10 +95,11 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			ReportDesign design = getDesign(argument);
 			ReportDesignResource r = getTemplate(design);			
 
-			String pathDir = "C:\\Users\\Michael\\AppData\\Local\\Temp\\"; 
-
+			String pathDir = BirtReportUtil.createTempDirectory("reports").getAbsolutePath() + File.separator;
+			
 			BirtReport report = new BirtReport();
-			report.setOutputFilename("c:\\save\\reporte.pdf");
+			report.setOutputFormat("pdf");
+			report.setOutputFilename(pathDir + r.getName() + "." + report.getOutputFormat());	
 
 			String pathName = pathDir + r.getResourceFilename();
 			fos = new FileOutputStream(pathName);
@@ -101,8 +108,19 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			//need to get the right prefix for the path to append to fileName
 			report.setReportDesignPath(pathName);
 			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
-
-			report.setOutputFormat("pdf");
+			
+			BirtReportServiceImpl brt = new BirtReportServiceImpl();
+			
+			ReportDesignHandle dezign = brt.openReportDesign(report.getReportDesignPath());
+			
+			//List dataSourcez = dezign.getAllDataSources(); 
+			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
+			dataSource.setProperty("URI", "C:\\Projects\\OpenMRS\\BIRT\\dsnimi\\concept_name.csv");	
+			
+			//List dataSets = dezign.getAllDataSets(); 
+			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
+			dataSet.setProperty("queryText", "select 'name', 'date_created' from 'file:/C:/Projects/OpenMRS/BIRT/project-documents/concept_name.csv' : {'name',\"name\",STRING;\"date_created\",\"date_created\",STRING}");
+			
 			reportService.generateReport(report);
 
 			// Get a reference to the report output file to be copied to the response
