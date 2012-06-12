@@ -30,6 +30,7 @@ import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.model.api.OdaDataSetHandle;
 import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.eclipse.birt.report.model.api.activity.SemanticException;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
@@ -113,14 +114,12 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			
 			ReportDesignHandle dezign = brt.openReportDesign(report.getReportDesignPath());
 			
-			//List dataSourcez = dezign.getAllDataSources(); 
-			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
-			dataSource.setProperty("URI", "C:\\Projects\\OpenMRS\\BIRT\\dsnimi\\concept_name.csv");	
+			// set csv
+			//csvOperation(dezign);
 			
-			//List dataSets = dezign.getAllDataSets(); 
-			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
-			dataSet.setProperty("queryText", "select 'name', 'date_created' from 'file:/C:/Projects/OpenMRS/BIRT/project-documents/concept_name.csv' : {'name',\"name\",STRING;\"date_created\",\"date_created\",STRING}");
-			
+			// set xml
+			xmlOperation(dezign);			
+
 			reportService.generateReport(report);
 
 			// Get a reference to the report output file to be copied to the response
@@ -130,6 +129,35 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 
 		} catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
+		}
+
+	}
+	
+	public void csvOperation(ReportDesignHandle dezign) {
+
+		try {
+			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
+			dataSource.setProperty("URI", "C:\\Projects\\OpenMRS\\BIRT\\dsnimi\\concept_name.csv");	
+			
+
+			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
+			dataSet.setProperty("queryText", "select 'name', 'date_created' from 'file:/C:/Projects/OpenMRS/BIRT/project-documents/concept_name.csv' : {'name',\"name\",STRING;\"date_created\",\"date_created\",STRING}");
+		} catch (SemanticException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	public void xmlOperation(ReportDesignHandle dezign) {
+		try {
+			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
+			dataSource.setProperty("FILELIST", "http://www.nasa.gov/rss/breaking_news.rss");	
+
+			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
+			dataSet.setProperty("queryText", "[CDATA[table0#-TNAME-#table0#:#[/rss/channel/title]#:#{Title;STRING;../title},{Description;STRING;../description}]]");
+		} catch (SemanticException e) {
+			e.printStackTrace();
 		}
 
 	}
