@@ -16,6 +16,7 @@ package org.openmrs.module.birt.report.renderer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,6 +50,21 @@ import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
 import org.springframework.util.FileCopyUtils;
 import org.openmrs.module.birt.BirtReportUtil;
+import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
+import org.openmrs.module.reporting.dataset.DataSetRow;
+import org.openmrs.Cohort;
+import org.openmrs.module.reporting.indicator.IndicatorResult;
+import org.eclipse.birt.report.model.api.ElementFactory;
+import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.eclipse.birt.report.model.api.SessionHandle;
+import org.eclipse.birt.report.model.api.IDesignEngine;
+import org.eclipse.birt.report.model.api.IDesignEngineFactory;
+import org.eclipse.birt.core.framework.Platform;
+import org.eclipse.birt.report.model.api.DesignConfig;
+import org.openmrs.module.birt.BirtConstants;
+
+import com.ibm.icu.util.ULocale;
 
 /**
  * Report Renderer implementation that supports rendering to a BIRT template
@@ -92,6 +108,8 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 		FileOutputStream fos = null;
 		try {
 			log.debug("Attempting to render report with BirtTemplateRenderer");
+			
+			System.out.println("report data " +  reportData.getDataSets());
 
 			ReportDesign design = getDesign(argument);
 			ReportDesignResource r = getTemplate(design);			
@@ -108,17 +126,22 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 
 			//need to get the right prefix for the path to append to fileName
 			report.setReportDesignPath(pathName);
-			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
 			
 			BirtReportServiceImpl brt = new BirtReportServiceImpl();
 			
-			ReportDesignHandle dezign = brt.openReportDesign(report.getReportDesignPath());
+			brt.prepareDataset(report);
 			
-			// set csv
-			//csvOperation(dezign);
+/*			ReportDesignHandle dezign = brt.openReportDesign(report.getReportDesignPath());
 			
-			// set xml
-			xmlOperation(dezign);			
+			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
+			dataSource.setProperty("URI", "C:\\Projects\\OpenMRS\\BIRT\\dsnimi\\Person Count.csv");	
+			
+
+			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
+			dataSet.setProperty("queryText", "select 'person_id', 'birthdate' from 'file:/C:/Projects/OpenMRS/BIRT/dsnimi/Person Count.csv' : {'person_id',\"person_id\",STRING;\"birthdate\",\"birthdate\",STRING}");
+*/
+			
+			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);			
 
 			reportService.generateReport(report);
 
@@ -129,35 +152,6 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 
 		} catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
-		}
-
-	}
-	
-	public void csvOperation(ReportDesignHandle dezign) {
-
-		try {
-			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
-			dataSource.setProperty("URI", "C:\\Projects\\OpenMRS\\BIRT\\dsnimi\\concept_name.csv");	
-			
-
-			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
-			dataSet.setProperty("queryText", "select 'name', 'date_created' from 'file:/C:/Projects/OpenMRS/BIRT/project-documents/concept_name.csv' : {'name',\"name\",STRING;\"date_created\",\"date_created\",STRING}");
-		} catch (SemanticException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-	
-	public void xmlOperation(ReportDesignHandle dezign) {
-		try {
-			OdaDataSourceHandle  dataSource = (OdaDataSourceHandle) dezign.getAllDataSources().get(0);
-			dataSource.setProperty("FILELIST", "http://www.nasa.gov/rss/breaking_news.rss");	
-
-			OdaDataSetHandle  dataSet = (OdaDataSetHandle) dezign.getAllDataSets().get(0);
-			dataSet.setProperty("queryText", "[CDATA[table0#-TNAME-#table0#:#[/rss/channel/title]#:#{Title;STRING;../title},{Description;STRING;../description}]]");
-		} catch (SemanticException e) {
-			e.printStackTrace();
 		}
 
 	}
@@ -179,8 +173,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			IReportEngine engine = BirtConfiguration.getReportEngine();	    		
 
 			// Open the report design
-			IReportRunnable reportRunnable =
-					engine.openReportDesign(report.getReportDesignPath());
+			IReportRunnable reportRunnable = engine.openReportDesign(report.getReportDesignPath());
 
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);
