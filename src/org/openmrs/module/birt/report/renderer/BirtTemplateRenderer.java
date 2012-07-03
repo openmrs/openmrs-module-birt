@@ -107,8 +107,8 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	}
 	
 
-	String pathName = null;
-	String pathDir = null;
+	//String pathName = null;
+	//String pathDir = null;
 	/**
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
@@ -119,18 +119,18 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			ReportDesign design = getDesign(argument);
 			ReportDesignResource r = getTemplate(design);
 			
-			pathDir = BirtReportUtil.createTempDirectory("reports").getAbsolutePath() + File.separator;
+			String pathDir = BirtReportUtil.createTempDirectory("reports").getAbsolutePath() + File.separator;
 			
-			pathName = pathDir + r.getName() + ".rptdesign";
+			String pathName = pathDir + r.getName() + ".rptdesign";
 			
-			prepareDatasets(reportData.getDataSets(), r);	
+			prepareDatasets(reportData.getDataSets(), r, pathName, pathDir);	
 			
-			modifyReport(r);						
+			modifyReport(r, pathName, pathDir);					
 					
-			executeReport();
-
+			executeReport(pathName, pathDir);	
+			
 			// Get a reference to the report output file to be copied to the response
-			InputStream fileInputStream = new FileInputStream(new File(pathDir + "my_report.pdf"));
+			InputStream fileInputStream = new FileInputStream(new File(pathDir + "province_report.pdf"));
 
 			FileCopyUtils.copy(fileInputStream, out);
 
@@ -141,7 +141,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	}
 	
 	String[] qtext = null;
-	public void prepareDatasets(Map<String, DataSet> datasets, ReportDesignResource designResource) {
+	public void prepareDatasets(Map<String, DataSet> datasets, ReportDesignResource designResource, String pathName, String pathDir) {
 		Iterator<Entry<String, DataSet>> iter = datasets.entrySet().iterator();
 		
 		while (iter.hasNext()) {
@@ -247,7 +247,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * Modify a report based on the attributes of the given report object.
 	 * 
 	 */	
-	public void modifyReport(ReportDesignResource designResource) {
+	public void modifyReport(ReportDesignResource designResource, String pathName, String pathDir) {
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(pathName);
@@ -331,12 +331,12 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 	 * 
 	 * @param	report	the report to generate
 	 */
-	public void executeReport() {
+	public void executeReport(String pathName, String pathDir) {
 		//log.debug("Generating output for report " + designResource + ", hashcode " + designResource.hashCode());
 		IRunAndRenderTask task = null;
 		try {			
 		
-		// Get the report engine that will be used to render the report
+			// Get the report engine that will be used to render the report
 			IReportEngine engine = BirtConfiguration.getReportEngine();	    		
 
 			// Open the report design
@@ -344,13 +344,13 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 				
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);
-			task.setParameterValues(null);
+			//task.setParameterValues(null);
 			// Validate runtime parameters
 			task.validateParameters();
 			
 			//task.setRenderOption(BirtConfiguration.getRenderOption(report));
 			PDFRenderOption options = new PDFRenderOption();
-			options.setOutputFileName(pathDir + "my_report.pdf");
+			options.setOutputFileName(pathDir + "province_report.pdf");
 			options.setOutputFormat("pdf");
 			task.setRenderOption(options);
 			//task.setRenderOption(BirtConfiguration.getRenderOption(report));    
@@ -359,15 +359,6 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			task.run();
 			task.close();
 			engine.destroy();
-
-/*			// Add errors to the report object
-			if (task.getErrors() != null && !task.getErrors().isEmpty()) {
-				report.setErrors(task.getErrors());
-			}
-*/
-			// Set the output file 
-			new File(pathName);
-			//report.setOutputFile(new File(PathName));	    	
 
 			//log.debug("Output file: " + report.getOutputFile().getAbsolutePath());
 		} 
