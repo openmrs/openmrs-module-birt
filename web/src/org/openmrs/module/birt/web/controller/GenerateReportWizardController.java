@@ -71,7 +71,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	log.debug("Initializing binders");
     	binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT), false));
-		binder.registerCustomEditor(AbstractReportObject.class, new AbstractReportObjectEditor());
+/*		binder.registerCustomEditor(AbstractReportObject.class, new AbstractReportObjectEditor());*/
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
     }
 
@@ -148,7 +148,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors, int page) {
     	log.debug("Getting reference data for page " + page);
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		
+/*		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		//BirtReport report = (BirtReport) command;    	
 		data.put("reports", reportService.getReports());
@@ -158,7 +158,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 		// Lookup cohort 
     	if ( request.getParameter("cohortId") != null ) { 
     	}
-
+*/
     	// Lookup report
     	/*
     	if ( request.getParameter("reportId") != null ) { 

@@ -109,8 +109,7 @@ public class GenerateReportController extends SimpleFormController {
 			log.debug("Report = " + report + ", hashcode " + report.hashCode());
 			
 			// Get BIRT report service
-			BirtReportService reportService = 
-				(BirtReportService)Context.getService(BirtReportService.class);
+			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 			
     		// Find the report associated with the given ID
     		Integer reportId = ServletRequestUtils.getIntParameter(request, REPORT_ID_KEY, 0);
@@ -250,10 +249,10 @@ public class GenerateReportController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
     	log.debug("referenceData");
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		BirtReportService reportService = 
+/*		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
 		
-    	data.put(COHORTS_KEY, reportService.getCohortDefinitions());
+    	data.put(COHORTS_KEY, reportService.getCohortDefinitions());*/
     	
     	return data;
     }

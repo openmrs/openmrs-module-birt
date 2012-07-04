@@ -171,13 +171,13 @@ public class ReportFormController extends SimpleFormController {
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		BirtReportService reportService = 
+/*		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
 		
 		//BirtReport report = (BirtReport) command; 
     	data.put("reports", reportService.getReports());
     	data.put("cohorts", Context.getCohortService().getCohorts());
-    	data.put("dataExports", reportService.getDataExports());
+    	data.put("dataExports", reportService.getDataExports());*/
     	//data.put("datasets", reportService.getDatasets());
     	return data;
     }

@@ -74,7 +74,7 @@ public class DatasetFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
-		binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
+		//binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
 	}
 
@@ -224,7 +224,7 @@ public class DatasetFormController extends SimpleFormController {
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		BirtReportService reportService = 
+/*		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
 		
 		//BirtReport report = (BirtReport) command; 
@@ -232,7 +232,7 @@ public class DatasetFormController extends SimpleFormController {
     	data.put("cohorts", Context.getCohortService().getCohorts());
     	data.put("dataExports", reportService.getDataExports());
     	//data.put("datasets", reportService.getDatasets());
-    	return data;
+*/    	return data;
     }
 	
 	/**

@@ -60,10 +60,10 @@ public class ListDatasetController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+/*    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
     	BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
     	return reportService.getDataExports();
-    }
+    }*/
 
 }
 

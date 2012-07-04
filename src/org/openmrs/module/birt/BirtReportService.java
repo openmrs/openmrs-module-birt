@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.reporting.AbstractReportObject;
@@ -131,7 +132,7 @@ public interface BirtReportService {
 	 * @param 	cohort	the cohort definition (rows)
 	 * @return	a file reference to the csv export file 
 	 */
-	public File exportFlatfileDataset(DataExportReportObject export);
+/*	public File exportFlatfileDataset(DataExportReportObject export);*/
 	
 	/**
 	 * Generates a CSV export for the given the export definition.
@@ -164,16 +165,16 @@ public interface BirtReportService {
 	 * 
 	 * @return 	list of data export objects
 	 */
-	@Transactional(readOnly=true)
-	public List<AbstractReportObject> getDataExports();
+/*	@Transactional(readOnly=true)
+	public List<AbstractReportObject> getDataExports();*/
 	
 	/**
 	 * Get a list of all cohorts in the database.
 	 * 
 	 * @return	cohorts
 	 */
-	@Transactional(readOnly=true)
-	public List<CohortDefinitionItemHolder> getCohortDefinitions();
+	/*	@Transactional(readOnly=true)
+	public List<CohortDefinitionItemHolder> getCohortDefinitions();*/
 	
 
 	/**
@@ -181,8 +182,14 @@ public interface BirtReportService {
 	 * @param report
 	 */
 	public void generateAndEmailReport(BirtReport report);
-	
-	
+
+	/**
+	 * Open an existing report
+	 * 
+	 * @param reportPath	path to the report
+	 * @return	a report design handle
+	 */
+	public ReportDesignHandle openReportDesign(String reportPath);	
 	
 
 }
