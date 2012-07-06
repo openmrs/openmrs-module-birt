@@ -129,8 +129,7 @@ public class GenerateReportController extends SimpleFormController {
     		// Evaluate the selected cohort or use the default cohort (all patients) 
     		Cohort cohort = new Cohort();    		
     		if (!BirtConstants.INVALID_COHORT_KEY.equals(cohortKey)) {     			
-    			cohort = Context.getCohortService().evaluate(
-    				Context.getCohortService().getCohortDefinition(cohortKey), null);
+    			cohort = Context.getCohortService().evaluate(Context.getCohortService().getCohortDefinition(cohortKey), null);
     		} else {     		
     			cohort = Context.getPatientSetService().getAllPatients();    			
     		}
@@ -252,6 +251,10 @@ public class GenerateReportController extends SimpleFormController {
 /*		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
 		
+<<<<<<< .mine
+		// TO DO Mike
+    	//data.put(COHORTS_KEY, reportService.getCohortDefinitions());
+=======
     	data.put(COHORTS_KEY, reportService.getCohortDefinitions());*/
     	
     	return data;

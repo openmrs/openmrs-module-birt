@@ -39,7 +39,8 @@ public class DownloadReportController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
         binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
+        // TO DO Mike
+		//binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
 	}
 
@@ -65,7 +66,9 @@ public class DownloadReportController extends SimpleFormController {
 		// Write report design file to response
 		InputStream fileInputStream = new FileInputStream(reportDesignFile);
 		response.setContentType("text/xml; charset=utf-8");
-		response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getReportObjectId() + ".rptdesign");
+		// TO DO
+		response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getId() + ".rptdesign");
+		//response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getReportObjectId() + ".rptdesign");
 		FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 		
 		return null;

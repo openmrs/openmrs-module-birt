@@ -24,14 +24,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.HTMLRenderContext;
+//import org.eclipse.birt.report.engine.api.HTMLRenderContext;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IPDFRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.HTMLActionHandler;
-import org.eclipse.birt.report.engine.api.HTMLEmitterConfig;
+//import org.eclipse.birt.report.engine.api.HTMLEmitterConfig;
 import org.eclipse.birt.report.engine.api.HTMLServerImageHandler;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.engine.api.PDFRenderOption;
@@ -197,11 +197,11 @@ public class BirtConfiguration {
 		
 		
 		// Setting the report output file name
-		if (report.getOutputFilename() == null) { 
+/*		if (report.getOutputFilename() == null) { 
 			String name = report.getReportDefinition().getName();
 			String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
 			report.setOutputFilename(filename);
-		}
+		}*/
 
 		log.debug("Setting report output filename " + report.getOutputFilename());
 

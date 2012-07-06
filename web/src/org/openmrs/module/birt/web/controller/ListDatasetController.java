@@ -62,7 +62,9 @@ public class ListDatasetController extends SimpleFormController {
 	 */
 /*    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
     	BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-    	return reportService.getDataExports();
+    	// TO DO MIke
+    	//return reportService.getDataExports();
+    	return null;
     }*/
 
 }

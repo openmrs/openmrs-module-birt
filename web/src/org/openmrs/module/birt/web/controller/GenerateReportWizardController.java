@@ -153,7 +153,8 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 		//BirtReport report = (BirtReport) command;    	
 		data.put("reports", reportService.getReports());
 		data.put("cohorts", Context.getCohortService().getCohorts());
-		data.put("dataExports", reportService.getDataExports());    	
+		// TO DO Mike
+		//data.put("dataExports", reportService.getDataExports());    	
     	
 		// Lookup cohort 
     	if ( request.getParameter("cohortId") != null ) { 
@@ -194,8 +195,6 @@ public class GenerateReportWizardController extends AbstractWizardFormController
     	log.debug("Getting next page...");
 		return currentPage+1;
 	}
-     */
-    
-    
+     */    
 
 }

@@ -20,7 +20,7 @@ import org.openmrs.module.Module;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.reporting.Report;
+//import org.openmrs.reporting.Report;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;

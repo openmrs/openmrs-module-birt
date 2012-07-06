@@ -17,7 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.report.ReportDefinition;
+//import org.openmrs.reporting.report.ReportDefinition;
 import org.openmrs.web.WebConstants;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
@@ -32,6 +32,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 public class UploadReportController extends SimpleFormController {
 		

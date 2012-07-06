@@ -61,6 +61,7 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.notification.MessageException;
+import org.openmrs.module.reporting.definition.service.BaseDefinitionService;
 //import org.openmrs.reporting.AbstractReportObject;
 //import org.openmrs.reporting.ReportObjectService;
 //import org.openmrs.reporting.data.DatasetDefinition;
@@ -68,9 +69,20 @@ import org.openmrs.notification.MessageException;
 //import org.openmrs.reporting.export.DataExportUtil;
 //import org.openmrs.reporting.export.ExportColumn;
 //import org.openmrs.reporting.report.ReportDefinition;
+//import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.ReportObjectService;
+//import org.openmrs.reporting.data.DatasetDefinition;
+//import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.reporting.export.DataExportUtil;
+//import org.openmrs.reporting.export.ExportColumn;
+//import org.openmrs.reporting.report.ReportDefinition;
+
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.FileCopyUtils;
+import org.openmrs.module.reporting.indicator.service.IndicatorService;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 
 import com.ibm.icu.util.ULocale;
 
@@ -143,9 +155,16 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * Convenience method
 	 * @return	report object service.
 	 */
+
+/*	public ReportObjectService getReportObjectService() { 
+		Context.getService(ReportObjectService.class);
+	}*/
+	
+
 /*	public ReportObjectService getReportObjectService() { 
 		return Context.getReportObjectService();
 	}*/
+
 
 
 	/**
@@ -160,9 +179,34 @@ public class BirtReportServiceImpl implements BirtReportService {
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
 	 */
-	public List<BirtReport> filterReports(String searchTerm) { 
+	public List<BirtReport> filterReports(String searchTerm) {
+		
+		List<BirtReport> reports = new Vector<BirtReport>();		
 
-/*		List<BirtReport> reports = new Vector<BirtReport>();		
+		if(searchTerm == null) { 
+			searchTerm = BirtConstants.ALL_REPORTS;
+		}
+		
+		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);
+	
+		
+		List<ReportDefinition> reportDefs = reportService.getAllDefinitions(true);
+
+
+		for (ReportDefinition rep : reportDefs) { 
+			ReportDefinition reportDefinition = (ReportDefinition) rep;
+			if (BirtConstants.ALL_REPORTS.equalsIgnoreCase(searchTerm.toLowerCase()) || 
+					reportDefinition.getName().toLowerCase().contains(searchTerm.toLowerCase())) { 
+				//reports.add(getReportWithoutParameters(reportDefinition));
+			}
+		}
+		sortByName(reports);
+
+		return reports;
+		
+		
+		/*
+		List<BirtReport> reports = new Vector<BirtReport>();		
 
 		if(searchTerm == null) { 
 			searchTerm = BirtConstants.ALL_REPORTS;
@@ -179,9 +223,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 		}
 		sortByName(reports);
 
-		return reports;*/
 		
-		return new ArrayList<BirtReport>();
+		return new ArrayList<BirtReport>(); */
+
 	}
 
 
@@ -229,9 +273,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 						if ("org.eclipse.datatools.connectivity.oda.flatfile.dataSet".equals(datasetHandle.getExtensionID())) { 
 							log.debug("Setting the properties for the Flat File data set");
 
-							if (!report.hasFlatfileDataSet()) {
+/*							if (!report.hasFlatfileDataSet()) {
 								throw new BirtReportException("Report is missing the '" + datasetHandle.getName() + "' dataset.  Please update the report to include this dataset.");
-							}
+							}*/
 
 							log.debug("Export dataset for report " + datasetHandle.getName());							
 							File dataset = exportFlatfileDataset(report);
@@ -430,7 +474,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param report
 	 */
 	public void fillReportParameters(BirtReport report) { 
-		log.debug("Filling report parameters for " + report.getReportDefinition().getName());
+/*		log.debug("Filling report parameters for " + report.getReportDefinition().getName());*/
 		IGetParameterDefinitionTask task = null;
 
 		try { 
@@ -517,17 +561,21 @@ public class BirtReportServiceImpl implements BirtReportService {
 /*		BirtReport report = null;
 		try { 
 			// Find the report object in the database
-			ReportDefinition reportDefinition =  
-				(ReportDefinition) getReportObjectService().getReportObject(reportId);
+			//ReportDefinition reportDefinition =  (ReportDefinition) getReportObjectService().getReportObject(reportId);
 
-			report = getReport(reportDefinition);
+			//report = getReport(reportDefinition);
 
 		} catch (Exception e) { 
 			throw new BirtReportException("Could not find report with id " + reportId, e);
 		}
+
+		
+		return new BirtReport();
+
 		return report;*/
 		
 		return new BirtReport();
+
 	}    
 
 
@@ -562,7 +610,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 		for (AbstractReportObject obj : reportObjs) { 
 			ReportDefinition reportDefinition = (ReportDefinition) obj;
 			reportDefs.add(reportDefinition);    		
-		}    	
+		}   	
 		return reportDefs;
 	}*/
 
@@ -637,7 +685,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			throw new BirtReportException("Could not find report with id " + reportDefinition, e);
 		}
 		return report;
-	}*/    
+	} */   
 
 
 
@@ -647,12 +695,16 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param definition
 	 */
 	public void saveReport(BirtReport report) { 
-		log.debug("Saving report " + report);
+/*		log.debug("Saving report " + report);
 		if (report == null || report.getReportDefinition() == null) 
-			throw new BirtReportException("Cannot create empty report");
+			throw new BirtReportException("Cannot create empty report");*/
+
+		ReportDefinition reportDefinition = report.getReportDefinition();
+		//getReportObjectService().updateReportObject(reportDefinition);
 
 /*		ReportDefinition reportDefinition = report.getReportDefinition();
 		getReportObjectService().updateReportObject(reportDefinition);*/
+
 		//saveReportDesign(report.getReportPath());
 
 	}
@@ -670,7 +722,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			if (reportDefinition != null) { 
 				log.debug("Deleting report definition " + reportDefinition);
 
-				getReportObjectService().deleteReport(reportDefinition);
+				//getReportObjectService().deleteReport(reportDefinition);
 				deleteReportDesign(report.getReportDesignPath());
 			}
 		} 
@@ -694,7 +746,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 
 			// Get the current data export columns that are available from the report 
-			List<ExportColumn> exportColumns = report.getReportDefinition().getDataExport().getColumns();
+			//List<ExportColumn> exportColumns = report.getReportDefinition().getDataExport().getColumns();
 
 			// Iterate over report design datasets 
 			Iterator iter = list.iterator();
@@ -920,8 +972,8 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @throws BirtReportException
 	 */
 	public File exportFlatfileDataset(BirtReport report) throws BirtReportException { 
-/*		// TODO need to fix the birt report object to contain a single reference to cohort and data export objects
-		DataExportReportObject export = report.getReportDefinition().getDataExport();
+		// TODO need to fix the birt report object to contain a single reference to cohort and data export objects
+/*		DataExportReportObject export = report.getReportDefinition().getDataExport();
 		Cohort cohort = report.getCohort();
 
 		// TODO workaround until we fix the way we pass a set of entities to the data exporter
@@ -929,9 +981,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 			export.setCohortId(cohort.getCohortId());
 		}
 
-
 		return exportFlatfileDataset(export);*/
 		return null;
+
 	}
 
 
@@ -1179,13 +1231,6 @@ public class BirtReportServiceImpl implements BirtReportService {
 		};
 
 		return Session.getInstance(props, auth);
-	}    
-
-
-
-
-
-
-
+	}  
 
 }

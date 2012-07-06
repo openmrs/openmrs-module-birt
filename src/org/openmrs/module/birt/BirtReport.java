@@ -9,12 +9,13 @@ import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.module.birt.model.ParameterDefinition;
-import org.openmrs.reporting.ReportObjectXMLEncoder;
-import org.openmrs.reporting.export.DataExportReportObject;
-import org.openmrs.reporting.report.ReportDefinition;
+//import org.openmrs.reporting.ReportObjectXMLEncoder;
+//import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.reporting.report.ReportDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 /**
  * Model class used to hold information for a BIRT report.  
@@ -37,13 +38,13 @@ public class BirtReport implements Serializable {
 	/* Report design object - transient because we can get it from the filesystem. */
 	private transient ReportDesignHandle reportDesign;
 	
-	/* Report definition object */
+	// Report definition object 
 	private ReportDefinition reportDefinition = new ReportDefinition();
 	
-	/* Desired Columns */
-	private DataExportReportObject dataExport = new DataExportReportObject();
+/*	 Desired Columns 
+	private DataExportReportObject dataExport = new DataExportReportObject();*/
 
-	/* Desired Rows */
+	// Desired Rows 
 	private Cohort cohort = new Cohort();
 	
 	/* Output format (default = pdf) */
@@ -84,12 +85,14 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Integer getReportId() { 
-		return this.reportDefinition.getReportObjectId();	
+	public Integer getReportId() {
+		return this.reportDefinition.getId();	
+		//return this.reportDefinition.getReportObjectId();	
 	}
 	
 	public String getName() { 
-		return this.reportDefinition.getName();
+		return null;
+		//return this.reportDefinition.getName();
 	}
 	
 	public String getVersion() { 
@@ -128,9 +131,9 @@ public class BirtReport implements Serializable {
 	 * Returns whether the report has an associated data export object.
 	 * @return	true if data export exists, false otherwise
 	 */
-	public boolean hasFlatfileDataSet() { 		
+/*	public boolean hasFlatfileDataSet() {
 		return getReportDefinition().getDataExport() != null && getReportDefinition().getDataExport().getReportObjectId() != null;		
-	}
+	}*/
 
 	/**
 	 * Gets the assigned cohort that is to populate the data set.
@@ -196,12 +199,14 @@ public class BirtReport implements Serializable {
 	}
 	
 	
+	
+	
 	/**
 	 * Set the report identifier.
 	 * @param id	the report identifier
 	 */
 	public void setReportId(Integer id) { 
-		this.reportDefinition.setReportObjectId(id);
+		//this.reportDefinition.setReportObjectId(id);
 	}	
 	
 	/**
@@ -234,9 +239,9 @@ public class BirtReport implements Serializable {
 	 * Sets the default data export object.
 	 * @param dataExport
 	 */
-	public void setDataExport(DataExportReportObject dataExport) { 
+/*	public void setDataExport(DataExportReportObject dataExport) { 
 		this.dataExport = dataExport;	
-	}
+	}*/
 	
 	/** 
 	 * 
@@ -323,8 +328,9 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @return
 	 */
-	public String getReportXml() { 		
-		return new ReportObjectXMLEncoder(this.getReportDefinition()).toXmlString();
+	public String getReportXml() {
+		return null;
+		//return new ReportObjectXMLEncoder(this.getReportDefinition()).toXmlString();
 	}
 	
 	/**
@@ -332,8 +338,9 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @return
 	 */
-	public String getDatasetXml() { 		
-		return new ReportObjectXMLEncoder(this.getReportDefinition().getDataExport()).toXmlString();		
+	public String getDatasetXml() { 
+		return null;
+		//return new ReportObjectXMLEncoder(this.getReportDefinition().getDataExport()).toXmlString();		
 	}
 	
 	/**
@@ -375,8 +382,9 @@ public class BirtReport implements Serializable {
 	/**
 	 * Convert birt report to 
 	 */
-	public String toString() { 		
-		return new StringBuffer().
+	public String toString() { 
+		return null;
+/*		return new StringBuffer().
 			append("[").
 			append("id=").append(this.getReportDefinition().getReportObjectId()).
 			append(", name=").append(this.getReportDefinition().getName()).
@@ -386,7 +394,7 @@ public class BirtReport implements Serializable {
 			//append(", cohort=").append(this.getCohort()).
 			//append(", dataExport=").append(this.getDataExport().getColumns()).
 			append("]").
-			toString();
+			toString();*/
 	}
 
 	

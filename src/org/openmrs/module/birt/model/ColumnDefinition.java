@@ -3,7 +3,7 @@ package org.openmrs.module.birt.model;
 import java.util.Date;
 
 import org.openmrs.User;
-import org.openmrs.reporting.export.ExportColumn;
+//import org.openmrs.reporting.export.ExportColumn;
 
 public class ColumnDefinition {
 	

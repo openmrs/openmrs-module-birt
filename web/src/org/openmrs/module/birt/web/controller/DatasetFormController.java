@@ -29,16 +29,16 @@ import org.eclipse.birt.report.model.api.ScalarParameterHandle;
 // Openmrs Core
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.ReportService;
+//import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
-import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.Report;
+//import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.web.WebConstants;
 import org.openmrs.propertyeditor.CohortEditor;
-import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
 
 // Spring
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -105,7 +105,7 @@ public class DatasetFormController extends SimpleFormController {
 				if (!params.isEmpty()) { 					
 					//report.getReportDefinition().getParameters().addAll(params);
 				}*/
-				Integer id = report.getReportDefinition().getReportObjectId();				
+				Integer id = report.getReportDefinition().getId();				
 				reportService.saveReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.saveReport.success");				
 
@@ -131,8 +131,8 @@ public class DatasetFormController extends SimpleFormController {
 						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
 						log.debug("Report preview mime type: " + mimeType);
 						response.setContentType(mimeType);
-						String filename = 
-							report.getReportDefinition().getReportObjectId() + ".pdf";
+						String filename = report.getReportDefinition().getId() + ".pdf";
+						//String filename = report.getReportDefinition().getReportObjectId() + ".pdf";
 						response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 						FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 						return null;
@@ -188,7 +188,7 @@ public class DatasetFormController extends SimpleFormController {
 				InputStream fileInputStream = new FileInputStream(reportDesignFile);
 				response.setContentType("text/xml; charset=utf-8");
 				response.setHeader("Content-Disposition", "attachment; filename=" + 
-						report.getReportDefinition().getReportObjectId() + ".rptdesign");
+						report.getReportDefinition().getId() + ".rptdesign");
 				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 			}			
 			else { 
@@ -229,10 +229,11 @@ public class DatasetFormController extends SimpleFormController {
 		
 		//BirtReport report = (BirtReport) command; 
     	data.put("reports", reportService.getReports());
+    	// TO DO Mike
     	data.put("cohorts", Context.getCohortService().getCohorts());
-    	data.put("dataExports", reportService.getDataExports());
+    	data.put("dataExports", reportService.getDataExports());*/
     	//data.put("datasets", reportService.getDatasets());
-*/    	return data;
+    	return data;
     }
 	
 	/**

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Form;
-import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.AbstractReportObject;
 
 /**
  * Report parameter definition.

@@ -53,7 +53,7 @@ public class ReportFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
-		binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
+/*		binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());*/
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
 	}
 
@@ -78,7 +78,9 @@ public class ReportFormController extends SimpleFormController {
 			if (request.getParameter("save") != null) { 
 				log.debug("Saving report " + report);
 
-				Integer id = report.getReportDefinition().getReportObjectId();
+				// TO DO Mike
+				//Integer id = report.getReportDefinition().getReportObjectId();
+				Integer id = report.getReportDefinition().getId();
 				reportService.saveReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.saveReport.success");				
 
@@ -104,8 +106,9 @@ public class ReportFormController extends SimpleFormController {
 						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
 						log.debug("Report preview mime type: " + mimeType);
 						response.setContentType(mimeType);
+						// TO DO Mike : Change getReportObjectId() -> getId()
 						String filename = 
-							report.getReportDefinition().getReportObjectId() + ".pdf";
+							report.getReportDefinition().getId() + ".pdf";
 						response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 						FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 						return null;
@@ -118,8 +121,8 @@ public class ReportFormController extends SimpleFormController {
 			else if (request.getParameter("downloadDataset") != null) { 	
 				try { 
 					response.setContentType("text/xml; charset=utf-8");
-					response.setHeader("Content-Disposition", "attachment; filename=" + 
-							report.getReportDefinition().getDataExport().getName().replace(" ", "_") + ".xml");
+					// to do Mike
+					//response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getDataExport().getName().replace(" ", "_") + ".xml");
 					response.getOutputStream().print(report.getDatasetXml());				
 				} catch (Exception e) { 
 					log.error("An error occurred while downloading dataset", e);
@@ -134,8 +137,9 @@ public class ReportFormController extends SimpleFormController {
 				// Write report design file to response
 				InputStream fileInputStream = new FileInputStream(reportDesignFile);
 				response.setContentType("text/xml; charset=utf-8");
+				// to do Mike getReportObjectId() 
 				response.setHeader("Content-Disposition", "attachment; filename=" + 
-						report.getReportDefinition().getReportObjectId() + ".rptdesign");
+						report.getReportDefinition().getId() + ".rptdesign");
 				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 			}			
 			else { 
@@ -176,8 +180,13 @@ public class ReportFormController extends SimpleFormController {
 		
 		//BirtReport report = (BirtReport) command; 
     	data.put("reports", reportService.getReports());
+    	// To do Mike -> 
     	data.put("cohorts", Context.getCohortService().getCohorts());
+<<<<<<< .mine
+    	//data.put("dataExports", reportService.getDataExports());
+=======
     	data.put("dataExports", reportService.getDataExports());*/
+
     	//data.put("datasets", reportService.getDatasets());
     	return data;
     }

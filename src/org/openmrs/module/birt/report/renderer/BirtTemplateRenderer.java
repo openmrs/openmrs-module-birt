@@ -37,7 +37,7 @@ import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.activity.SemanticException;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ReportService;
+//import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtDataSetQuery;
 import org.openmrs.module.birt.BirtReport;
