@@ -47,7 +47,7 @@ public class DwrBirtReportService {
 			reportList = new Vector<Object>(reports.size());
 			for (BirtReport report : reports) {
 				ListItem item = new ListItem();
-				item.setId(report.getReportId());
+				item.setId(report.getId());
 				item.setName(report.getName());
 				if (report.getParameters() != null ) { 
 					StringBuffer paramBuffer = new StringBuffer();

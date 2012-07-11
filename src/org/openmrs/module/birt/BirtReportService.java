@@ -134,7 +134,6 @@ public interface BirtReportService {
 	 * @return	a file reference to the csv export file 
 	 */
 
-	//public File exportFlatfileDataset(DataExportReportObject export);
 
 /*	public File exportFlatfileDataset(DataExportReportObject export);*/
 
@@ -178,9 +177,6 @@ public interface BirtReportService {
 	 * 
 	 * @return	cohorts
 	 */
-
-	@Transactional(readOnly=true)
-	//public List<CohortDefinitionItemHolder> getCohortDefinitions();
 
 	/*	@Transactional(readOnly=true)
 	public List<CohortDefinitionItemHolder> getCohortDefinitions();*/

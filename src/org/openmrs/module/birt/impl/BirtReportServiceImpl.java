@@ -181,26 +181,22 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public List<BirtReport> filterReports(String searchTerm) {
 		
-		List<BirtReport> reports = new Vector<BirtReport>();		
-
+		List<BirtReport> reports = new Vector<BirtReport>();
+		
 		if(searchTerm == null) { 
 			searchTerm = BirtConstants.ALL_REPORTS;
 		}
-		
-		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);
 	
+		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);	
 		
 		List<ReportDefinition> reportDefs = reportService.getAllDefinitions(true);
-
-
-		for (ReportDefinition rep : reportDefs) { 
-			ReportDefinition reportDefinition = (ReportDefinition) rep;
-			if (BirtConstants.ALL_REPORTS.equalsIgnoreCase(searchTerm.toLowerCase()) || 
-					reportDefinition.getName().toLowerCase().contains(searchTerm.toLowerCase())) { 
-				//reports.add(getReportWithoutParameters(reportDefinition));
-			}
+		
+		for (ReportDefinition rep : reportDefs)
+		{
+			BirtReport report = new BirtReport();			
+			report.setReportDefinition(rep);
+			reports.add(report);
 		}
-		sortByName(reports);
 
 		return reports;
 		
@@ -558,6 +554,13 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @return
 	 */
 	public BirtReport getReport(Integer reportId) { 
+		
+		BirtReport report = null;
+		
+		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);	
+		
+		List<ReportDefinition> reportDefs = reportService.getAllDefinitions(true);
+		
 /*		BirtReport report = null;
 		try { 
 			// Find the report object in the database

@@ -76,46 +76,15 @@
 				<tr class="${rowClass}">
 
 					<td valign="middle" align="center" width="3%">					
-						<a href="generateReport.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/play.gif" 
+						<a href="generateReport.form?reportId=${report.reportDefinition.id}"><img src="${pageContext.request.contextPath}/images/play.gif" 
 								border="0" alt="<spring:message code="Report.generate"/>" /></a>						
 					</td>
 					<td valign="middle" align="center" width="3%">
-						<a href="report.form?reportId=${report.reportDefinition.reportObjectId}"><img src="${pageContext.request.contextPath}/images/edit.gif" 
-								border="0" alt="<spring:message code="Report.edit"/>" /></a>
+						<a href="report.form?reportId=${report.reportDefinition.id}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>
 					</td>					
 
-					<td valign="middle" align="left">
-						${report.reportDefinition.name}
-					</td>
-					<%-- 
-					<td valign="middle" align="left">
-						${report.reportDefinition.createdDate}
-					</td>	
-					--%>				
-					<!-- 
-					<td valign="middle" align="left" width="300">
-						<a href="${pageContext.request.contextPath}/admin/reports/dataExport.form?dataExportId=${report.reportDefinition.dataExport.reportObjectId}">
-							${report.reportDefinition.dataExport.name}
-						</a>
-					</td>
-					 -->
-						<%--
-						<a href="report.form?delete=true&reportId=${report.reportDefinition.reportObjectId}">
-							<img src="${pageContext.request.contextPath}/images/trash.gif" border="0" alt="<spring:message code="Report.delete"/>" />
-						</a>
-						&nbsp;
-						<img src="${pageContext.request.contextPath}/images/edit.gif" border="0" alt="<spring:message code="Report.edit"/>" />
-						<img src="${pageContext.request.contextPath}/images/copy.gif" border="0" alt="<spring:message code="Report.duplicate"/>" />
-						<img src="${pageContext.request.contextPath}/images/open.gif" border="0" alt="<spring:message code="Report.design"/>" />
-						<img src="${pageContext.request.contextPath}/images/play.gif" border="0" alt="<spring:message code="Report.generate"/>" />
-						--%>
-					<%--
-					<td valign="top" align="center">
-						<c:if test="${report.reportDesignExists}">
-							<input class="smallButton" type="submit" value="<spring:message code="birt.reportDesign.download"/>"/>
-						</c:if>	
-					</td>
-					--%>
+					<td valign="middle" align="left">${report.reportDefinition.name}</td>
+
 				</tr>
 			</c:forEach>			
 		</table>

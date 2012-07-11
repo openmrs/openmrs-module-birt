@@ -114,10 +114,12 @@ h4 {
 
 <h2>
 	<c:choose>
-		<c:when test="${empty report.reportDefinition.reportObjectId}">
+		<c:when test="${empty report.reportDefinition.id}">
 			<spring:message code="birt.create.title"/>
 		</c:when>
-		<c:otherwise><spring:message code="birt.update.title"/></c:otherwise>
+		<c:otherwise>
+			<spring:message code="birt.update.title"/>
+		</c:otherwise>
 	</c:choose>
 </h2>
 
@@ -129,10 +131,12 @@ h4 {
 
 <b class="boxHeader">
 	<c:choose>
-		<c:when test="${empty report.reportDefinition.reportObjectId}">
+		<c:when test="${empty report.reportDefinition.id}">
 			<spring:message code="birt.create.title"/>
 		</c:when>
-		<c:otherwise><spring:message code="birt.update.title"/></c:otherwise>
+		<c:otherwise>
+			<spring:message code="birt.update.title"/>
+		</c:otherwise>
 	</c:choose>
 </b>
 <div class="box">
@@ -142,11 +146,11 @@ h4 {
 			<tr>
 				<td align="center">					
 					<table border="0" width="100%">					
-						<c:if test="${!(empty report.reportDefinition.reportObjectId)}">
+						<c:if test="${!(empty report.reportDefinition.id)}">
 							<tr>		
 								<th class="headerCell" align="right"><spring:message code="general.id"/></th>
 								<td class="inputCell" colspan="5">
-									<spring:bind path="report.reportDefinition.reportObjectId">
+									<spring:bind path="report.reportDefinition.id">
 										${status.value}
 									</spring:bind>
 									
@@ -157,7 +161,7 @@ h4 {
 								<th class="" align="right" valign="top"><spring:message code="birt.report.reportDesign"/></th>
 								<td class="" valign="top" colspan="5">
 									<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
-										<input type="hidden" name="reportId" value="${report.reportDefinition.reportObjectId}" />
+										<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
 										<input type="file" name="reportFile" size="40" />
 										<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />				
 									</form>	
@@ -168,7 +172,7 @@ h4 {
 								<th class="headerCell" align="right" valign="top"></th>
 								<td class="inputCell" valign="top" colspan="5">								
 									<form id="downloadReportForm" name="downloadReportForm" method="post">
-										<spring:bind path="report.reportDefinition.reportObjectId">
+										<spring:bind path="report.reportDefinition.id">
 											<input type="hidden" name="${status.expression}" value="${status.value}">
 										</spring:bind>			
 										<c:choose>
@@ -220,8 +224,8 @@ h4 {
 					
 					
 					<form id="reportForm" method="post">			
-						<c:if test="${!(report.reportDefinition.reportObjectId == null)}" >
-							<spring:bind path="report.reportDefinition.reportObjectId">
+						<c:if test="${!(report.reportDefinition.id == null)}" >
+							<spring:bind path="report.reportDefinition.id">
 								<input type="hidden" name="${status.expression}" value="${status.value}">
 							</spring:bind>								
 						</c:if>
@@ -252,13 +256,13 @@ h4 {
 									<select id="${status.expression}" name="${status.expression}">
 										<option value="">None</option>
 										<c:forEach var="export" items="${dataExports}">
-											<option value="${export.reportObjectId}" <c:if test="${export.reportObjectId==report.reportDefinition.dataExport.reportObjectId}">selected</c:if>>${export.name}</option>	
+											<option value="${export.id}" <c:if test="${export.id==report.reportDefinition.dataExport.id}">selected</c:if>>${export.name}</option>	
 										</c:forEach>
 									</select>
 									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 								</spring:bind>
 	
-								<c:if test="${!empty report.reportDefinition.dataExport.reportObjectId}">
+								<c:if test="${!empty report.reportDefinition.dataExport.id}">
 									<input type="button" class="smallButton" value="View" 
 										onClick="javascript:toggleProperties('dataset', this);"/>	
 									<!-- 
@@ -302,211 +306,8 @@ h4 {
 							</tr>
 						</c:if>
 						
-						<c:if test="${!(report.reportDefinition.reportObjectId == null)}" >
-										
-						
-						<!--  
-								<tr>		
-									<td align="right" valign="top">Data Source:</td>
-									<td valign="top" colspan="5"> 
-											<input type="radio" name="dataSource" value="CSV"/> Flat File Data Source (CSV, TSV)<br/>
-											<input type="radio" name="dataSource" value="SQL"/> SQL Data Source<br/>
-											<input type="radio" name="dataSource" value="XML"/> XML	Data Source<br/>
-											<input type="radio" name="dataSource" value="OLAP"/> OLAP Data Source<br/>
-											<input type="radio" name="dataSource" value="WS"/> Web Service Data Source<br/>
-											<input type="radio" name="dataSource" value="OPENMRS"/> OpenMRS Data Source<br/>
-									</td>
-								</tr>
-						-->		
-						<%-- 
-								<tr>		
-									<th class="headerCell" align="right" valign="top"><spring:message code="birt.report.datasets"/></th>
-									<td class="inputCell" valign="top" colspan="5"> 
-										<spring:bind path="report.reportDefinition.dataExport">
-											${status.value}	
-										</spring:bind>
-									</td>
-								</tr>
-								<tr>
-									<th></th>
-									<td>
-										<ul>
-											<c:forEach var="column" items="${report.reportDefinition.dataExport.columns}">
-												<li>${column.columnName}</li>
-											</c:forEach>
-										</ul>								
-									</td>
-								</tr>
-								<tr>		
-									<th class="headerCell" align="right" valign="top"></th>
-									<td class="inputCell" valign="top" colspan="5"> 
-										<spring:bind path="report.reportDefinition.dataExport">
-											<select id="${status.expression}" name="${status.expression}">
-												<option value=""></option>
-												<c:forEach var="export" items="${dataExports}">
-													<option value="${export.reportObjectId}">${export.name}</option>	
-												</c:forEach>
-											</select>
-											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-										</spring:bind>
-										<input type="submit" class="smallButton" name="addParameter" value="Add" />
-									</td>
-								</tr>						
-		
-							--%>
-	
-							<%--
-								<tr>
-									<th class="headerCell" align="right" valign="top"><spring:message code="birt.report.parameters"/></th>
-									<td class="inputCell" valign="top" colspan="5">
-										<table class="parameters">										
-											<tr class="header">
-												<th>Name</th>
-												<th>Data Type</th>
-												<th>Default Value</th>
-												<th></th>
-											</tr>
-											
-											<tbody id="parametersTbody">
-												<c:choose>
-													<c:when test="${!empty report.reportDefinition.parameters}">
-														<c:set var="parameterCount" scope="page" value="${fn:length(report.reportDefinition.parameters)}"/>
-													</c:when>
-													<c:otherwise>
-														<c:set var="parameterCount" scope="page" value="0"/>										
-													</c:otherwise>
-												</c:choose>
-												<c:if test="${!empty report.reportDefinition.parameters}">
-													<tr>
-														<td>											
-															There are ${parameterCount} parameters in this report.
-														</td>
-													</tr>
-													<input type="hidden" id="parameterIndex" name="parameterIndex" value=""/>
-													<c:forEach var="parameter" items="${report.reportDefinition.parameters}" varStatus="varStatus">
-														<c:set var="parameterCount" scope="page" value="${varStatus.index}"/>
-														<c:if test="${report.reportDefinition.parameters[varStatus.index]!=null}">					
-															<tr>
-																<td>
-																	<spring:bind path="report.reportDefinition.parameters[${varStatus.index}].name">
-																		<input type="text" name="${status.expression}" value="${status.value}"/>
-																	</spring:bind>
-																</td>
-																<td>
-																	<spring:bind path="report.reportDefinition.parameters[${varStatus.index}].dataType">
-																		<spring:bind path="report.parameters[${parameterCount}].dataType">													
-																			<select name="${status.expression}">
-																				<option value=""></option>
-																				<option value="Boolean">Boolean</option>
-																				<option value="Date">Date</option>
-																				<option value="DateTime">DateTime</option>
-																				<option value="Decimal">Decimal</option>
-																				<option value="Float">Float</option>
-																				<option value="Integer">Integer</option>
-																				<option value="String">String</option>								
-																				<option value="Time">Time</option>								
-																			</select>
-																		</spring:bind>
-																	</spring:bind>
-																</td>
-																<td>
-																	<spring:bind path="report.reportDefinition.parameters[${varStatus.index}].defaultValue">
-																		<input type="text" name="${status.expression}" value="${status.value}"/>
-																	</spring:bind>
-																</td>
-																<td>
-																	<input type="submit" class="smallButton" name="removeParameter" onClick="removeReportParameter(${varStatus.index});" value='Remove' />				
-																</td>
-															</tr>
-														</c:if>
-													</c:forEach>												
-												</c:if>
-												
-											<tr id="parameterRow">
-												<td>
-													<spring:bind path="report.parameters[${parameterCount}].name">
-														<input type="text" name="${status.expression}" value="${status.value}"/>
-													</spring:bind>
-												</td>
-												<td valign="top">
-													<spring:bind path="report.parameters[${parameterCount}].dataType">													
-														<select name="${status.expression}">
-															<option value=""></option>
-															<option value="Boolean">Boolean</option>
-															<option value="Date">Date</option>
-															<option value="DateTime">DateTime</option>
-															<option value="Decimal">Decimal</option>
-															<option value="Float">Float</option>
-															<option value="Integer">Integer</option>
-															<option value="String">String</option>								
-															<option value="Time">Time</option>								
-														</select>
-													</spring:bind>
-												</td>													
-												<td>
-													<spring:bind path="report.parameters[${parameterCount}].defaultValue">
-														<input type="text" name="${status.expression}" value="${status.value}"/>
-													</spring:bind>
-												</td>													
-												<td>
-													<input type="button" class="smallButton" value='Add' onClick="addRow('report.parameters', ${parameterCount}});" />
-												</td>
-											</tr>										
-										</table>
-											
-											<!--  
-											<c:if test="${!empty report.parameters}">
-												<spring:bind path="report.reportDefinition.parameters">
-													<c:forEach var="param" items="${report.parameters}" varStatus="varStatus">
-														<spring:bind path="report.reportDefinition.parameters[${varStatus.index}].reportObjectId">							
-															<input type="hidden" name="${status.expression}" id="${status.expression}" value="${status.value}" />
-														</spring:bind>
-														<spring:bind path="reportparameters[${varStatus.index}].label">
-															<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" />
-														</spring:bind>
-													</c:forEach>
-													<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-												</spring:bind>
-											</c:if>
-											-->
-									<!-- 							
-									<table id="parameters" cellspacing="2">
-										<tbody id="parametersTbody">
-											<tr id="parameterRow" style="display: none;">				
-												<td valign="top">
-													<input type="text" size="30" name="name" onmouseup="parameterChanged(this)" />
-												</td>
-												<td valign="top">
-													<select name="parameterType" onclick="parameterChanged(this)">
-														<option value=""></option>
-														<option value="Boolean">Boolean</option>
-														<option value="Date">Date</option>
-														<option value="DateTime">DateTime</option>
-														<option value="Decimal">Decimal</option>
-														<option value="Float">Float</option>
-														<option value="Integer">Integer</option>
-														<option value="String">String</option>								
-														<option value="Time">Time</option>								
-													</select>
-												</td>
-												<td valign="top">
-													<input type="text" size="30" name="defaultValue" onmouseup="parameterChanged(this)" />
-												</td>
-												<td valign="middle" align="center">
-													<input type="checkbox" name="required" value="" onclick="parameterChanged(this)" />
-												</td>
-												<td valign="middle" align="center">
-													<input type="button" name="closeButton" onClick="return removeRow(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-									-->
-									
-									
-								</td>														
-							</tr>
-	--%>						
+						<c:if test="${!(report.reportDefinition.id == null)}" >
+
 							
 						</c:if>					
 						<tr height="50">

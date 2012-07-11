@@ -13,12 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.propertyeditor.CohortEditor;
-import org.openmrs.propertyeditor.DataExportReportObjectEditor;
-import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+//import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.FileCopyUtils;
@@ -175,6 +176,13 @@ public class ReportFormController extends SimpleFormController {
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<Object, Object> data = new HashMap<Object, Object>();
+		BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
+		
+		BirtReport report = (BirtReport) command;
+		
+		data.put("reports", reportService.getReports());
+		data.put("cohorts", Context.getService(CohortService.class).getAllCohorts());
+		
 /*		BirtReportService reportService = 
 			(BirtReportService)Context.getService(BirtReportService.class);
 		
@@ -182,9 +190,7 @@ public class ReportFormController extends SimpleFormController {
     	data.put("reports", reportService.getReports());
     	// To do Mike -> 
     	data.put("cohorts", Context.getCohortService().getCohorts());
-<<<<<<< .mine
     	//data.put("dataExports", reportService.getDataExports());
-=======
     	data.put("dataExports", reportService.getDataExports());*/
 
     	//data.put("datasets", reportService.getDatasets());

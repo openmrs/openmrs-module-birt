@@ -85,14 +85,21 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Integer getReportId() {
+/*	public Integer getReportId() {
 		return this.reportDefinition.getId();	
 		//return this.reportDefinition.getReportObjectId();	
+	}*/
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Integer getId() {
+		return this.reportDefinition.getId();	
 	}
 	
-	public String getName() { 
-		return null;
-		//return this.reportDefinition.getName();
+	public String getName() { 		
+		return this.reportDefinition.getName();
 	}
 	
 	public String getVersion() { 

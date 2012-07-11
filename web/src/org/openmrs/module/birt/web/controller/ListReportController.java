@@ -76,7 +76,6 @@ public class ListReportController extends SimpleFormController {
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			String textReport = msa.getMessage("Report.report");
 			String noneDeleted = msa.getMessage("Report.nonedeleted");
-
 			
 			// Delete report
 			if ( reportList != null ) {
