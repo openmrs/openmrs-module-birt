@@ -247,64 +247,7 @@ h4 {
 								</spring:bind>
 							</td>
 						</tr>
-						
-						
-						<tr>		
-							<th class="headerCell" align="right" valign="top">Dataset</th>
-							<td class="inputCell" valign="top" colspan="5"> 
-								<spring:bind path="report.reportDefinition.dataExport">
-									<select id="${status.expression}" name="${status.expression}">
-										<option value="">None</option>
-										<c:forEach var="export" items="${dataExports}">
-											<option value="${export.id}" <c:if test="${export.id==report.reportDefinition.dataExport.id}">selected</c:if>>${export.name}</option>	
-										</c:forEach>
-									</select>
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-	
-								<c:if test="${!empty report.reportDefinition.dataExport.id}">
-									<input type="button" class="smallButton" value="View" 
-										onClick="javascript:toggleProperties('dataset', this);"/>	
-									<!-- 
-									<input type="submit" class="smallButton" name="downloadDataset" 
-										value="<spring:message code="birt.reportDesign.download"/>">
-									-->
-								</c:if>
-							</td>
-						</tr>	
-						
-						
-						<c:if test="${!empty report.reportDefinition.dataExport}">											
-							<tr>
-								<th></th>
-								<td>
-									<div id="dataset" class="data">
-										<div class="boxHeader">				
-											<spring:bind path="report.reportDefinition.dataExport.name">
-												<strong>${status.value}</strong>
-											</spring:bind>
-										</div>
-										<div align="center">
-											<table class="nothing">
-												<tr>
-													<th>Name</th>
-													<th>Type</th>
-												</tr>
-												<c:forEach var="column" items="${report.reportDefinition.dataExport.columns}">
-													<tr>
-														<td>${column.columnName}</td><td>${column.class.simpleName}</td>
-													</tr>
-												</c:forEach>
-											</table>
-														
-											<input type="button" class="smallButton" value="Close" 
-												onClick="javascript:toggleProperties('dataset', this);"/>	
-										
-										</div>									
-									</div>
-								</td>
-							</tr>
-						</c:if>
+
 						
 						<c:if test="${!(report.reportDefinition.id == null)}" >
 
@@ -319,7 +262,7 @@ h4 {
 							</td>
 						</tr>
 	
-		</form>	
+				</form>	
 	</table>	
 					
 	
