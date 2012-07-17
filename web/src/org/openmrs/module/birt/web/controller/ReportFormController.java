@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,18 +21,26 @@ import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.propertyeditor.CohortEditor;
-//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
-//import org.openmrs.reporting.export.DataExportReportObject;
+import org.openmrs.util.HandlerUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+//import org.openmrs.reporting.export.DataExportReportObject;
 
 
 /**
@@ -54,9 +66,9 @@ public class ReportFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
-/*		binder.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());*/
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
 	}
+	
 
 	/** 
 	 * 
@@ -65,11 +77,34 @@ public class ReportFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
+	@SuppressWarnings("unchecked")
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		String view = null;
 		boolean formRedirect = false;
 		BirtReport report = (BirtReport)obj;
+		
+		ReportService rs = Context.getService(ReportService.class);		
+	
+    	MultipartHttpServletRequest mpr = (MultipartHttpServletRequest) request;
+    	Map<String, MultipartFile> files = (Map<String, MultipartFile>)mpr.getFileMap();
+    	for (String paramName : files.keySet()) {
+    		try {	    	
+	    			ReportDesignResource resource = new ReportDesignResource();
+
+	    			MultipartFile file = files.get(paramName);
+	    			String fileName = file.getOriginalFilename();
+
+		    			int index = fileName.lastIndexOf(".");
+		    			resource.setContentType(file.getContentType());
+		    			resource.setName(fileName.substring(0, index));
+		    			resource.setExtension(fileName.substring(index+1));
+    		}
+    		catch (Exception e) {
+    			throw new RuntimeException("Unable to add resource to design.", e);
+    		}
+    	}
+
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		log.debug("Birt report object: " + report);
@@ -220,6 +255,19 @@ public class ReportFormController extends SimpleFormController {
 			report = new BirtReport();
     	
         return report;
+    }
+    
+    public class FileUploadBean {
+
+        private byte[] file;
+
+        public void setFile(byte[] file) {
+            this.file = file;
+        }
+
+        public byte[] getFile() {
+            return file;
+        }
     }
     
 }

@@ -4,7 +4,7 @@
 <!-- Beans to add to the current Application context definition -->
   
 <beans>
-	
+
 	<!-- Set up URL mappings for new URLs -->
     <bean id="birtUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     	<property name="mappings">
@@ -46,7 +46,8 @@
 					<!-- Uses the annotations in the code -->
 					<property name="transactionAttributeSource">
 						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-					</property>
+					</property>				
+	
 				</bean>
 			</list>
 		</property>
