@@ -76,14 +76,11 @@ public class UploadReportController extends SimpleFormController {
 						ReportDefinition reportDefinition = new ReportDefinition();
 						reportDefinition.setName(reportFile.getName());
 						report.setReportDefinition(reportDefinition);
-						service.saveReport(report);
-						
-						
+						service.saveReport(report);						
 					}
 					
 					// Copy uploaded file 
-					if (reportFile != null && !reportFile.isEmpty()) {				
-
+					if (reportFile != null && !reportFile.isEmpty()) {
 						
 						reportFile.getName();
 				        InputStream inputStream = reportFile.getInputStream();
@@ -95,10 +92,7 @@ public class UploadReportController extends SimpleFormController {
 				        log.debug("Content type: " + contentType);
 				        
 						File reportDirectory = BirtReportUtil.getReportRepository();
-				        String reportFilename = reportDirectory.getAbsolutePath() + System.getProperty("file.separator")
-				        	+ reportId + ".rptdesign";
-				        
-				        
+				        String reportFilename = reportDirectory.getAbsolutePath() + System.getProperty("file.separator") + reportId + ".rptdesign";				        
 				        
 				        FileCopyUtils.copy(inputStream, new FileOutputStream(reportFilename));
 				        

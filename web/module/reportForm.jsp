@@ -141,37 +141,66 @@ h4 {
 </b>
 <div class="box">
 	<div id="reportDetails">
-			<form id="reportForm" method="post" enctype="multipart/form-data">
-				<table>
-					<tr>
-						<td><spring:message code="general.name"/>*</td>
-						<td>
-							<spring:bind path="report.reportDefinition.name">
-								<input type="text" name="${status.expression}" value="${status.value}" size="52" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>			
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<td valign="top"><spring:message code="general.description"/></td>
-						<td>
-							<spring:bind path="report.reportDefinition.description">
-								<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<td>Report Name*</td>
-						<td><input type="file" name="file"/></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><input type="submit" class="smallButton" name="save" value="<spring:message code="general.save"/>"><input type="submit" value="Preview"/><input type="submit" value="Cancel"/></td>
-					</tr>
-				</table>
-			</form>
-	</div>
+		<table>
+			<c:if test="${!(empty report.reportDefinition.id)}">	
+				<tr>
+					<td>
+						<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
+							<table>
+								<tr>
+									<td><spring:message code="birt.report.reportDesign"/></td>
+									<td>
+										<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
+										<input type="file" name="reportFile" size="40" />
+										<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />
+									</td>
+								</tr>
+							</table>				
+						</form>	
+					</td>
+				</tr>
+			</c:if>	
+			<tr>
+				<td>
+				<form id="reportForm" method="post">
+						<c:if test="${!(report.reportDefinition.id == null)}" >
+							<spring:bind path="report.reportDefinition.id">
+								<input type="hidden" name="${status.expression}" value="${status.value}">
+							</spring:bind>								
+						</c:if>
+					<table>
+						<tr>
+							<th class="headerCell" align="right"><spring:message code="general.name"/></th>
+							<td class="inputCell" colspan="5">
+								<spring:bind path="report.reportDefinition.name">
+									<input type="text" name="${status.expression}" value="${status.value}" size="52" />
+									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>			
+								</spring:bind>
+							</td>
+						</tr>
+						<tr>
+							<th class="headerCell" align="right" valign="top"><spring:message code="general.description"/></th>
+							<td class="inputCell" valign="top" colspan="5">
+								<spring:bind path="report.reportDefinition.description">
+									<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
+									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+								</spring:bind>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td class="inputCell" colspan="1" align="left">				
+								<input type="submit" class="smallButton" name="save" value="<spring:message code="general.save"/>">
+								<input type="submit" class="smallButton" name="delete" value="Delete">
+								<input type="submit" class="smallButton" name="cancel" value="Done">
+							</td>
+						</tr>
+					</table>
+				</form>
+				</td>
+			</tr>
+		</table>
+		</div>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>							
