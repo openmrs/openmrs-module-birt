@@ -1,51 +1,34 @@
 package org.openmrs.module.birt;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IParameterSelectionChoice;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
-import org.eclipse.birt.report.engine.api.impl.ParameterDefn;
-import org.eclipse.birt.report.engine.api.script.IReportContext;
 import org.eclipse.birt.report.model.api.CascadingParameterGroupHandle;
 import org.eclipse.birt.report.model.api.ModuleUtil;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.ScalarParameterHandle;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
-import org.eclipse.birt.report.model.api.util.ParameterValidationUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleException;
-import org.openmrs.module.birt.impl.BirtConfiguration;
 import org.openmrs.module.birt.model.ParameterDefinition;
-import org.openmrs.util.OpenmrsUtil;
 
 public class BirtReportUtil {
 
@@ -59,8 +42,7 @@ public class BirtReportUtil {
 	 */
 	public static File getReportRepository() {
 		
-		String reportDirectory = 
-			Context.getAdministrationService().getGlobalProperty(BirtConstants.PROPERTY_REPORT_DIR);
+		String reportDirectory = Context.getAdministrationService().getGlobalProperty(BirtConstants.PROPERTY_REPORT_DIR);
 		
 		return createDirectory(reportDirectory);
 	}

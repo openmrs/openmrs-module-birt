@@ -556,29 +556,17 @@ public class BirtReportServiceImpl implements BirtReportService {
 	public BirtReport getReport(Integer reportId) { 
 		
 		BirtReport report = null;
-		
-		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);	
-		
-		List<ReportDefinition> reportDefs = reportService.getAllDefinitions(true);
-		
-/*		BirtReport report = null;
 		try { 
 			// Find the report object in the database
-			//ReportDefinition reportDefinition =  (ReportDefinition) getReportObjectService().getReportObject(reportId);
-
-			//report = getReport(reportDefinition);
-
+			ReportDefinition reportDefinition = Context.getService(ReportDefinitionService.class).getDefinition(reportId);			
+		
+			report = getReport(reportDefinition);
+		
 		} catch (Exception e) { 
 			throw new BirtReportException("Could not find report with id " + reportId, e);
 		}
-
 		
-		return new BirtReport();
-
-		return report;*/
-		
-		return new BirtReport();
-
+		return report;
 	}    
 
 
@@ -635,9 +623,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param reportDefinition	the report definition
 	 * @return	a birt report object
 	 */
-/*	public BirtReport getReport(ReportDefinition reportDefinition) { 
+	public BirtReport getReport(ReportDefinition reportDefinition) { 
 		return getReport(reportDefinition, true);
-	}*/
+	}
 	
 	/**
 	 * Gets the birt report associated with the given report definition, minus
@@ -662,7 +650,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param includeParameters	if true, inspect the report design to get parameters 
 	 * @return	a birt report object
 	 */
-/*	public BirtReport getReport(ReportDefinition reportDefinition, boolean includeParameters) { 
+	public BirtReport getReport(ReportDefinition reportDefinition, boolean includeParameters) { 
 
 		BirtReport report = new BirtReport();
 		try { 
@@ -670,7 +658,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			report.setReportDefinition(reportDefinition);
 
 			// Set report design file information 
-			String reportId = reportDefinition.getReportObjectId().toString();
+			String reportId = reportDefinition.getId().toString();
 			String reportDesignPath = BirtReportUtil.getReportDesignPath(reportId);
 			report.setReportDesignPath(reportDesignPath);
 
@@ -688,7 +676,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			throw new BirtReportException("Could not find report with id " + reportDefinition, e);
 		}
 		return report;
-	} */   
+	}    
 
 
 
@@ -698,17 +686,36 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param definition
 	 */
 	public void saveReport(BirtReport report) { 
-/*		log.debug("Saving report " + report);
-		if (report == null || report.getReportDefinition() == null) 
-			throw new BirtReportException("Cannot create empty report");*/
-
+		log.debug("Saving report " + report);
+	
+		if ( report == null || report.getReportDefinition() == null)
+			throw new BirtReportException("Cannot create empty report");
+		
 		ReportDefinition reportDefinition = report.getReportDefinition();
-		//getReportObjectService().updateReportObject(reportDefinition);
+		
+		ReportDefinitionService reportDef = (ReportDefinitionService) Context.getService(ReportDefinitionService.class);
+		reportDef.saveDefinition(reportDefinition);
+		
+		//saveReportDesign(report.getReportDesignPath());
 
-/*		ReportDefinition reportDefinition = report.getReportDefinition();
-		getReportObjectService().updateReportObject(reportDefinition);*/
+	}
+	
+	/**
+	 * Saves a report design (either creates or overwrites an existing file)
+	 * 
+	 * TODO Need to rewrite this to save an existing report design if it exists
+	 * since this method basically does nothing.
+	 * 
+	 * @param reportPath	path to the report design file to be saved
+	 */
+	public void saveReportDesign(String reportPath) { 
+		try { 
 
-		//saveReportDesign(report.getReportPath());
+			getReportDesign(reportPath).save();
+
+		} catch (Exception e) { 
+			throw new BirtReportException("Could not save report with name " + reportPath, e);
+		}
 
 	}
 
@@ -732,6 +739,15 @@ public class BirtReportServiceImpl implements BirtReportService {
 		catch (Exception e ) { 
 			log.warn("An error occurred while deleting report " + report.getReportDefinition().getName(), e);
 		}*/
+	}
+	
+	/**
+	 * Uploads the report to the database.
+	 * 
+	 * @param	report	
+	 */
+	public void uploadReport(BirtReport report) { 
+
 	}
 
 
@@ -781,30 +797,6 @@ public class BirtReportServiceImpl implements BirtReportService {
 			log.warn("An error occurred while comparing datasets for report " + report.getReportDefinition().getName(), e);
 		} */   	
 	}
-
-
-
-	/**
-	 * Saves a report design (either creates or overwrites an existing file)
-	 * 
-	 * TODO Need to rewrite this to save an existing report design if it exists
-	 * since this method basically does nothing.
-	 * 
-	 * @param reportPath	path to the report design file to be saved
-	 */
-	public void saveReportDesign(String reportPath) { 
-		try { 
-
-			getReportDesign(reportPath).save();
-
-		} catch (Exception e) { 
-			throw new BirtReportException("Could not save report with name " + reportPath, e);
-		}
-
-	}
-
-
-
 
 	/**
 	 * Saves a report design (either creates or overwrites an existing file)

@@ -72,6 +72,13 @@ public interface BirtReportService {
 	 */
 	public void deleteReport(BirtReport report);
 	
+	/**
+	 * Uploads a report.
+	 * 
+	 * @param	report	the report to upload
+	 */
+	public void uploadReport(BirtReport report);
+	
 	
 	/**
 	 * Duplicates the given report design.
