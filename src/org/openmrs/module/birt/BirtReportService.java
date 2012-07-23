@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 //import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.module.birt.db.BirtReportDAO;
+import org.openmrs.module.reporting.report.ReportDesign;
 //import org.openmrs.reporting.AbstractReportObject;
 //import org.openmrs.reporting.export.DataExportReportObject;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ public interface BirtReportService {
 	 */
 	public BirtReportDAO getBirtReportDAO();
 	
+	public List<ReportDesign> filterReportDesigns(Integer reportId);
+	
 	
 	/**
 	 * Gets all reports in the system.
@@ -37,6 +40,13 @@ public interface BirtReportService {
 	 */
 	@Transactional(readOnly=true)
 	public List<BirtReport> getReports();
+	
+	/**
+	 * Gets all report designs in the system.
+	 * @return	a list of report designs in the database
+	 */
+	@Transactional(readOnly=true)
+	public List<ReportDesign> getReportDesigns();
 
     /**
      * Find reports whose name/title matches the given search term.

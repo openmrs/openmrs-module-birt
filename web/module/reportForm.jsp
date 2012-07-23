@@ -110,6 +110,10 @@ h4 {
 	letter-spacing: 1px;
 	background-color: #CCC;
 }
+	div.metadataField { display:block; margin:0; padding:2px 2px 2px 2px; clear:both; color:#444; }
+	div.metadataField label { line-height:100%; margin:0; padding:0 12px 3px 0; border:none; color:#222; font-weight:bold; }
+	div.metadataField label.desc { display:block; }
+	div.metadataField label.inline { display:inline; }
 </style>
 
 <h2>
@@ -129,78 +133,128 @@ h4 {
 </spring:hasBindErrors>
 
 
-<b class="boxHeader">
-	<c:choose>
-		<c:when test="${empty report.reportDefinition.id}">
-			<spring:message code="birt.create.title"/>
-		</c:when>
-		<c:otherwise>
-			<spring:message code="birt.update.title"/>
-		</c:otherwise>
-	</c:choose>
-</b>
-<div class="box">
-	<div id="reportDetails">
-		<table>
-			<c:if test="${!(empty report.reportDefinition.id)}">	
-				<tr>
-					<td>
-						<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
-							<table>
-								<tr>
-									<td><spring:message code="birt.report.reportDesign"/></td>
-									<td>
-										<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
-										<input type="file" name="reportFile" size="40" />
-										<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />
-									</td>
-								</tr>
-							</table>				
-						</form>	
-					</td>
-				</tr>
-			</c:if>	
-			<tr>
-				<td>
-				<form id="reportForm" method="post">
-						<c:if test="${!(report.reportDefinition.id == null)}" >
-							<spring:bind path="report.reportDefinition.id">
-								<input type="hidden" name="${status.expression}" value="${status.value}">
-							</spring:bind>								
-						</c:if>
-					<table>
-						<tr>
-							<th class="headerCell" align="right"><spring:message code="general.name"/></th>
-							<td class="inputCell" colspan="5">
-								<spring:bind path="report.reportDefinition.name">
-									<input type="text" name="${status.expression}" value="${status.value}" size="52" />
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>			
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<th class="headerCell" align="right" valign="top"><spring:message code="general.description"/></th>
-							<td class="inputCell" valign="top" colspan="5">
-								<spring:bind path="report.reportDefinition.description">
-									<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td class="inputCell" colspan="1" align="left">				
-								<input type="submit" class="smallButton" name="save" value="<spring:message code="general.save"/>">
-								<input type="submit" class="smallButton" name="delete" value="Delete">
-								<input type="submit" class="smallButton" name="cancel" value="Done">
-							</td>
-						</tr>
-					</table>
-				</form>
-				</td>
-			</tr>
-		</table>
-		</div>
+<div class="page">
+	<div id="container">
+		<c:choose>		
+			<c:when test="${report.reportDefinition.id == null}">
+				<b class="boxHeader">
+					<spring:message code="birt.create.title"/>
+				</b>
+				<div class="box">
+					<form id="reportForm" method="post">
+						<div style="margin:0; padding:0; width:100%;">
+								<c:if test="${!(report.reportDefinition.id == null)}" >
+									<spring:bind path="report.reportDefinition.id">
+										<input type="hidden" name="${status.expression}" value="${status.value}">
+									</spring:bind>								
+								</c:if>
+								<div class="metadataField">
+									<label class="desc" for="name"><spring:message code="general.name"/></label>
+										<spring:bind path="report.reportDefinition.name">
+											<input type="text" name="${status.expression}" tabindex="1" value="${status.value}" size="50" />
+											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>			
+										</spring:bind>
+								</div>
+								<div class="metadataField">
+									<label class="desc" for="description"><spring:message code="general.description"/></label>			
+										<spring:bind path="report.reportDefinition.description">
+											<textarea name="${status.expression}" tabindex="2" rows="10" cols="80">${status.value}</textarea>
+											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+										</spring:bind>
+								</div>
+							</div>
+							<hr style="color:blue;"/>
+							<div style="width:100%; text-align:left;">
+								<input tabindex="3" type="submit" id="submitButton" class="ui-button ui-state-default ui-corner-all" name="save" value="<spring:message code="general.save"/>">
+								<input tabindex="4" type="submit" id="cancelButton" class="ui-button ui-state-default ui-corner-all" name="cancel" value="Cancel">
+							</div>
+					</form>
+				</div>				
+			</c:when>
+			<c:otherwise>
+				<table style="font-size:small; width:100%;">
+					<tr>
+						<td valign="top" style="width:35%;">
+						
+							<div <c:if test="${model.size != null}">style="width:${model.size};"</c:if>>
+								<b class="boxHeader" style="font-weight:bold; text-align:right;">
+									<span style="float:left;">${model.label}</span>
+									<a style="color:lightyellow;" href="#" id="${model.id}EditLink">Edit</a>
+								</b>
+								<div class="box">
+									<div class="metadataForm">
+										<div class="metadataField">
+											<label class="inline">Name:</label>${model.obj.name}
+										</div>
+										<div class="metadataField">
+											<label class="inline" for="type">Query Type:</label>
+											<rpt:displayLabel type="${model.obj['class'].name}"/>			
+										</div>				
+										<div class="metadataField">
+											<label class="inline">Description:</label>
+											<c:choose>
+												<c:when test="${!empty model.obj.description}">
+													${model.obj.description}
+												</c:when>
+												<c:otherwise>
+													<i><spring:message code="reporting.none"/></i>							
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+								</div>
+							</div>
+													
+						
+							<br/>
+							<b class="boxHeader">Output Designs</b>
+							<div class="box">
+							<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
+								<c:if test="${!empty designs}">
+									<table width="100%" style="margin-bottom:5px;">
+										<tr>
+											<th style="text-align:left; border-bottom:1px solid black;">Name</th>
+											<th style="text-align:left; border-bottom:1px solid black;">Type</th>
+											<th style="text-align:left; border-bottom:1px solid black;">Download</th>
+											<th style="border-bottom:1px solid black;">[X]</th>
+										</tr>
+										<c:forEach items="${designs}" var="design" varStatus="designStatus">
+											<tr>
+												<td nowrap><a href="#" id="${design.uuid}DesignEditLink">${design.name}</a></td>
+												<td width="100%">${design.rendererType.simpleName}</td>
+												<td nowrap><a href="downloadReport.form?reportDesignId=${report.reportDefinition.id}">RPTDESIGN</a></td>
+												<td nowrap align="center"><a href="#" id="${design.uuid}DesignRemoveLink">[X]</a></td>
+											</tr>
+										</c:forEach>
+									</table>
+								</c:if>
+								
+										<table>
+											<tr>
+												<td><spring:message code="birt.report.reportDesign"/></td>
+												<td>
+													<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
+													<input type="file" name="reportFile" size="40" />
+													<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />
+												</td>
+											</tr>
+										</table>				
+									</form>	
+								
+							</div>
+							<br/>							
+						
+						</td>
+						<td valign="top" style="width:65%;">
+
+
+
+						</td>
+					</tr>
+				</table>		
+			</c:otherwise>			
+		</c:choose>	
+	</div>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>							

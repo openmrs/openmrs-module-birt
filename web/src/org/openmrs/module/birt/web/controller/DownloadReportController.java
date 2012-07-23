@@ -59,6 +59,8 @@ public class DownloadReportController extends SimpleFormController {
 
 		BirtReport report = (BirtReport)obj;
 		
+		String reportDesignId = request.getParameter("reportDesignId");
+		
 		// Get the report file
 		String reportDesignPath = report.getReportDesignPath();
 		File reportDesignFile = new File(reportDesignPath);

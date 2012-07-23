@@ -42,6 +42,7 @@ import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
+import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.model.api.DesignFileException;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.OdaDataSetHandle;
@@ -81,8 +82,10 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.FileCopyUtils;
 import org.openmrs.module.reporting.indicator.service.IndicatorService;
+import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.service.ReportService;
 
 import com.ibm.icu.util.ULocale;
 
@@ -173,8 +176,34 @@ public class BirtReportServiceImpl implements BirtReportService {
 	public List<BirtReport> getReports() { 
 		return filterReports(BirtConstants.ALL_REPORTS);
 	}
+	
+	public List<ReportDesign> getReportDesigns() { 
+		List<ReportDesign> designs = new ArrayList<ReportDesign>();	
+	
+		ReportService rs = Context.getService(ReportService.class);
+		designs = rs.getAllReportDesigns(true);
+		return designs;
+	}
 
+	/**
+	 * Gets the report design with the given report identifier.
+	 * 
+	 * @param reportId
+	 * @return
+	 */
+	public List<ReportDesign> filterReportDesigns(Integer reportId) { 
 
+		List<ReportDesign> designs = new ArrayList<ReportDesign>();
+		
+		List<ReportDesign> reportObjs = getReportDesigns();
+		for (ReportDesign rep : reportObjs) {
+			if( rep.getReportDefinition().getId() == reportId)
+				designs.add(rep);
+		}
+
+		return designs;
+	}
+	
 
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
@@ -436,7 +465,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 		IRunAndRenderTask task = null;
 		try { 
 			// Fill the report parameters
-			//fillReportParameters(report);			
+			//fillReportParameters(report);	
 
 			//Open the report design
 			log.debug("Opening report design file to be generated: " + report.getReportDesignPath());
@@ -446,12 +475,22 @@ public class BirtReportServiceImpl implements BirtReportService {
 			task = reportEngine.createRunAndRenderTask(reportRunnable); 							
 			//task.setAppContext( BirtConfiguration.getRenderContext() );
 			//task.setParameterValues( report.getReportParameters() );
-			task.validateParameters();
+/*			task.validateParameters();
 			task.setRenderOption( BirtConfiguration.getRenderOption(report) );
-			task.run();			
-
+*/			
+			PDFRenderOption options = new PDFRenderOption();
+			String path = BirtReportUtil.createTempDirectory("reports") + File.separator + "province_report.pdf";
+			options.setOutputFileName(path);
+			options.setOutputFormat("pdf");
+			task.setRenderOption(options);
+			task.run();	
+			task.close();
+			reportEngine.destroy();
+			
+			report.setOutputFile(new File(path));
+			
 			// TODO Need to pass the file name as input to set render option
-			report.setOutputFile(new File(BirtConstants.REPORT_OUTPUT_FILE));	
+			//report.setOutputFile(new File(BirtConstants.REPORT_OUTPUT_FILE));	
 
 
 		} 

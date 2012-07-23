@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,12 +61,10 @@ public class UploadReportController extends SimpleFormController {
 					reportId = multipartRequest.getParameter("reportId");
 					String fileName = reportFile.getOriginalFilename();
 
-
 					// Check to see if the report exists already 
 
 					BirtReportService service = (BirtReportService) Context.getService(BirtReportService.class);						
 					BirtReport report = service.getReport(ServletRequestUtils.getIntParameter(multipartRequest, "reportId"));
-
 					if (report == null) { 
 
 
@@ -150,8 +150,17 @@ public class UploadReportController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+/*		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
+		return reportService.getReports();*/
+		
+		List<ReportDesign> report = new ArrayList<ReportDesign>();
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		return reportService.getReports();
+		
+		//only fill the Object is the user has authenticated properly
+		if (Context.isAuthenticated()) {
+	    	report = reportService.getReportDesigns();
+		}		
+		return report;	
 	}
 
 

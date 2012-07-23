@@ -3,7 +3,9 @@ package org.openmrs.module.birt.web.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,6 +19,7 @@ import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -177,17 +180,26 @@ public class ReportFormController extends SimpleFormController {
 		data.put("reports", reportService.getReports());
 		data.put("cohorts", Context.getService(CohortService.class).getAllCohorts());
 		
-/*		BirtReportService reportService = 
-			(BirtReportService)Context.getService(BirtReportService.class);
-		
-		//BirtReport report = (BirtReport) command; 
-    	data.put("reports", reportService.getReports());
+/*		
     	// To do Mike -> 
     	data.put("cohorts", Context.getCohortService().getCohorts());
     	//data.put("dataExports", reportService.getDataExports());
     	data.put("dataExports", reportService.getDataExports());*/
 
     	//data.put("datasets", reportService.getDatasets());
+		
+		String reportId = request.getParameter("reportId");
+		
+		if (reportId != null){
+			List<ReportDesign> designs = new ArrayList<ReportDesign>();
+			
+			//only fill the Object is the user has authenticated properly
+			if (Context.isAuthenticated()) {
+				//designs = reportService.getReportDesigns();
+				designs = reportService.filterReportDesigns(Integer.valueOf(reportId));
+			}		
+			data.put("designs", designs);
+		}
     	return data;
     }
 	

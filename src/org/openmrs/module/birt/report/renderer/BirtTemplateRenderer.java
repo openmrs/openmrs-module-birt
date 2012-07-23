@@ -106,9 +106,6 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 		return schema.getName() + ".pdf";
 	}
 	
-
-	//String pathName = null;
-	//String pathDir = null;
 	/**
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
@@ -117,6 +114,7 @@ public class BirtTemplateRenderer extends ReportTemplateRenderer {
 			log.debug("Attempting to render report with BirtTemplateRenderer");
 			
 			ReportDesign design = getDesign(argument);
+			
 			ReportDesignResource r = getTemplate(design);
 			
 			String pathDir = BirtReportUtil.createTempDirectory("reports").getAbsolutePath() + File.separator;
