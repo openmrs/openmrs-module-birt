@@ -33,6 +33,7 @@ public interface BirtReportService {
 	
 	public List<ReportDesign> filterReportDesigns(Integer reportId);
 	
+	public List<BirtReport> getAllBirtReports();
 	
 	/**
 	 * Gets all reports in the system.
@@ -213,6 +214,14 @@ public interface BirtReportService {
 	 * @return	a report design handle
 	 */
 	public ReportDesignHandle openReportDesign(String reportPath);	
+	/**
+	 * Gets a report design file by opening an existing file or creating a new design file).
+	 * 
+	 * @param reportPath
+	 * @return
+	 */
+	public ReportDesignHandle getReportDesign(String reportPath);
+	
 	
 
 }

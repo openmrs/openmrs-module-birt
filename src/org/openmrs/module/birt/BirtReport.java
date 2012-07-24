@@ -15,6 +15,8 @@ import org.openmrs.module.birt.model.ParameterDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 /**
@@ -36,12 +38,22 @@ public class BirtReport implements Serializable {
 	private String reportDesignPath;
 
 	/* Report design object - transient because we can get it from the filesystem. */
-	private transient ReportDesignHandle reportDesign;
+	private transient ReportDesignHandle reportDesignHandle;
 	
 	// Report definition object 
 	private ReportDefinition reportDefinition = new ReportDefinition();
 	
-/*	 Desired Columns 
+	private ReportDesign reportDesign = null;
+	private ReportDesignResource reportDesignResource = null;
+	
+	public ReportDesign getReportDesign() { return reportDesign; } 
+	public ReportDesignResource getReportDesignResource() { return reportDesignResource; } 
+	public void setReportDesign(ReportDesign reportDesign) { this.reportDesign = reportDesign; } 
+	public void setReportDesignResource(ReportDesignResource reportDesignResource) { this.reportDesignResource = reportDesignResource; } 
+	
+		
+	
+	/*	 Desired Columns 
 	private DataExportReportObject dataExport = new DataExportReportObject();*/
 
 	// Desired Rows 
@@ -122,8 +134,8 @@ public class BirtReport implements Serializable {
 	 * Get report design handle.
 	 * @return
 	 */
-	public ReportDesignHandle getReportDesign() { 
-		return reportDesign;
+	public ReportDesignHandle getReportDesignHandle() { 
+		return reportDesignHandle;
 	}
 	
 	/**
@@ -229,8 +241,8 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @param reportDesign
 	 */
-	public void setReportDesign(ReportDesignHandle reportDesign) { 
-		this.reportDesign = reportDesign;
+	public void setReportDesign(ReportDesignHandle reportDesignHandle) { 
+		this.reportDesignHandle = reportDesignHandle;
 	}	
 	
 	/** 

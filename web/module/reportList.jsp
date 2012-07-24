@@ -64,8 +64,9 @@
 			<c:forEach var="report" items="${reportList}" varStatus="varStatus">
 				<c:if test="${varStatus.first}">
 					<tr class="evenRow">		
-						<th align="center"><spring:message code="birt.generateReport.header"/></th>
+						<th align="center"><spring:message code="birt.generateReport.header"/></th>						
 						<th align="center"><spring:message code="birt.editReport.header"/></th>
+						<th></th>
 						<th align="left"><spring:message code="birt.reportTitle.header" /></th>
 					</tr>
 				</c:if>
@@ -82,6 +83,13 @@
 					<td valign="middle" align="center" width="3%">
 						<a href="report.form?reportId=${report.reportDefinition.id}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>
 					</td>					
+					<td valign="middle" align="left">
+					
+						<c:if test="${report.reportDesign != null }">
+							<a href="downloadReportDesign.list?id=${report.reportDesign.id}">Download Report Design by ID</a>
+							<a href="downloadReportDesign.list?uuid=${report.reportDesign.uuid}">Download Report Design by UUID</a>						
+						</c:if>
+					</td>
 
 					<td valign="middle" align="left">${report.reportDefinition.name}</td>
 

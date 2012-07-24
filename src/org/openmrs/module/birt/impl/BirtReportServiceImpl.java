@@ -61,6 +61,7 @@ import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.module.birt.model.ParameterDefinition;
+import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
 import org.openmrs.notification.MessageException;
 import org.openmrs.module.reporting.definition.service.BaseDefinitionService;
 //import org.openmrs.reporting.AbstractReportObject;
@@ -83,8 +84,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.FileCopyUtils;
 import org.openmrs.module.reporting.indicator.service.IndicatorService;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.service.ReportService;
 
 import com.ibm.icu.util.ULocale;
@@ -204,6 +207,43 @@ public class BirtReportServiceImpl implements BirtReportService {
 		return designs;
 	}
 	
+	
+	
+	/**
+	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
+	 */
+	public List<BirtReport> getAllBirtReports() {	
+		List<BirtReport> birtReports = new Vector<BirtReport>();		
+		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);			
+		List<ReportDefinition> reportDefinitions = reportDefinitionService.getAllDefinitions(true);
+		
+		ReportService reportService = Context.getService(ReportService.class);			
+		
+		
+		for (ReportDefinition reportDefinition : reportDefinitions) {
+			BirtReport birtReport = new BirtReport();			
+			birtReport.setReportDefinition(reportDefinition);
+			
+			// Assumes there's at most one report design with one report design resource
+			List<ReportDesign> reportDesigns = 
+					reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
+
+			if (!reportDesigns.isEmpty()) { 
+				ReportDesign reportDesign = reportDesigns.iterator().next();
+				birtReport.setReportDesign(reportDesign);
+				
+				if (reportDesign.getResources().isEmpty()) { 
+					ReportDesignResource reportDesignResource = 
+							reportDesign.getResources().iterator().next();
+					birtReport.setReportDesignResource(reportDesignResource);
+				}
+			}
+			
+			birtReports.add(birtReport);
+		}
+
+		return birtReports;
+	}	
 
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)

@@ -16,6 +16,7 @@
 				<prop key="module/birt/generateReportWizard.form">generateReportWizard</prop>
 				<prop key="module/birt/previewReport.form">previewReport</prop>
 				<prop key="module/birt/uploadReport.form">uploadReport</prop>
+				<prop key="module/birt/downloadReportDesign.list">downloadReportDesign</prop>
 			</props>
 		</property>
 	</bean>	
@@ -53,6 +54,9 @@
 	</bean>
 
 	<!-- Controllers -->
+	<bean id="downloadReportDesign" 
+	    class="org.openmrs.module.birt.web.controller.DownloadReportDesignController"/>
+	
 	<bean id="listReports" class="org.openmrs.module.birt.web.controller.ListReportController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>reportList</value></property>

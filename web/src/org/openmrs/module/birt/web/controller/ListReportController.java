@@ -121,7 +121,7 @@ public class ListReportController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 	    	reportList = ((BirtReportService)
-	    		Context.getService(BirtReportService.class)).filterReports( request.getParameter("filter"));
+	    		Context.getService(BirtReportService.class)).getAllBirtReports();
 		}		
 		return reportList;
     }
