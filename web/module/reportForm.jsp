@@ -222,7 +222,7 @@ h4 {
 											<tr>
 												<td nowrap><a href="#" id="${design.uuid}DesignEditLink">${design.name}</a></td>
 												<td width="100%">${design.rendererType.simpleName}</td>
-												<td nowrap><a href="downloadReport.form?reportDesignId=${report.reportDefinition.id}">RPTDESIGN</a></td>
+												<td nowrap><a href="downloadReportDesign.form?id=${design.id}">RPTDESIGN</a></td>
 												<td nowrap align="center"><a href="#" id="${design.uuid}DesignRemoveLink">[X]</a></td>
 											</tr>
 										</c:forEach>
@@ -246,9 +246,10 @@ h4 {
 						
 						</td>
 						<td valign="top" style="width:65%;">
+						<b class="boxHeader">Dataset Definitions</b>
+							<div class="box">
 
-
-
+							</div>
 						</td>
 					</tr>
 				</table>		

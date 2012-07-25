@@ -57,9 +57,7 @@ public class DownloadReportController extends SimpleFormController {
 				Object obj, 
 				BindException errors) throws Exception {
 
-		BirtReport report = (BirtReport)obj;
-		
-		String reportDesignId = request.getParameter("reportDesignId");
+		BirtReport report = (BirtReport)obj;		
 		
 		// Get the report file
 		String reportDesignPath = report.getReportDesignPath();

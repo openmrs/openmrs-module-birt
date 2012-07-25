@@ -40,10 +40,9 @@ public class DownloadReportDesignController implements Controller {
 		try { 
 			ReportService reportService = Context.getService(ReportService.class);
 			String uuid = request.getParameter("uuid"); 
-			ReportDesign reportDesign = 
-					reportService.getReportDesignByUuid(request.getParameter("uuid"));
+			ReportDesign reportDesign = reportService.getReportDesignByUuid(request.getParameter("uuid"));
 					
-					
+					String tellMe = request.getParameter("id");
 			// Get the report design by ID
 			if (reportDesign == null) { 
 				reportDesign = reportService.getReportDesign(Integer.valueOf(request.getParameter("id")));

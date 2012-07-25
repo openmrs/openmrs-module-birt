@@ -86,8 +86,8 @@
 					<td valign="middle" align="left">
 					
 						<c:if test="${report.reportDesign != null }">
-							<a href="downloadReportDesign.list?id=${report.reportDesign.id}">Download Report Design by ID</a>
-							<a href="downloadReportDesign.list?uuid=${report.reportDesign.uuid}">Download Report Design by UUID</a>						
+							<a href="downloadReportDesign.form?id=${report.reportDesign.id}">Download Report Design by ID</a>
+							<a href="downloadReportDesign.form?uuid=${report.reportDesign.uuid}">Download Report Design by UUID</a>						
 						</c:if>
 					</td>
 

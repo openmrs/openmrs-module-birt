@@ -32,6 +32,7 @@ public class BirtConstants {
 	public static final String PDF_FORMAT = "pdf";
 	public static final String DOC_FORMAT = "doc";
 	public static final String XLS_FORMAT = "xls";
+	public static final String CSV_FORMAT = "csv";
 	
 	// Report constants
 	public final static String REPORT_ID = "report.reportId";	
