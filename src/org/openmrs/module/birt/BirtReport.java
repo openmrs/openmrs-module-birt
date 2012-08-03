@@ -15,6 +15,7 @@ import org.openmrs.module.birt.model.ParameterDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -45,6 +46,8 @@ public class BirtReport implements Serializable {
 	
 	private ReportDesign reportDesign = null;
 	private ReportDesignResource reportDesignResource = null;
+	
+	private DataSetDefinition dataSetDefinition = null; 
 	
 	public ReportDesign getReportDesign() { return reportDesign; } 
 	public ReportDesignResource getReportDesignResource() { return reportDesignResource; } 
@@ -97,15 +100,6 @@ public class BirtReport implements Serializable {
 	 * 
 	 * @return
 	 */
-/*	public Integer getReportId() {
-		return this.reportDefinition.getId();	
-		//return this.reportDefinition.getReportObjectId();	
-	}*/
-	
-	/**
-	 * 
-	 * @return
-	 */
 	public Integer getId() {
 		return this.reportDefinition.getId();	
 	}
@@ -138,6 +132,7 @@ public class BirtReport implements Serializable {
 		return reportDesignHandle;
 	}
 	
+
 	/**
 	 * Get report definition.
 	 * @return	the report definition object
@@ -215,10 +210,7 @@ public class BirtReport implements Serializable {
 	 */
 	public Map<String,String> getEmailProperties() { 
 		return emailProperties;
-	}
-	
-	
-	
+	}	
 	
 	/**
 	 * Set the report identifier.

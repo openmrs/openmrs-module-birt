@@ -33,6 +33,8 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
 //import org.openmrs.reporting.AbstractReportObject;
 //import org.openmrs.reporting.Report;
 //import org.openmrs.reporting.export.DataExportReportObject;
@@ -224,14 +226,14 @@ public class DatasetFormController extends SimpleFormController {
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<Object, Object> data = new HashMap<Object, Object>();
-/*		BirtReportService reportService = 
-			(BirtReportService)Context.getService(BirtReportService.class);
+		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		
-		//BirtReport report = (BirtReport) command; 
-    	data.put("reports", reportService.getReports());
+		BirtReport report = (BirtReport) command; 
+		data.put("reports", reportService.getAllBirtReports());
     	// TO DO Mike
-    	data.put("cohorts", Context.getCohortService().getCohorts());
-    	data.put("dataExports", reportService.getDataExports());*/
+    	//data.put("cohorts", Context.getCohortService().getCohorts());
+    	//data.put("dataExports", reportService.getDataExports());    	
+
     	//data.put("datasets", reportService.getDatasets());
     	return data;
     }

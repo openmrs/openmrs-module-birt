@@ -42,7 +42,6 @@
 		}
 	}	
 	
-	
 </script>
 
 <style>
@@ -141,7 +140,7 @@ h4 {
 					<spring:message code="birt.create.title"/>
 				</b>
 				<div class="box">
-					<form id="reportForm" method="post">
+					<form id="reportForm" method="post" action="report.form?type=org.openmrs.module.reporting.dataset.definition.DataSetDefinition">
 						<div style="margin:0; padding:0; width:100%;">
 								<c:if test="${!(report.reportDefinition.id == null)}" >
 									<spring:bind path="report.reportDefinition.id">
@@ -164,7 +163,7 @@ h4 {
 								</div>
 							</div>
 							<hr style="color:blue;"/>
-							<div style="width:100%; text-align:left;">
+							<div style="width:100%; text-align:left;">								
 								<input tabindex="3" type="submit" id="submitButton" class="ui-button ui-state-default ui-corner-all" name="save" value="<spring:message code="general.save"/>">
 								<input tabindex="4" type="submit" id="cancelButton" class="ui-button ui-state-default ui-corner-all" name="cancel" value="Cancel">
 							</div>
@@ -245,11 +244,11 @@ h4 {
 							<br/>							
 						
 						</td>
-						<td valign="top" style="width:65%;">
+						<td valign="top" style="width:1%;"></td>
+						<td valign="top" style="width:64%;">
 						<b class="boxHeader">Dataset Definitions</b>
-							<div class="box">
 
-							</div>
+							<openmrs:portlet url="mappedPropertyForm" id="mappedPropertyForm" moduleId="birt" />
 						</td>
 					</tr>
 				</table>		

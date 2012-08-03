@@ -1,9 +1,6 @@
 package org.openmrs.module.birt.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,10 +46,8 @@ import org.eclipse.birt.report.model.api.OdaDataSetHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.SessionHandle;
 import org.eclipse.birt.report.model.api.activity.SemanticException;
-import org.openmrs.Cohort;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-//import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtDataSetQuery;
 import org.openmrs.module.birt.BirtReport;
@@ -62,35 +57,33 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
-import org.openmrs.notification.MessageException;
-import org.openmrs.module.reporting.definition.service.BaseDefinitionService;
-//import org.openmrs.reporting.AbstractReportObject;
-//import org.openmrs.reporting.ReportObjectService;
-//import org.openmrs.reporting.data.DatasetDefinition;
-//import org.openmrs.reporting.export.DataExportReportObject;
-//import org.openmrs.reporting.export.DataExportUtil;
-//import org.openmrs.reporting.export.ExportColumn;
-//import org.openmrs.reporting.report.ReportDefinition;
-//import org.openmrs.reporting.AbstractReportObject;
-//import org.openmrs.reporting.ReportObjectService;
-//import org.openmrs.reporting.data.DatasetDefinition;
-//import org.openmrs.reporting.export.DataExportReportObject;
-//import org.openmrs.reporting.export.DataExportUtil;
-//import org.openmrs.reporting.export.ExportColumn;
-//import org.openmrs.reporting.report.ReportDefinition;
-
-import org.openmrs.util.OpenmrsUtil;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.util.FileCopyUtils;
-import org.openmrs.module.reporting.indicator.service.IndicatorService;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.notification.MessageException;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.core.io.FileSystemResource;
 
 import com.ibm.icu.util.ULocale;
+//import org.openmrs.cohort.CohortDefinitionItemHolder;
+//import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.ReportObjectService;
+//import org.openmrs.reporting.data.DatasetDefinition;
+//import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.reporting.export.DataExportUtil;
+//import org.openmrs.reporting.export.ExportColumn;
+//import org.openmrs.reporting.report.ReportDefinition;
+//import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.ReportObjectService;
+//import org.openmrs.reporting.data.DatasetDefinition;
+//import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.reporting.export.DataExportUtil;
+//import org.openmrs.reporting.export.ExportColumn;
+//import org.openmrs.reporting.report.ReportDefinition;
 
 
 /**
@@ -171,7 +164,14 @@ public class BirtReportServiceImpl implements BirtReportService {
 		return Context.getReportObjectService();
 	}*/
 
-
+	public void getDatasets() {
+/*		DataSetDefinitionService service = Context.getService(DataSetDefinitionService.class);
+		DataSetDefinition dataSetDefinition = null;
+		if (uuid != null) { 
+			log.debug("Retrieving dataset definition by uuid " + uuid);
+			dataSetDefinition = service.getDefinitionByUuid(uuid);    	
+		} */
+	}
 
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#getReports()
@@ -208,7 +208,6 @@ public class BirtReportServiceImpl implements BirtReportService {
 	}
 	
 	
-	
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
 	 */
@@ -243,8 +242,47 @@ public class BirtReportServiceImpl implements BirtReportService {
 		}
 
 		return birtReports;
-	}	
+	}
 
+	/**
+	 * Gets the report with the given report identifier.
+	 * 
+	 * @param reportId
+	 * @return
+	 */
+	public BirtReport getReport(Integer reportId) { 
+		
+		BirtReport report = null;
+		try {
+			report = new BirtReport();
+		
+			ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);			
+			ReportDefinition reportDefinition = reportDefinitionService.getDefinition(reportId);
+		
+			ReportService reportService = Context.getService(ReportService.class);	
+		
+			report.setReportDefinition(reportDefinition);		
+			
+			// Assumes there's at most one report design with one report design resource
+			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
+			
+			if (!reportDesigns.isEmpty()) { 
+				ReportDesign reportDesign = reportDesigns.iterator().next();
+				report.setReportDesign(reportDesign);
+				
+				if (reportDesign.getResources().isEmpty()) { 
+					ReportDesignResource reportDesignResource = reportDesign.getResources().iterator().next();
+					report.setReportDesignResource(reportDesignResource);
+				}
+			}					
+		
+		} catch (Exception e) { 
+			throw new BirtReportException("Could not find report with id " + reportId, e);
+		}		
+		return report;	
+
+	}
+	
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
 	 */
@@ -626,27 +664,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	}
 
 
-	/**
-	 * Gets the report with the given report identifier.
-	 * 
-	 * @param reportId
-	 * @return
-	 */
-	public BirtReport getReport(Integer reportId) { 
-		
-		BirtReport report = null;
-		try { 
-			// Find the report object in the database
-			ReportDefinition reportDefinition = Context.getService(ReportDefinitionService.class).getDefinition(reportId);			
-		
-			report = getReport(reportDefinition);
-		
-		} catch (Exception e) { 
-			throw new BirtReportException("Could not find report with id " + reportId, e);
-		}
-		
-		return report;
-	}    
+   
 
 
 	/**
@@ -778,6 +796,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 		//saveReportDesign(report.getReportDesignPath());
 
 	}
+	
 	
 	/**
 	 * Saves a report design (either creates or overwrites an existing file)

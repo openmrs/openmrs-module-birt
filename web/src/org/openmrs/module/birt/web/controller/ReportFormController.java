@@ -223,8 +223,8 @@ public class ReportFormController extends SimpleFormController {
     	}
 		
 		if (report == null)
-			report = new BirtReport();
-    	
+			report = new BirtReport();		
+   	
         return report;
     }
     

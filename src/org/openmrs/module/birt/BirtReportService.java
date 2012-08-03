@@ -35,6 +35,10 @@ public interface BirtReportService {
 	
 	public List<BirtReport> getAllBirtReports();
 	
+	public void getDatasets();
+	
+	//public BirtReport getBirtReport();
+	
 	/**
 	 * Gets all reports in the system.
 	 * @return	a list of reports in the database
