@@ -51,11 +51,9 @@
 					<tr>
 						<td>DataSetDefinition:</td>
 						<td>					
-							<select name="encounterType">								
-								<c:forEach items="${definitions}" var="entry" varStatus="entryStatus">
-									<c:forEach items="${entry.value}" var="definition" varStatus="definitionStatus">
-										<option value="${definition.name}">${definition.name}</option>
-									</c:forEach>
+							<select name="definitionType">								
+								<c:forEach items="${dataSetDefinitions}" var="item" >
+										<option value="${item.name}">${item.name}</option>									
 								</c:forEach>
 							</select>						
 						</td>

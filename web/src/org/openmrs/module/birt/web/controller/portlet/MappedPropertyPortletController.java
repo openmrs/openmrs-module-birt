@@ -53,45 +53,16 @@ public class MappedPropertyPortletController extends SimpleFormController {
 	
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		System.out.println("hello from mapped controller");
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		
-		//List<? extends Definition> definitions = DefinitionContext.getAllDefinitions(type, true);
-		
-		map.put("reports", reportService.getAllBirtReports());
-		
-		//List<DataSetDefinition> definitions = Context.getService(DataSetDefinitionService.class).getAllDefinitions(true);
-		
-		//List<? extends Definition> definitionsf = Context.getService(DataSetDefinitionService.class).getAllDefinitions(true);
-
-		
-		// Add all dataset definition to the request (allow user to choose)
-    	//map.put("dataSetDefinitions", definitionsf); 	
-		
-		
-    	List<Class<? extends Definition>> hiddenDefinitions = new ArrayList<Class<? extends Definition>>();
-    	hiddenDefinitions.add(CohortIndicatorDataSetDefinition.class);
-    	hiddenDefinitions.add(MultiPeriodIndicatorDataSetDefinition.class);
-    	hiddenDefinitions.add(EncounterDataSetDefinition.class);
-    	hiddenDefinitions.add(PatientDataSetDataDefinition.class);
-    	hiddenDefinitions.add(AgeAtDateOfOtherDataDefinition.class);
-    	hiddenDefinitions.add(PersonToPatientDataDefinition.class);
-    	hiddenDefinitions.add(PersonToEncounterDataDefinition.class);
-    	hiddenDefinitions.add(PatientToEncounterDataDefinition.class);
+		    	
+    	List<DataSetDefinition> dataSetDefinitionList = new ArrayList<DataSetDefinition>();
+    	dataSetDefinitionList.addAll(DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true));
     	
-    	// Construct a Map of Definition Type to List of Definitions
-    	Map<Class<? extends Definition>, List<Definition>> defsByType = new TreeMap<Class<? extends Definition>, List<Definition>>(new DefinitionNameComparator());
-       	
-    	// Initialize the Map with all known supported types
-    	for (Class<? extends Definition> supportedType : DefinitionContext.getDefinitionService(DataSetDefinition.class).getDefinitionTypes()) {
-    		if (!hiddenDefinitions.contains(supportedType)) {
-    			defsByType.put(supportedType, new ArrayList<Definition>());
-    		}
-    	}
-    	
-    	map.put("definitions", defsByType);			
+    	map.put("reports", reportService.getAllBirtReports());
+    	map.put("dataSetDefinitions", dataSetDefinitionList);			
 		
 		return map;
 	}
