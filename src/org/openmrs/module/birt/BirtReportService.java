@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 //import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.module.birt.db.BirtReportDAO;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.report.ReportDesign;
 //import org.openmrs.reporting.AbstractReportObject;
 //import org.openmrs.reporting.export.DataExportReportObject;
@@ -36,6 +37,8 @@ public interface BirtReportService {
 	public List<BirtReport> getAllBirtReports();
 	
 	public void getDatasets();
+	
+	public List<BirtReport> getAllDataSetDefinitions();
 	
 	//public BirtReport getBirtReport();
 	

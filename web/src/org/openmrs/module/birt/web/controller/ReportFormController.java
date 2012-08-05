@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +22,21 @@ import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.reporting.common.MessageUtil;
+import org.openmrs.module.reporting.data.encounter.definition.PatientToEncounterDataDefinition;
+import org.openmrs.module.reporting.data.encounter.definition.PersonToEncounterDataDefinition;
+import org.openmrs.module.reporting.data.patient.definition.PatientDataSetDataDefinition;
+import org.openmrs.module.reporting.data.patient.definition.PersonToPatientDataDefinition;
+import org.openmrs.module.reporting.data.person.definition.AgeAtDateOfOtherDataDefinition;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.EncounterDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.MultiPeriodIndicatorDataSetDefinition;
+import org.openmrs.module.reporting.definition.DefinitionContext;
+import org.openmrs.module.reporting.evaluation.Definition;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.web.controller.ManageDefinitionsController.DefinitionNameComparator;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -60,7 +77,20 @@ public class ReportFormController extends SimpleFormController {
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
 	}
 	
-
+    /**
+     * Comparator which orders Definitions based on their Display Label
+     */
+    public class DefinitionNameComparator implements Comparator<Class<? extends Definition>> {
+		/**
+		 * @see Comparator#compare(Object, Object)
+		 */
+		public int compare(Class<? extends Definition> o1, Class<? extends Definition> o2) {
+			String key1 = MessageUtil.getDisplayLabel(o1);
+			String key2 = MessageUtil.getDisplayLabel(o2);
+			return key1.compareTo(key2);
+		}
+    }
+	
 	/** 
 	 * 
 	 * The onSubmit function receives the form/command object that was modified
@@ -81,6 +111,21 @@ public class ReportFormController extends SimpleFormController {
 			// Save the report definition to the database
 			if (request.getParameter("save") != null) { 
 				log.debug("Saving report " + report);
+				
+				List<DataSetDefinition> dataSetDefinitionList = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true);
+		    	
+			    	List<String> types = new ArrayList<String>();
+			    	DataSetDefinition dataSetDefinition = dataSetDefinitionList.iterator().next();
+			    	types.add(dataSetDefinition.getName());
+/*			    	for (DataSetDefinition p : dataSetDefinitionList) {
+			    		types.add(p.getName());
+			    	}*/
+			    	Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
+			    	
+			    	for (String item : types) {
+			    	    System.out.println("item is " + item);
+			    	}				 
+
 
 				Integer id = report.getReportDefinition().getId();
 				reportService.saveReport(report);
@@ -200,6 +245,17 @@ public class ReportFormController extends SimpleFormController {
 			}		
 			data.put("designs", designs);
 		}
+		
+		List<DataSetDefinition> dataSetDefinitionList = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(false);
+    	
+    	List<String> dsdNames = new ArrayList<String>();
+    	for (DataSetDefinition p : dataSetDefinitionList) {
+    		dsdNames.add(p.getName());
+    	}
+    	Collections.sort(dsdNames, String.CASE_INSENSITIVE_ORDER);
+    	
+    	data.put("dataSetDefinitionName", dsdNames);    	
+		
     	return data;
     }
 	

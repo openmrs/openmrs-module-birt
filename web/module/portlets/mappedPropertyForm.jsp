@@ -40,33 +40,30 @@
 	<a style="font-weight:bold;" href="#" id="newDsdEditLink">[+] New Dataset Definition</a>
 	<div id="addUpgradePopup">
 			
-			<form method="post" action="" onSubmit="return validateForm()">				
+			<form method="post" action="" onSubmit="return validateForm()">							
 				<table>
 					<tr>
 						<td>Key:</td>
 						<td>
-							<input type="text" name="addkey" id="newDsdKey" size="40"/>
+							<input type="text" name="newkey" id="newDsdKey" size="20"/>
 						</td>
 					</tr>
 					<tr>
 						<td>DataSetDefinition:</td>
 						<td>					
-							<select name="definitionType">								
-								<c:forEach items="${dataSetDefinitions}" var="item" >
-										<option value="${item.name}">${item.name}</option>									
+							<select name="definitionName">								
+								<c:forEach items="${dataSetDefinitionName}" var="dataSetDefinitionName" >
+										<option value="${dataSetDefinitionName}">${dataSetDefinitionName}</option>									
 								</c:forEach>
 							</select>						
 						</td>
 					</tr>
-					<tr>
-						<td></td>
-						<td>
-							<input type="submit" value="Submit"/><input type="reset" value="Cancel"/>
-						</td>
-					</tr>
-				</table>
-				<input type="hidden" name="personType" value=""/>
-				<input type="hidden" name="viewType" value=""/>
+				</table>				
+				<hr style="color:blue;"/>
+				<div style="width:100%; text-align:left;">
+					<input type="button" id="" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
+					<input type="button" id="" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
+				</div>
 			</form>											
 		<br/>
 	</div>

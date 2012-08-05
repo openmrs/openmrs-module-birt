@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry excluding="client/|api/" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="web/src"/>
+	<classpathentry excluding="org/openmrs/module/birt/web/controller/portlet/MappedPropertyPortletController.java" kind="src" path="web/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar" sourcepath="C:/Users/Michael/.m2/repository/org/springframework/spring/2.5.1/spring-2.5.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
-	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar" sourcepath="C:/Users/Michael/.m2/repository/org/springframework/spring-webmvc/2.5.1/spring-webmvc-2.5.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib-common/log4j.jar"/>
 	<classpathentry kind="lib" path="lib-common/activation.jar"/>
 	<classpathentry kind="lib" path="lib-common/mail.jar"/>
@@ -24,7 +24,7 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/flute.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
-	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar" sourcepath="C:/Users/Michael/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/axis.jar"/>
 	<classpathentry kind="lib" path="lib/axis-ant.jar"/>

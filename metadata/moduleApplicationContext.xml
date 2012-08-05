@@ -17,7 +17,6 @@
 				<prop key="module/birt/previewReport.form">previewReport</prop>
 				<prop key="module/birt/uploadReport.form">uploadReport</prop>
 				<prop key="module/birt/downloadReportDesign.form">downloadReportDesign</prop>
-				<prop key="**/mappedPropertyForm.portlet">mappedPropertyFormPortletController</prop>
 			</props>
 		</property>
 	</bean>	
@@ -55,9 +54,7 @@
 	</bean>
 
 	<!-- Controllers -->
-	
-	<bean id="mappedPropertyFormPortletController" class="org.openmrs.module.birt.web.controller.portlet.MappedPropertyPortletController" />
-	
+
 	<bean id="downloadReportDesign" class="org.openmrs.module.birt.web.controller.DownloadReportDesignController"/>
 	
 	<bean id="listReports" class="org.openmrs.module.birt.web.controller.ListReportController">

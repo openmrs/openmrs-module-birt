@@ -59,6 +59,7 @@ import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
+import org.openmrs.module.reporting.definition.DefinitionContext;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -218,29 +219,46 @@ public class BirtReportServiceImpl implements BirtReportService {
 		
 		ReportService reportService = Context.getService(ReportService.class);			
 		
-		
 		for (ReportDefinition reportDefinition : reportDefinitions) {
 			BirtReport birtReport = new BirtReport();			
 			birtReport.setReportDefinition(reportDefinition);
 			
 			// Assumes there's at most one report design with one report design resource
-			List<ReportDesign> reportDesigns = 
-					reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
+			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
 
 			if (!reportDesigns.isEmpty()) { 
 				ReportDesign reportDesign = reportDesigns.iterator().next();
 				birtReport.setReportDesign(reportDesign);
 				
 				if (reportDesign.getResources().isEmpty()) { 
-					ReportDesignResource reportDesignResource = 
-							reportDesign.getResources().iterator().next();
+					ReportDesignResource reportDesignResource = reportDesign.getResources().iterator().next();
 					birtReport.setReportDesignResource(reportDesignResource);
 				}
 			}
 			
+	    	List<DataSetDefinition> dataSetDefinitions = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true);
+	    	if (!dataSetDefinitions.isEmpty()) {
+	    		DataSetDefinition dataSetDefinition = dataSetDefinitions.iterator().next();
+	    		birtReport.setDataSetDefinition(dataSetDefinition);
+	    	}
+	    	
 			birtReports.add(birtReport);
 		}
 
+		return birtReports;
+	}
+	
+	public List<BirtReport> getAllDataSetDefinitions() {
+		List<BirtReport> birtReports = new Vector<BirtReport>();
+		
+    	List<DataSetDefinition> dataSetDefinitions = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true);
+    	for (DataSetDefinition dataSetDefinition : dataSetDefinitions) {
+    		BirtReport birtReport = new BirtReport();
+    		birtReport.setDataSetDefinition(dataSetDefinition);
+    		
+    		birtReports.add(birtReport);
+    	}
+		
 		return birtReports;
 	}
 

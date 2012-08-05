@@ -132,6 +132,13 @@ public class BirtReport implements Serializable {
 		return reportDesignHandle;
 	}
 	
+	/**
+	 * Get dataset definition.
+	 * @return
+	 */
+	public DataSetDefinition getDataSetDefinition() { 
+		return dataSetDefinition;
+	}
 
 	/**
 	 * Get report definition.
@@ -236,6 +243,15 @@ public class BirtReport implements Serializable {
 	public void setReportDesign(ReportDesignHandle reportDesignHandle) { 
 		this.reportDesignHandle = reportDesignHandle;
 	}	
+	
+	/**
+	 * Set dataset definition.
+	 * 
+	 * @param dataSetDefinition
+	 */
+	public void setDataSetDefinition(DataSetDefinition dataSetDefinition) { 
+		this.dataSetDefinition = dataSetDefinition;
+	}
 	
 	/** 
 	 * Set report definition.
