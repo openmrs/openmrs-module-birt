@@ -81,7 +81,7 @@
 								border="0" alt="<spring:message code="Report.generate"/>" /></a>						
 					</td>
 					<td valign="middle" align="center" width="3%">
-						<a href="report.form?reportId=${report.reportDefinition.id}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>
+						<a href="report.form?reportId=${report.reportDefinition.id}&uuid=${report.reportDefinition.uuid}&type=${report.reportDefinition['class'].name}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>
 					</td>					
 					<td valign="middle" align="left">
 					

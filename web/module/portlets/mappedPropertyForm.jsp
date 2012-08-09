@@ -11,48 +11,43 @@
 		$j('#addUpgradePopup').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>',
+			title: '<spring:message code="birt.newDataSetDefinition" javaScriptEscape="true"/>',
 			width: '50%'
 		});
 		
 		$j('#newDsdEditLink').click(function() {
 			$j('#addUpgradePopup').dialog('open');
 		});
+		
+		$j('#mapParametersFormCancelButton').click(function(event){			
+			$j('#addUpgradePopup').dialog('close');
+		});
+		
+		$j('#mapParametersFormSubmitButton').click(function(event){
+			
+			
+			$j('#mapParametersForm').submit();
+		});
 
 	});
 	
 </script>
 
-<c:forEach items="${report.reportDefinition.dataSetDefinitions}" var="dsd" varStatus="dsdStatus">
-	<div style="display:none; width:100%" id="dsdView${dsdStatus.index}">
-		<table style="font-size:smaller; color:grey; border:1px solid black;">
-			<tr>
-				<th colspan="7">
-					${dsd.value.parameterizable.name}
-					(<a href="../definition/editDefinition.form?type=${dsd.value.parameterizable['class'].name}&uuid=${dsd.value.parameterizable.uuid}">Edit this Definition</a>)
-				</th>
-			</tr>
-		</table>
-	</div>
-</c:forEach>
-
-<div class="box" style="vertical-align:top;">
-	<a style="font-weight:bold;" href="#" id="newDsdEditLink">[+] New Dataset Definition</a>
+	<a style="font-weight:bold;" href="#" id="newDsdEditLink"><spring:message code="birt.newDataSetDefinition"/></a>
 	<div id="addUpgradePopup">
 			
-			<form method="post" action="" onSubmit="return validateForm()">							
+			<form id="mapParametersForm" method="post" action="report.form">
+			<input type="hidden" name="mapped" value="mappedForm"/>									
 				<table>
 					<tr>
 						<td>Key:</td>
-						<td>
-							<input type="text" name="newkey" id="newDsdKey" size="20"/>
-						</td>
+						<td><input type="text" name="newkey" id="newDsdKey" size="20" value="${param.newKey}"/></td>
 					</tr>
 					<tr>
 						<td>DataSetDefinition:</td>
 						<td>					
 							<select name="definitionName">								
-								<c:forEach items="${dataSetDefinitionName}" var="dataSetDefinitionName" >
+								<c:forEach items="${dataSetDefinitionNames}" var="dataSetDefinitionName" >
 										<option value="${dataSetDefinitionName}">${dataSetDefinitionName}</option>									
 								</c:forEach>
 							</select>						
@@ -61,10 +56,10 @@
 				</table>				
 				<hr style="color:blue;"/>
 				<div style="width:100%; text-align:left;">
-					<input type="button" id="" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
-					<input type="button" id="" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
+					<input type="button" name="send" id="mapParametersFormSubmitButton" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
+					<input type="button" id="mapParametersFormCancelButton" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
 				</div>
 			</form>											
 		<br/>
 	</div>
-</div>	
+	

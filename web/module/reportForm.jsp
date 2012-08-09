@@ -247,8 +247,35 @@ h4 {
 						<td valign="top" style="width:1%;"></td>
 						<td valign="top" style="width:64%;">
 						<b class="boxHeader">Dataset Definitions</b>
+						<div class="box" style="vertical-align:top;">
+						<c:if test="${!empty reportt.dataSetDefinitions}">	
+							<c:forEach items="${reportt.dataSetDefinitions}" var="dsd" varStatus="dsdStatus">
+								
+									<span>
+										<span style="font-weight:bold;float:left;">${dsd.key}</span>&nbsp;&nbsp;&nbsp;
+										<span>
+											<a style="color:blue;" href="#">Edit Mappings</a>&nbsp;|&nbsp;
+											<a style="color:blue;" href="#">Delete</a>
+										</span>
+									</span>									
 
+												
+									<table style="font-size:smaller; color:grey; border:1px solid black;">
+										<tr>
+											<th colspan="6">
+												${dsd.value.parameterizable.name}
+												(<a href="../reporting/definition/editDefinition.form?type=${dsd.value.parameterizable['class'].name}&uuid=${dsd.value.parameterizable.uuid}">Edit this Definition</a>)
+											</th>
+										</tr>										
+									</table>
+										
+							
+							<br/>
+							
+							</c:forEach>
+							</c:if>
 							<openmrs:portlet url="mappedPropertyForm" id="mappedPropertyForm" moduleId="birt" />
+							</div>
 						</td>
 					</tr>
 				</table>		

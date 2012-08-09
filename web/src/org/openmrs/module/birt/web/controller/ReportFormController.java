@@ -35,6 +35,7 @@ import org.openmrs.module.reporting.dataset.definition.MultiPeriodIndicatorDataS
 import org.openmrs.module.reporting.definition.DefinitionContext;
 import org.openmrs.module.reporting.evaluation.Definition;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.web.controller.ManageDefinitionsController.DefinitionNameComparator;
 import org.openmrs.propertyeditor.CohortEditor;
@@ -44,6 +45,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -63,7 +65,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ReportFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass()); 
 
 	/**
 	 * Allows for Integers to be used as values in input tags.
@@ -104,6 +106,8 @@ public class ReportFormController extends SimpleFormController {
 		boolean formRedirect = false;
 		BirtReport report = (BirtReport) obj;
 		
+		String mapped = ServletRequestUtils.getStringParameter(request, "mapped", "");
+		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		log.debug("Birt report object: " + report);
 		try { 
@@ -111,22 +115,6 @@ public class ReportFormController extends SimpleFormController {
 			// Save the report definition to the database
 			if (request.getParameter("save") != null) { 
 				log.debug("Saving report " + report);
-				
-				List<DataSetDefinition> dataSetDefinitionList = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true);
-		    	
-			    	List<String> types = new ArrayList<String>();
-			    	DataSetDefinition dataSetDefinition = dataSetDefinitionList.iterator().next();
-			    	types.add(dataSetDefinition.getName());
-/*			    	for (DataSetDefinition p : dataSetDefinitionList) {
-			    		types.add(p.getName());
-			    	}*/
-			    	Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
-			    	
-			    	for (String item : types) {
-			    	    System.out.println("item is " + item);
-			    	}				 
-
-
 				Integer id = report.getReportDefinition().getId();
 				reportService.saveReport(report);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.saveReport.success");				
@@ -184,7 +172,13 @@ public class ReportFormController extends SimpleFormController {
 				response.setContentType("text/xml; charset=utf-8");
 				response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getId() + ".rptdesign");
 				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
-			}			
+			}
+			else if ("mappedForm".equals(mapped)) {
+				String newKey = ServletRequestUtils.getStringParameter(request, "newKey", "");
+				String definitionName = ServletRequestUtils.getStringParameter(request, "definitionName", "");
+				System.out.println("newKey " + newKey);
+				System.out.println("definitionName " + definitionName);				
+			}
 			else { 
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.noAction");
 			} 
@@ -220,20 +214,24 @@ public class ReportFormController extends SimpleFormController {
 		Map<Object, Object> data = new HashMap<Object, Object>();
 		BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
 		
-		BirtReport report = (BirtReport) command;
+		//BirtReport report = (BirtReport) command;
 		
 		data.put("reports", reportService.getReports());
 		data.put("cohorts", Context.getService(CohortService.class).getAllCohorts());
 		
-/*		
-    	// To do Mike -> 
-    	data.put("cohorts", Context.getCohortService().getCohorts());
-    	//data.put("dataExports", reportService.getDataExports());
-    	data.put("dataExports", reportService.getDataExports());*/
-
-    	//data.put("datasets", reportService.getDatasets());
-		
 		String reportId = request.getParameter("reportId");
+		String uuid = request.getParameter("uuid");
+		String type = request.getParameter("type");
+		
+		BirtReport report = null;
+
+    	if (reportId != null) {    		
+    		report = reportService.getReport(Integer.valueOf(reportId));
+    	}
+    	
+    	ReportDefinitionService rs = Context.getService(ReportDefinitionService.class); 
+    	ReportDefinition r = rs.getDefinition(uuid, ReportDefinition.class);
+		data.put("reportt", r);
 		
 		if (reportId != null){
 			List<ReportDesign> designs = new ArrayList<ReportDesign>();
@@ -254,7 +252,7 @@ public class ReportFormController extends SimpleFormController {
     	}
     	Collections.sort(dsdNames, String.CASE_INSENSITIVE_ORDER);
     	
-    	data.put("dataSetDefinitionName", dsdNames);    	
+    	data.put("dataSetDefinitionNames", dsdNames);
 		
     	return data;
     }
