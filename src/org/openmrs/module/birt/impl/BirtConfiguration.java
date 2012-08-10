@@ -71,7 +71,7 @@ public class BirtConfiguration {
 	 */
 	public synchronized static EngineConfig getEngineConfig() {
 		if (engineConfig == null) {
-			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
+			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME + " - The Current Directory");
 			engineConfig = new EngineConfig();
 			engineConfig.setEngineHome(BirtConstants.BIRT_HOME);
 			engineConfig.setLogConfig(BirtConstants.LOGGING_PATH, BirtConstants.LOGGING_LEVEL);	

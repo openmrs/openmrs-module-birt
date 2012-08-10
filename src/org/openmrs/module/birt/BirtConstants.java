@@ -64,7 +64,8 @@ public class BirtConstants {
 	 * Names correspond to global properties in the database */
 	public static final String PROPERTY_LOGGING_DIR 			= 	"birt.loggingDir";
 	public static final String PROPERTY_LOGGING_LEVEL		 	=   "birt.loggingLevel";
-	public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";
+	/*public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";*/
+	public static final String PROPERTY_BIRT_HOME 				= 	".";
 	public static final String PROPERTY_REPORT_DIR				= 	"birt.reportDir";
 	public static final String PROPERTY_OUTPUT_DIR 				= 	"birt.outputDir";
 	public static final String PROPERTY_DATASET_DIR				= 	"birt.datasetDir";

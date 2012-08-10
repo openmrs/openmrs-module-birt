@@ -1,5 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<script type="text/javascript" language="javascript">
+
+<!-- Include javascript from core -->
+<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js"/>
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+
+
+<script type="text/javascript" language="javascript">	
 	function PopupCenter(pageURL, title,w,h) {
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
@@ -24,11 +30,10 @@
 		});
 		
 		$j('#mapParametersFormSubmitButton').click(function(event){
-			
-			
+
 			$j('#mapParametersForm').submit();
 		});
-
+		
 	});
 	
 </script>
@@ -41,12 +46,12 @@
 				<table>
 					<tr>
 						<td>Key:</td>
-						<td><input type="text" name="newkey" id="newDsdKey" size="20" value="${param.newKey}"/></td>
+						<td><input type="text" name="newKey" id="newDsdKey" size="20" value="${param.newKey}"/></td>
 					</tr>
 					<tr>
 						<td>DataSetDefinition:</td>
 						<td>					
-							<select name="definitionName">								
+							<select id="jest" name="definitionName">								
 								<c:forEach items="${dataSetDefinitionNames}" var="dataSetDefinitionName" >
 										<option value="${dataSetDefinitionName}">${dataSetDefinitionName}</option>									
 								</c:forEach>
@@ -56,7 +61,7 @@
 				</table>				
 				<hr style="color:blue;"/>
 				<div style="width:100%; text-align:left;">
-					<input type="button" name="send" id="mapParametersFormSubmitButton" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
+					<input type="button" id="mapParametersFormSubmitButton" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
 					<input type="button" id="mapParametersFormCancelButton" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
 				</div>
 			</form>											

@@ -174,9 +174,9 @@ public class ReportFormController extends SimpleFormController {
 				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 			}
 			else if ("mappedForm".equals(mapped)) {
-				String newKey = ServletRequestUtils.getStringParameter(request, "newKey", "");
+				String newKey = request.getParameter("newKey");
 				String definitionName = ServletRequestUtils.getStringParameter(request, "definitionName", "");
-				System.out.println("newKey " + newKey);
+				System.out.println("keyName " + newKey);
 				System.out.println("definitionName " + definitionName);				
 			}
 			else { 
