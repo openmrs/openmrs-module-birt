@@ -131,7 +131,8 @@ public class BirtConstants {
 	public static Level LOGGING_LEVEL = Level.parse(BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_LOGGING_LEVEL));
 
 	/* BIRT Engine properties */
-	public static String BIRT_HOME = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_BIRT_HOME);	
+	public static String BIRT_HOME = PROPERTY_BIRT_HOME;	
+	/*public static String BIRT_HOME = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_BIRT_HOME);	*/
 	
 	public static String OUTPUT_DIR = BirtConfiguration.getGlobalProperty(BirtConstants.PROPERTY_OUTPUT_DIR);
 	
