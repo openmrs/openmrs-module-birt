@@ -23,6 +23,10 @@ public interface BirtReportService {
 	 * @param 	dao		the report DAO
 	 */
 	public void setBirtReportDAO(BirtReportDAO dao);
+	
+	public void prepareDataset(BirtReport report);
+	
+	public void createReportDesign(BirtReport report);
 
 	
 	/**

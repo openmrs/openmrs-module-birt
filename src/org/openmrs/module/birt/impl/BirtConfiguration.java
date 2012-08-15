@@ -71,7 +71,7 @@ public class BirtConfiguration {
 	 */
 	public synchronized static EngineConfig getEngineConfig() {
 		if (engineConfig == null) {
-			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME + " - The Current Directory");
+			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME + ", the Current Directory");
 			engineConfig = new EngineConfig();
 			engineConfig.setEngineHome(BirtConstants.BIRT_HOME);
 			engineConfig.setLogConfig(BirtConstants.LOGGING_PATH, BirtConstants.LOGGING_LEVEL);	
@@ -183,8 +183,12 @@ public class BirtConfiguration {
 		}
 		else if(BirtConstants.PDF_FORMAT.equalsIgnoreCase(report.getOutputFormat())) { 
 			PDFRenderOption pdfOptions = new PDFRenderOption( options );
-			pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, new Boolean(true));
-			pdfOptions.setOption(IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, new Boolean(true));
+			pdfOptions.setOption(PDFRenderOption.PAGE_OVERFLOW, IPDFRenderOption.FIT_TO_PAGE_SIZE);
+			//pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, new Boolean(true));
+			pdfOptions.setOption( IRenderOption.HTML_PAGINATION, Boolean.FALSE );
+			//pdfOptions.setOption(IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, new Boolean(true));
+			pdfOptions.setSupportedImageFormats("PNG;GIF;JPG;BMP;SWF;SVG");
+			pdfOptions.setOutputFormat("pdf");
 
 		}
 		//file based images
@@ -197,11 +201,11 @@ public class BirtConfiguration {
 		
 		
 		// Setting the report output file name
-/*		if (report.getOutputFilename() == null) { 
+		if (report.getOutputFilename() == null) { 
 			String name = report.getReportDefinition().getName();
 			String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
 			report.setOutputFilename(filename);
-		}*/
+		}
 
 		log.debug("Setting report output filename " + report.getOutputFilename());
 

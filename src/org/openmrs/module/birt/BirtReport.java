@@ -52,9 +52,7 @@ public class BirtReport implements Serializable {
 	public ReportDesign getReportDesign() { return reportDesign; } 
 	public ReportDesignResource getReportDesignResource() { return reportDesignResource; } 
 	public void setReportDesign(ReportDesign reportDesign) { this.reportDesign = reportDesign; } 
-	public void setReportDesignResource(ReportDesignResource reportDesignResource) { this.reportDesignResource = reportDesignResource; } 
-	
-		
+	public void setReportDesignResource(ReportDesignResource reportDesignResource) { this.reportDesignResource = reportDesignResource; } 		
 	
 	/*	 Desired Columns 
 	private DataExportReportObject dataExport = new DataExportReportObject();*/
@@ -71,15 +69,20 @@ public class BirtReport implements Serializable {
 	/* Report output filename */
 	private String outputFilename = null;
 	
+	/* Report output directory */
+	private String outputDirectory = null;	
+	
 	/* Report parameters */
 	private List<ParameterDefinition> parameters = new ArrayList<ParameterDefinition>();
 	 	
 	/* Report errors */
 	private List errors = null;
+	
+	/* Csv File Names */
+	private List<String> csvFileNames = null;
 
 	/* Email properties */
-	private Map<String,String> emailProperties = new HashMap<String,String>();
-	
+	private Map<String,String> emailProperties = new HashMap<String,String>();	
 	
 	/**
 	 * Public default constructor.
@@ -125,6 +128,20 @@ public class BirtReport implements Serializable {
 	}
 	
 	/**
+	 * Gets the csv file names.
+	 */
+	public List<String> getCsvFileNames (){
+		return csvFileNames;
+	}
+	
+	/**
+	 * Sets the csv file names.
+	 */
+	public void setCsvFileNames( List<String> csvFileNames ){
+		this.csvFileNames = csvFileNames;
+	}
+	
+	/**
 	 * Get report design handle.
 	 * @return
 	 */
@@ -152,9 +169,10 @@ public class BirtReport implements Serializable {
 	 * Returns whether the report has an associated data export object.
 	 * @return	true if data export exists, false otherwise
 	 */
-/*	public boolean hasFlatfileDataSet() {
-		return getReportDefinition().getDataExport() != null && getReportDefinition().getDataExport().getReportObjectId() != null;		
-	}*/
+	public boolean hasFlatfileDataSet() {
+		return getReportDefinition().hasDataSetDefinitions();
+		//return getReportDefinition().getDataExport() != null && getReportDefinition().getDataExport().getReportObjectId() != null;		
+	}
 
 	/**
 	 * Gets the assigned cohort that is to populate the data set.
@@ -186,6 +204,22 @@ public class BirtReport implements Serializable {
 	 */
 	public String getOutputFilename() { 
 		return outputFilename;
+	}
+	
+	/**
+	 * Gets the output directory.
+	 * @return
+	 */
+	public String getOutputDirectory() { 
+		return outputDirectory;
+	}
+	
+	/**
+	 * Sets the output directory.
+	 * @return
+	 */
+	public void setOutputDirectory(String outputDirectory) { 
+		this.outputDirectory = outputDirectory;
 	}
 	
 	/**

@@ -4,6 +4,21 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+
+<script type="text/javascript" charset="utf-8">	
+	
+	function confirmDelete(name, uuid) {
+		if (confirm("Are you sure you want to delete " + name + " ?")) {
+		$j.ajax({
+				  type: "POST",
+				  url: "report.list",				  
+				  data: { reportId : uuid },
+				  success: function() { window.location.reload(true); },
+				})			
+		}
+	}
+
+</script>
  
  
 <h2><spring:message code="birt.manage.title"/></h2>	
@@ -57,42 +72,37 @@
 					</form>					
 				</td>
 			</tr>
-		</table>
-	
+		</table>	
 	
 		<table id="reportListTable" cellspacing="0" cellpadding="0" border="0">
 			<c:forEach var="report" items="${reportList}" varStatus="varStatus">
 				<c:if test="${varStatus.first}">
-					<tr class="evenRow">		
-						<th align="center"><spring:message code="birt.generateReport.header"/></th>						
-						<th align="center"><spring:message code="birt.editReport.header"/></th>
-						<th></th>
-						<th align="left"><spring:message code="birt.reportTitle.header" /></th>
+					<tr class="evenRow">
+						<th align="center" width="3%">Actions</th>						
+						<th align="left"><spring:message code="birt.reportName.header" /></th>
+						<th align="left"><spring:message code="birt.reportDescription.header" /></th>
+						<th align="left"><spring:message code="birt.reportDownload.header" /></th>					
 					</tr>
-				</c:if>
-				
+				</c:if>				
 				<c:set var="rowClass" scope="page">
 					<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>
 				</c:set>
 				<tr class="${rowClass}">
-
-					<td valign="middle" align="center" width="3%">					
-						<a href="generateReport.form?reportId=${report.reportDefinition.id}"><img src="${pageContext.request.contextPath}/images/play.gif" 
-								border="0" alt="<spring:message code="Report.generate"/>" /></a>						
+					<td width="3%" align="center" nowrap>
+							&nbsp;
+							<a href="report.form?reportId=${report.reportDefinition.id}&uuid=${report.reportDefinition.uuid}&type=${report.reportDefinition['class'].name}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>					
+							&nbsp;
+							<a href="javascript:confirmDelete('${report.reportDefinition.name}','${report.reportDefinition.uuid}');"><img src="<c:url value='/images/trash.gif'/>" border="0"/></a>			
+							&nbsp;
+							<a href="${pageContext.request.contextPath}/module/reporting/run/runReport.form?reportId=${report.reportDefinition.uuid}"><img src="${pageContext.request.contextPath}/images/play.gif" border="0" alt="<spring:message code="Report.generate"/>" /></a>
 					</td>
-					<td valign="middle" align="center" width="3%">
-						<a href="report.form?reportId=${report.reportDefinition.id}&uuid=${report.reportDefinition.uuid}&type=${report.reportDefinition['class'].name}"><img src="${pageContext.request.contextPath}/images/edit.gif" 	border="0" alt="<spring:message code="Report.edit"/>" /></a>
-					</td>					
-					<td valign="middle" align="left">
-					
-						<c:if test="${report.reportDesign != null }">
-							<a href="downloadReportDesign.form?id=${report.reportDesign.id}">Download Report Design by ID</a>
-							<a href="downloadReportDesign.form?uuid=${report.reportDesign.uuid}">Download Report Design by UUID</a>						
+					<td valign="middle" align="left">${report.reportDefinition.name}</td>
+					<td valign="middle" align="left">${report.reportDefinition.description}</td>
+					<td valign="middle" align="left">					
+						<c:if test="${report.reportDesign != null }">							
+							<a href="downloadReportDesign.form?uuid=${report.reportDesign.uuid}">RPTDESIGN</a>						
 						</c:if>
 					</td>
-
-					<td valign="middle" align="left">${report.reportDefinition.name}</td>
-
 				</tr>
 			</c:forEach>			
 		</table>

@@ -30,19 +30,33 @@
 		});
 		
 		$j('#mapParametersFormSubmitButton').click(function(event){
-
+			var existingKeys = [<c:forEach items="${existingKeys}" var="c" varStatus="cStat">'${c}'<c:if test="${!cStat.last}">,</c:if></c:forEach>];
+			var newKey = $j('#newDsdKey').val();
+			
+			for (var i=0; i<existingKeys.length; i++) {
+				if (existingKeys[i] == newKey) {
+					alert('That key is already in use, please choose another.')
+					return false;
+				}
+			}
 			$j('#mapParametersForm').submit();
+			$j('#newDsdKey').val('');
+			
 		});
 		
 	});
 	
 </script>
 
-	<a style="font-weight:bold;" href="#" id="newDsdEditLink"><spring:message code="birt.newDataSetDefinition"/></a>
+	<a style="font-weight:bold;" href="#" id="newDsdEditLink">[+] <spring:message code="birt.newDataSetDefinition"/></a>
 	<div id="addUpgradePopup">
 			
 			<form id="mapParametersForm" method="post" action="report.form">
-			<input type="hidden" name="mapped" value="mappedForm"/>									
+			<input type="hidden" name="mapped" value="mappedForm"/>	
+			<input type="hidden" name="type" value="${report.reportDefinition['class'].name}"/>
+			<input type="hidden" name="uuid" value="${report.reportDefinition.uuid}"/>
+			<input type="hidden" name="currentKey" value=""/>
+			<input type="hidden" name="property" value="dataSetDefinitions"/>											
 				<table>
 					<tr>
 						<td>Key:</td>
@@ -51,9 +65,9 @@
 					<tr>
 						<td>DataSetDefinition:</td>
 						<td>					
-							<select id="jest" name="definitionName">								
-								<c:forEach items="${dataSetDefinitionNames}" var="dataSetDefinitionName" >
-										<option value="${dataSetDefinitionName}">${dataSetDefinitionName}</option>									
+							<select id="jest" name="mappedUuid">								
+								<c:forEach items="${dataSetDefinitionProperties}" var="dataSetDefinitionProperty" >
+										<option value="${dataSetDefinitionProperty.value}">${dataSetDefinitionProperty.key}</option>									
 								</c:forEach>
 							</select>						
 						</td>

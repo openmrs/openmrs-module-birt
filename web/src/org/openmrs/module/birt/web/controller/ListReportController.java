@@ -61,7 +61,6 @@ public class ListReportController extends SimpleFormController {
 		
 		String view = getFormView();
 
-
 		if (Context.isAuthenticated()) {
 			String[] reportList = request.getParameterValues("reportId");
 			

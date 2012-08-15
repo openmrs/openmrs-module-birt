@@ -28,7 +28,7 @@ public class BirtModuleActivator implements Activator {
 
 		// Define global properties
 		String [] globalProperties = { 
-			BirtConstants.PROPERTY_BIRT_HOME, 
+			/* BirtConstants.PROPERTY_BIRT_HOME,*/ 
 			BirtConstants.PROPERTY_DATASET_DIR, 
 			BirtConstants.PROPERTY_LOGGING_DIR, 
 			BirtConstants.PROPERTY_LOGGING_LEVEL,

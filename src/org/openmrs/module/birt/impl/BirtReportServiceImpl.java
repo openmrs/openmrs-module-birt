@@ -1,6 +1,8 @@
 package org.openmrs.module.birt.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +60,6 @@ import org.openmrs.module.birt.db.BirtReportDAO;
 import org.openmrs.module.birt.model.ParameterDefinition;
 import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
 import org.openmrs.module.reporting.definition.DefinitionContext;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
@@ -70,22 +71,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.core.io.FileSystemResource;
 
 import com.ibm.icu.util.ULocale;
-//import org.openmrs.cohort.CohortDefinitionItemHolder;
-//import org.openmrs.reporting.AbstractReportObject;
-//import org.openmrs.reporting.ReportObjectService;
-//import org.openmrs.reporting.data.DatasetDefinition;
-//import org.openmrs.reporting.export.DataExportReportObject;
-//import org.openmrs.reporting.export.DataExportUtil;
-//import org.openmrs.reporting.export.ExportColumn;
-//import org.openmrs.reporting.report.ReportDefinition;
-//import org.openmrs.reporting.AbstractReportObject;
-//import org.openmrs.reporting.ReportObjectService;
-//import org.openmrs.reporting.data.DatasetDefinition;
-//import org.openmrs.reporting.export.DataExportReportObject;
-//import org.openmrs.reporting.export.DataExportUtil;
-//import org.openmrs.reporting.export.ExportColumn;
-//import org.openmrs.reporting.report.ReportDefinition;
-
 
 /**
  * Implementation of the Birt Report service.  This was originally going to implement 
@@ -221,14 +206,14 @@ public class BirtReportServiceImpl implements BirtReportService {
 		
 		for (ReportDefinition reportDefinition : reportDefinitions) {
 			BirtReport birtReport = new BirtReport();			
-			birtReport.setReportDefinition(reportDefinition);
+			birtReport.setReportDefinition(reportDefinition); 
 			
 			// Assumes there's at most one report design with one report design resource
-			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
+			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, null, false);
 
 			if (!reportDesigns.isEmpty()) { 
 				ReportDesign reportDesign = reportDesigns.iterator().next();
-				birtReport.setReportDesign(reportDesign);
+				birtReport.setReportDesign(reportDesign); 
 				
 				if (reportDesign.getResources().isEmpty()) { 
 					ReportDesignResource reportDesignResource = reportDesign.getResources().iterator().next();
@@ -386,25 +371,26 @@ public class BirtReportServiceImpl implements BirtReportService {
 				for (Iterator iterator = reportDesign.getAllDataSets().iterator(); iterator.hasNext(); ) { 
 					Object obj = iterator.next();
 
-
 					if ( obj instanceof OdaDataSetHandle) { 
 						OdaDataSetHandle datasetHandle = (OdaDataSetHandle) obj;					
 
 						// Flat File data set (reset the HOME property) 
 						if ("org.eclipse.datatools.connectivity.oda.flatfile.dataSet".equals(datasetHandle.getExtensionID())) { 
-							log.debug("Setting the properties for the Flat File data set");
+							log.debug("Setting the properties for the Flat File data set");							
 
 /*							if (!report.hasFlatfileDataSet()) {
 								throw new BirtReportException("Report is missing the '" + datasetHandle.getName() + "' dataset.  Please update the report to include this dataset.");
-							}*/
+							}*/							
 
 							log.debug("Export dataset for report " + datasetHandle.getName());							
-							File dataset = exportFlatfileDataset(report);
+							File dataset =  new File(report.getOutputDirectory() + report.getCsvFileNames().get(0));   //exportFlatfileDataset(report);  
 
 							log.debug("Dataset " + datasetHandle.getExtensionID() + " = " + dataset.getParentFile().getAbsolutePath());
 
 							// First we need to set the data source to the dataset's current directory
 							datasetHandle.getDataSource().setProperty("HOME", dataset.getParentFile().getAbsolutePath());
+							// First we need to set the data source to the dataset's current directory
+							//String uriPath = "file:/" + pathDir + designResource.getName() + ".csv";
 
 							// TODO Refactor to use a better query parser ... 
 							// this one does not handle more complex queries 
@@ -457,6 +443,22 @@ public class BirtReportServiceImpl implements BirtReportService {
 			log.error("Error preparing data export ", e);
 			throw new BirtReportException("Unable to prepare data export due to file exception: " + e.getMessage(), e);
 		}
+	}
+	
+	public void createReportDesign(BirtReport report) {
+		FileOutputStream fos = null;
+		
+			try {
+				fos = new FileOutputStream(report.getReportDesignPath());
+				fos.write(report.getReportDesignResource().getContents());
+				fos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	/**
@@ -517,8 +519,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			IReportEngine engine = BirtConfiguration.getReportEngine();	    		
 
 			// Open the report design
-			IReportRunnable reportRunnable =
-				engine.openReportDesign(report.getReportDesignPath());
+			IReportRunnable reportRunnable = engine.openReportDesign(report.getReportDesignPath());
 
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);

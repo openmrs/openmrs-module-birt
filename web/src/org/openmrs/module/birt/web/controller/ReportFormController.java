@@ -3,18 +3,22 @@ package org.openmrs.module.birt.web.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -22,7 +26,9 @@ import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.htmlwidgets.web.WidgetUtil;
 import org.openmrs.module.reporting.common.MessageUtil;
+import org.openmrs.module.reporting.common.ReflectionUtil;
 import org.openmrs.module.reporting.data.encounter.definition.PatientToEncounterDataDefinition;
 import org.openmrs.module.reporting.data.encounter.definition.PersonToEncounterDataDefinition;
 import org.openmrs.module.reporting.data.patient.definition.PatientDataSetDataDefinition;
@@ -34,11 +40,17 @@ import org.openmrs.module.reporting.dataset.definition.EncounterDataSetDefinitio
 import org.openmrs.module.reporting.dataset.definition.MultiPeriodIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.definition.DefinitionContext;
 import org.openmrs.module.reporting.evaluation.Definition;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.module.reporting.evaluation.parameter.Parameter;
+import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
+import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.reporting.web.controller.ManageDefinitionsController.DefinitionNameComparator;
 import org.openmrs.propertyeditor.CohortEditor;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.FileCopyUtils;
@@ -107,6 +119,7 @@ public class ReportFormController extends SimpleFormController {
 		BirtReport report = (BirtReport) obj;
 		
 		String mapped = ServletRequestUtils.getStringParameter(request, "mapped", "");
+		String removeMappedProperty = ServletRequestUtils.getStringParameter(request, "removeMappedProperty", "");
 		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		log.debug("Birt report object: " + report);
@@ -173,17 +186,133 @@ public class ReportFormController extends SimpleFormController {
 				response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getId() + ".rptdesign");
 				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
 			}
+			else if (request.getParameter("removeReportDesign") != null) { 
+				String uuid = request.getParameter("uuid");
+				ReportService rs = Context.getService(ReportService.class);
+		    	ReportDesign design = rs.getReportDesignByUuid(uuid);
+		    	rs.purgeReportDesign(design);		    	
+			}
 			else if ("mappedForm".equals(mapped)) {
 				String newKey = request.getParameter("newKey");
 				String definitionName = ServletRequestUtils.getStringParameter(request, "definitionName", "");
+				String uuid = request.getParameter("uuid");
+				String property  = request.getParameter("property");
+				Class<? extends Parameterizable> type = (Class<? extends Parameterizable>) Class.forName(request.getParameter("type")); 
+				String mappedUuid = request.getParameter("mappedUuid");
+				String currentKey =  request.getParameter("currentKey");
+				
+		    	Parameterizable parent = ParameterizableUtil.getParameterizable(uuid, type);
+		    	Field f = ReflectionUtil.getField(type, property);
+		    	Class<?> fieldType = ReflectionUtil.getFieldType(f);
+		    	
+				Class<? extends Parameterizable> mappedType = null;
+				if (StringUtils.isNotEmpty(property)) {
+					mappedType = ParameterizableUtil.getMappedType(type, property);
+				}
+				
+				Mapped m = null;
+				Object previousValue = ReflectionUtil.getPropertyValue(parent, property);
+				
+				if (StringUtils.isNotEmpty(mappedUuid)) {
+					Parameterizable valToSet = ParameterizableUtil.getParameterizable(mappedUuid, mappedType);
+		    		
+					m = new Mapped();
+		    		m.setParameterizable(valToSet);
+		    		
+		        	for (Parameter p : valToSet.getParameters()) {
+		        		String valueType = request.getParameterValues("valueType_"+p.getName())[0];
+		        		String[] value = request.getParameterValues(valueType+"Value_"+p.getName());
+		        		if (value != null && value.length > 0) {
+		    	    		Object paramValue = null;
+		    	    		if (StringUtils.isEmpty(valueType) || valueType.equals("fixed")) {
+		    	    			String fixedValueString = OpenmrsUtil.join(Arrays.asList(value), ",");
+		    	    			paramValue = WidgetUtil.parseInput(fixedValueString, p.getType());
+		    	    		}
+		    	    		else {
+		    	    			paramValue = "${"+value[0]+"}";
+		    	    		}
+		    	    		if (paramValue != null) {
+		    	    			m.addParameterMapping(p.getName(), paramValue);
+		    	    		}
+		        		}
+		        	}
+				}
+				
+		        if (previousValue != null || m != null) {
+	        		
+		    		if (List.class.isAssignableFrom(fieldType)) {
+		    			List newValue = null;
+		    			if (previousValue == null) {
+		    				newValue = new ArrayList();
+		    				newValue.add(m);
+		    			}
+		    			else if (m != null) {
+		    				newValue = (List)previousValue;
+		    				if (StringUtils.isEmpty(newKey)) {
+		    					newValue.add(m);
+		    				}
+		    				else {
+		    					int listIndex = Integer.parseInt(newKey);
+		    					newValue.set(listIndex, m);
+		    				}
+		    			}
+		    			ReflectionUtil.setPropertyValue(parent, f, newValue);
+		    		}
+		    		else if (Map.class.isAssignableFrom(fieldType)) {
+		    			if (m != null) {
+		    				Map newValue = (previousValue == null ? new HashMap() : (Map)previousValue);
+		    				newValue.put(newKey, m);
+		        			if (!newKey.equals(currentKey) && currentKey != null) {
+		        				newValue.remove(currentKey);
+		        			}
+		       				ReflectionUtil.setPropertyValue(parent, f, newValue);
+		    			}
+		    		}
+		    		else if (Mapped.class.isAssignableFrom(fieldType)) {
+		    			ReflectionUtil.setPropertyValue(parent, f, m);
+		    		}
+		    		else {
+		    			throw new IllegalArgumentException("Cannot set property of type: " + fieldType + " to " + m);
+		    		}
+		    	}
+		    	
+		    	ParameterizableUtil.saveParameterizable(parent);					    	
+		    
 				System.out.println("keyName " + newKey);
-				System.out.println("definitionName " + definitionName);				
+				System.out.println("definitionName " + definitionName);	
+				System.out.println("mappedUuid " + mappedUuid);	
+			}
+			else if ("removeDatasetMapping".equals(removeMappedProperty)) {				
+				String uuid = request.getParameter("uuid");
+				String property  = request.getParameter("property");
+				Class<? extends Parameterizable> type = (Class<? extends Parameterizable>) Class.forName(request.getParameter("type")); 				
+				String currentKey =  request.getParameter("currentKey");
+				
+				Parameterizable parent = ParameterizableUtil.getParameterizable(uuid, type);
+		    	Field f = ReflectionUtil.getField(type, property);
+		    	Class<?> fieldType = ReflectionUtil.getFieldType(f);	
+				Object previousValue = ReflectionUtil.getPropertyValue(parent, property);
+				
+		        if (List.class.isAssignableFrom(fieldType)) {
+		        	List v = (List)previousValue;
+					int listIndex = Integer.parseInt(currentKey);
+					v.remove(listIndex);
+		        }
+				else if (Map.class.isAssignableFrom(fieldType)) {
+					Map v = (Map)previousValue;
+					v.remove(currentKey);
+				}
+				else {
+		        	throw new IllegalArgumentException("Cannot remove property in fieldType: " + fieldType + " with key " + currentKey);
+		    	}
+		        
+		        ReflectionUtil.setPropertyValue(parent, f, previousValue);
+		    	ParameterizableUtil.saveParameterizable(parent); 
+		    	
 			}
 			else { 
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.noAction");
-			} 
-			
-			
+			} 			
 			
 		} catch (Exception e) { 
 			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.general.error");			
@@ -227,11 +356,32 @@ public class ReportFormController extends SimpleFormController {
 
     	if (reportId != null) {    		
     		report = reportService.getReport(Integer.valueOf(reportId));
+    	}    	
+ 	    	
+    	ReportDefinitionService rs = Context.getService(ReportDefinitionService.class); 
+    	ReportDefinition r = rs.getDefinition(uuid, ReportDefinition.class); 
+    	data.put("reportt", r);
+    	
+		List<DataSetDefinition> dataSetDefinitionList = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(false);
+    	
+    	List<String> dsdNames = new ArrayList<String>();
+    	SortedMap<String, String> dsdProperties = new TreeMap<String, String>();
+    	for (DataSetDefinition p : dataSetDefinitionList) {
+    		dsdProperties.put(p.getName(), p.getUuid()); 
+    		dsdNames.add(p.getName());
+    	}
+    	Collections.sort(dsdNames, String.CASE_INSENSITIVE_ORDER);
+    	
+    	data.put("dataSetDefinitionNames", dsdNames);
+    	data.put("dataSetDefinitionProperties", dsdProperties);    	
+    	
+    	List<String> existingKeys = new ArrayList<String>();
+    	for ( String key : r.getDataSetDefinitions().keySet() ) {    		
+    		existingKeys.add(key);    		
     	}
     	
-    	ReportDefinitionService rs = Context.getService(ReportDefinitionService.class); 
-    	ReportDefinition r = rs.getDefinition(uuid, ReportDefinition.class);
-		data.put("reportt", r);
+    	data.put("existingKeys", existingKeys);    	
+    	
 		
 		if (reportId != null){
 			List<ReportDesign> designs = new ArrayList<ReportDesign>();
@@ -243,16 +393,6 @@ public class ReportFormController extends SimpleFormController {
 			}		
 			data.put("designs", designs);
 		}
-		
-		List<DataSetDefinition> dataSetDefinitionList = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(false);
-    	
-    	List<String> dsdNames = new ArrayList<String>();
-    	for (DataSetDefinition p : dataSetDefinitionList) {
-    		dsdNames.add(p.getName());
-    	}
-    	Collections.sort(dsdNames, String.CASE_INSENSITIVE_ORDER);
-    	
-    	data.put("dataSetDefinitionNames", dsdNames);
 		
     	return data;
     }

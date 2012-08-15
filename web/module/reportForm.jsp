@@ -5,7 +5,6 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-
 <script type="text/javascript" language="javascript">
 	/**
 	 *  Submits a post request to the server to remove the selected parameter.
@@ -41,6 +40,29 @@
 			if (button.value == "Expand") button.value = "Collapse";
 		}
 	}	
+	
+	function deleteMapping(keyName) {
+		if (confirm("Please confirm you wish to remove " + keyName)) {
+		$j.ajax({
+				  type: "POST",
+				  url: "report.form",				  
+				  data: { removeMappedProperty: "removeDatasetMapping", type : "${report.reportDefinition['class'].name}", uuid : "${report.reportDefinition.uuid}", property : "dataSetDefinitions", currentKey : keyName  },
+				  success: function() { window.location.reload(true); },
+				})			
+		}
+	}
+	
+	function removeReportDesign(reportUuid, name) {
+		if (confirm("Please confirm you wish to remove " + name + ".rptdesign ?")) {
+		$j.ajax({
+				  type: "POST",
+				  url: "report.form",				  
+				  data: { uuid : reportUuid, removeReportDesign : "removeReportDesign" },
+				  success: function() { window.location.reload(true); },
+				})			
+		}
+	}
+	
 	
 </script>
 
@@ -177,23 +199,21 @@ h4 {
 						
 							<div <c:if test="${model.size != null}">style="width:${model.size};"</c:if>>
 								<b class="boxHeader" style="font-weight:bold; text-align:right;">
-									<span style="float:left;">${model.label}</span>
-									<a style="color:lightyellow;" href="#" id="${model.id}EditLink">Edit</a>
+									<span style="float:left;">Basic Details</span>									
 								</b>
 								<div class="box">
 									<div class="metadataForm">
 										<div class="metadataField">
-											<label class="inline">Name:</label>${model.obj.name}
+											<label class="inline">Name:</label>${reportt.name}
 										</div>
 										<div class="metadataField">
-											<label class="inline" for="type">Query Type:</label>
-											<rpt:displayLabel type="${model.obj['class'].name}"/>			
+											<label class="inline" for="type">Query Type:</label>																								
 										</div>				
 										<div class="metadataField">
 											<label class="inline">Description:</label>
 											<c:choose>
-												<c:when test="${!empty model.obj.description}">
-													${model.obj.description}
+												<c:when test="${!empty reportt.description}">
+													${reportt.description}
 												</c:when>
 												<c:otherwise>
 													<i><spring:message code="reporting.none"/></i>							
@@ -202,8 +222,7 @@ h4 {
 										</div>
 									</div>
 								</div>
-							</div>
-													
+							</div>													
 						
 							<br/>
 							<b class="boxHeader">Output Designs</b>
@@ -222,7 +241,7 @@ h4 {
 												<td nowrap><a href="#" id="${design.uuid}DesignEditLink">${design.name}</a></td>
 												<td width="100%">${design.rendererType.simpleName}</td>
 												<td nowrap><a href="downloadReportDesign.form?id=${design.id}">RPTDESIGN</a></td>
-												<td nowrap align="center"><a href="#" id="${design.uuid}DesignRemoveLink">[X]</a></td>
+												<td nowrap align="center"><a href="javascript:removeReportDesign('${design.uuid}', '${design.name}');">[X]</a></td>												
 											</tr>
 										</c:forEach>
 									</table>
@@ -246,16 +265,16 @@ h4 {
 						</td>
 						<td valign="top" style="width:1%;"></td>
 						<td valign="top" style="width:64%;">
-						<b class="boxHeader">Dataset Definitions</b>
-						<div class="box" style="vertical-align:top;">
+						<b class="boxHeader">Dataset Definitions</b>						
+						<div id="dataSetDefinitionBox" class="box" style="vertical-align:top;">
 						<c:if test="${!empty reportt.dataSetDefinitions}">	
 							<c:forEach items="${reportt.dataSetDefinitions}" var="dsd" varStatus="dsdStatus">
 								
 									<span>
 										<span style="font-weight:bold;float:left;">${dsd.key}</span>&nbsp;&nbsp;&nbsp;
 										<span>
-											<a style="color:blue;" href="#">Edit Mappings</a>&nbsp;|&nbsp;
-											<a style="color:blue;" href="#">Delete</a>
+											&nbsp;|&nbsp;
+											<a style="color:blue;" href="javascript:deleteMapping('${dsd.key}');">Delete</a>											
 										</span>
 									</span>									
 
@@ -274,7 +293,7 @@ h4 {
 							
 							</c:forEach>
 							</c:if>
-							<openmrs:portlet url="mappedPropertyForm" id="mappedPropertyForm" moduleId="birt" />
+							<openmrs:portlet url="mappedPropertyForm" id="mappedPropertyForm" moduleId="birt"/>
 							</div>
 						</td>
 					</tr>

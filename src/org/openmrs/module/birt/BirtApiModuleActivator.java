@@ -21,12 +21,6 @@ public class BirtApiModuleActivator  {
 	 */
 	public void shutdown() {
 		log.debug("Shutting down BIRT API Reporting Module");	
-	}
-	
-	
-
-
-
-	
+	}	
 	
 }
