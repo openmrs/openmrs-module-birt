@@ -395,10 +395,11 @@ public class ReportFormController extends SimpleFormController {
     	
     	data.put("existingKeys", existingKeys);     	
     	
-    	ReportService rrs = Context.getService(ReportService.class);
-    	String reportDesignUuid = request.getParameter("reportDesignUuid");
-    	String reportId = request.getParameter("reportId");		
-		ReportDesign design = null;
+    	try {
+    		ReportService rrs = Context.getService(ReportService.class);
+    		String reportDesignUuid = request.getParameter("reportDesignUuid");
+    		String reportId = request.getParameter("reportId");		
+    		ReportDesign design = null;
 /*		if (reportId != null ){
 			if ( reportService.getReportDesign(reportId) != null )
 			design = rrs.getReportDesignByUuid(reportDesignUuid); 
@@ -406,22 +407,30 @@ public class ReportFormController extends SimpleFormController {
 				reportDesignUuid = "";		
 		} */
 		
-		if ( rrs.getReportDesignByUuid(reportDesignUuid) == null )
-			reportDesignUuid = "";
+    		if ( rrs.getReportDesignByUuid(reportDesignUuid) == null )
+    			reportDesignUuid = "";
 		
-		if (StringUtils.isNotEmpty(reportDesignUuid)) {
-			design = rrs.getReportDesignByUuid(reportDesignUuid);
-		}
-		else if ( reportService.getReportDesign(Integer.valueOf(reportId)) != null ) {
-			design = reportService.getReportDesign(Integer.valueOf(reportId));
-		}
-		else  {
-			design = new ReportDesign();
-			if (StringUtils.isNotEmpty(uuid)) {
-				design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+    		if (StringUtils.isNotEmpty(reportDesignUuid)) {
+    			design = rrs.getReportDesignByUuid(reportDesignUuid);
+    		}
+    		else if ( reportId != null ) {
+    			design = reportService.getReportDesign(Integer.valueOf(reportId));
+    			if (design == null) {
+    				design = new ReportDesign();
+    				if (StringUtils.isNotEmpty(uuid)) {
+    					design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+    				}
+    			}
+    		}
+    		else {
+				design = new ReportDesign();
+				if (StringUtils.isNotEmpty(uuid)) {
+					design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+				}
 			}
-		}
-		data.put("design", design);
+    		data.put("design", design);
+		
+
 		
 /*		String reportId = request.getParameter("reportId");
 		ReportService rrs = Context.getService(ReportService.class);
@@ -442,7 +451,7 @@ public class ReportFormController extends SimpleFormController {
     	if ( design != null ) {
     		if (!design.getResources().isEmpty()) {
     			for ( ReportDesignResource rdr : design.getResources() ) {
-    				if ( rdr.getReportDesign().getId() == design.getId() ) {
+    				if ( rdr.getReportDesign().getId().equals(design.getId()) ) {
     					resource = rdr;
     					break;
     				}
@@ -450,6 +459,10 @@ public class ReportFormController extends SimpleFormController {
     			data.put("resource", resource);
     		}
     	}
+    	
+    	} catch(NumberFormatException nfe) {
+ 		   System.out.println("Could not parse " + nfe);
+ 	} 
 		
     	return data;
     }
