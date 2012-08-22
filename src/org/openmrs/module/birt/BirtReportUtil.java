@@ -132,7 +132,7 @@ public class BirtReportUtil {
 				
 		StringBuffer buffer = new StringBuffer();
 		buffer.
-			append(getOutputDirectory()).append(File.separator).
+			append(getOutputDirectory().replace("/", File.separator)).append(File.separator).
 			append(name.replace(" ", "_")).
 			append("-").append(BirtConstants.DATE_FORMATTER.format(new Date())).
 			append(".").append(extension);

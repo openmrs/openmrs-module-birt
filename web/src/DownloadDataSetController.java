@@ -1,5 +1,3 @@
-package org.openmrs.module.birt.web.controller;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,14 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 
-/**
- *
- */
-public class DownloadReportDesignController implements Controller {
-	
-    /** Logger for this class and subclasses */
+public class DownloadDataSetController implements Controller {
+	/** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
-
+    
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		/**
@@ -35,12 +29,11 @@ public class DownloadReportDesignController implements Controller {
 		try { 
 			ReportService reportService = Context.getService(ReportService.class);
 			String uuid = request.getParameter("uuid"); 
-			String id = request.getParameter("id");
-			ReportDesign reportDesign = reportService.getReportDesignByUuid(uuid);					
+			ReportDesign reportDesign = reportService.getReportDesignByUuid(request.getParameter("uuid"));					
 					
 			// Get the report design by ID
 			if (reportDesign == null) { 
-				reportDesign = reportService.getReportDesign(Integer.valueOf(id));
+				reportDesign = reportService.getReportDesign(Integer.valueOf(request.getParameter("id")));
 			}
 				
 			// Get the first report design resource 
@@ -65,8 +58,4 @@ public class DownloadReportDesignController implements Controller {
 		}
 	}
 
-	
-    
 }
-
-

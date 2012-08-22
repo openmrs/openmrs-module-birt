@@ -55,6 +55,7 @@
 			<input type="hidden" name="mapped" value="mappedForm"/>	
 			<input type="hidden" name="type" value="${report.reportDefinition['class'].name}"/>
 			<input type="hidden" name="uuid" value="${report.reportDefinition.uuid}"/>
+			<input type="hidden" name="reportId" value="${report.reportDefinition.id}"/>
 			<input type="hidden" name="currentKey" value=""/>
 			<input type="hidden" name="property" value="dataSetDefinitions"/>											
 				<table>

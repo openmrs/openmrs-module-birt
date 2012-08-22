@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -20,9 +21,11 @@ import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
+import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.web.WebConstants;
 import org.springframework.util.FileCopyUtils;
@@ -33,6 +36,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
 
 public class UploadReportController extends SimpleFormController {
 
@@ -52,6 +56,8 @@ public class UploadReportController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
 		String reportId = null;
+		String reportDesignUuid = null;
+		String uuid = null;
 		if (Context.isAuthenticated()) {
 			try {
 				if (request instanceof MultipartHttpServletRequest) {
@@ -60,6 +66,12 @@ public class UploadReportController extends SimpleFormController {
 					MultipartFile reportFile = (MultipartFile) multipartRequest.getFile("reportFile");
 					reportId = multipartRequest.getParameter("reportId");
 					String fileName = reportFile.getOriginalFilename();
+					reportDesignUuid = multipartRequest.getParameter("reportDesignUuid");
+					String description = multipartRequest.getParameter("description");
+					String name = multipartRequest.getParameter("name");
+					//String reportDefinitionUuid = multipartRequest.getParameter("reportDefinitionUuid");
+					String resourceUuid = multipartRequest.getParameter("resourceUuid");
+					uuid = multipartRequest.getParameter("uuid");
 
 					// Check to see if the report exists already 
 
@@ -74,14 +86,33 @@ public class UploadReportController extends SimpleFormController {
 					else { 
 
 						ReportService rs = Context.getService(ReportService.class);
+							
+						ReportDesign design = null;
+						if (StringUtils.isNotEmpty(reportDesignUuid)) {
+							design = rs.getReportDesignByUuid(reportDesignUuid);
+						}
+						if (design == null) {
+							design = new ReportDesign();
+						}
+						
+						Class<? extends ReportRenderer> rendererType = (Class<? extends ReportRenderer>) Class.forName(request.getParameter("rendererType")); 
 
-						ReportDesign design = new ReportDesign();
+						design.setName(name);
+						design.setDescription(description);
+						design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+						//design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinition(Integer.parseInt(reportId)));
+						design.setRendererType(rendererType);
+						
+						ReportDesignResource resource = null;
+						if (StringUtils.isNotEmpty(resourceUuid)) { 
+							resource = rs.getReportDesignByUuid(reportDesignUuid).getResourceByUuid(resourceUuid);
+						}
+						if (resource == null) {
+							resource = new ReportDesignResource();
+						}
+						
 
-						design.setName(fileName);
-						design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinition(Integer.parseInt(reportId)));
-						design.setRendererType(BirtTemplateRenderer.class);
-
-						ReportDesignResource resource = new ReportDesignResource();
+						//ReportDesignResource resource = new ReportDesignResource();
 						int index = fileName.lastIndexOf(".");
 						resource.setReportDesign(design);
 						resource.setContentType(reportFile.getContentType());
@@ -91,7 +122,9 @@ public class UploadReportController extends SimpleFormController {
 						design.getResources().add(resource);
 
 						design = rs.saveReportDesign(design);
-					}
+						reportDesignUuid = design.getUuid();
+					}				
+					
 
 					// Copy uploaded file 
 					if (reportFile != null && !reportFile.isEmpty()) {
@@ -130,7 +163,7 @@ public class UploadReportController extends SimpleFormController {
 
 			// redirect to the report design page if a successful upload occurred
 			if (reportId != null) { 
-				view = request.getContextPath() + "/module/birt/report.form?reportId=" + reportId;
+				view = request.getContextPath() + "/module/birt/report.form?reportId=" + reportId + "&uuid=" + uuid + "&reportDesignUuid=" + reportDesignUuid;
 			}
 			else { 
 				view = getSuccessView();
@@ -150,8 +183,6 @@ public class UploadReportController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-/*		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		return reportService.getReports();*/
 		
 		List<ReportDesign> report = new ArrayList<ReportDesign>();
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);

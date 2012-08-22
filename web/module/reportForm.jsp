@@ -5,6 +5,8 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<%@ taglib prefix="wgt" uri="/WEB-INF/view/module/htmlwidgets/resources/htmlwidgets.tld" %>
+
 <script type="text/javascript" language="javascript">
 	/**
 	 *  Submits a post request to the server to remove the selected parameter.
@@ -53,7 +55,7 @@
 	}
 	
 	function removeReportDesign(reportUuid, name) {
-		if (confirm("Please confirm you wish to remove " + name + ".rptdesign ?")) {
+		if (confirm("Please confirm you wish to remove " + name + " report?")) {
 		$j.ajax({
 				  type: "POST",
 				  url: "report.form",				  
@@ -61,7 +63,80 @@
 				  success: function() { window.location.reload(true); },
 				})			
 		}
-	}
+	} 
+	
+	$j(document).ready(function() {
+		
+
+		$j('#editReportDesignPopup').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="birt.Report.edit" javaScriptEscape="true"/>',
+			width: '50%'
+		});
+		
+		$j('#editReportDesignPopupLink').click(function() {
+			$j('#editReportDesignPopup').dialog('open');
+		});
+		
+		$j('#${design.uuid}DesignRemoveLink').click(function(event){					
+			if (confirm('Please confirm you wish to permanantly delete <b>${design.name}</b>')) {
+				document.location.href='${pageContext.request.contextPath}/module/reporting/reports/deleteReportDesign.form?uuid=${design.uuid}&returnUrl=${pageUrl}';
+			}
+		});
+		
+		$j('#${design.uuid}DesignEditLink').click(function(event){					
+			$j('#editReportDesignPopup').dialog('open');
+		});	
+		
+		$j('#newReportDesignPopupLink').click(function() {
+			$j('#addReportDesignPopup').dialog('open');
+		});
+		
+		$j('#newReportDesignCancelButton').click(function(event){			
+			$j('#addReportDesignPopup').dialog('close');
+		});
+		
+		$j('#addReportDesignPopup').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="birt.Report.new" javaScriptEscape="true"/>',			
+			width: '50%'
+		});
+		
+		$j('#designSubmitButton').click(function(event){
+			$j('#uploadReportForm').submit();			
+		});
+		
+		$j('#designCancelButton').click(function(event){			
+			$j('#editReportDesignPopup').dialog('close');
+		});
+		
+		$j('#designCancelButton').click(function(event){			
+			$j('#addReportDesignPopup').dialog('close');
+		});
+		
+		$j('#editBasicDetailsPopup').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="birt.editBasicDetails" javaScriptEscape="true"/>',			
+			width: '50%'
+		});
+		
+		
+		$j('#reportEditLink').click(function() {
+			$j('#editBasicDetailsPopup').dialog('open');
+		});
+		
+		$j('#basicDetailsSubmitButton').click(function(event){
+			$j('#editDetailsReportForm').submit();			
+		});
+		
+		$j('#basicDetailsCancelButton').click(function(event){			
+			$j('#editBasicDetailsPopup').dialog('close');
+		});
+		
+	});
 	
 	
 </script>
@@ -136,7 +211,7 @@ h4 {
 	div.metadataField label.desc { display:block; }
 	div.metadataField label.inline { display:inline; }
 </style>
-
+<div class="spacer" style="height: 15px"><!--  --></div>
 <h2>
 	<c:choose>
 		<c:when test="${empty report.reportDefinition.id}">
@@ -162,7 +237,7 @@ h4 {
 					<spring:message code="birt.create.title"/>
 				</b>
 				<div class="box">
-					<form id="reportForm" method="post" action="report.form?type=org.openmrs.module.reporting.dataset.definition.DataSetDefinition">
+					<form id="reportForm" method="post" action="report.form?uuid=${report.reportDefinition.uuid}&type=${report.reportDefinition['class'].name}">
 						<div style="margin:0; padding:0; width:100%;">
 								<c:if test="${!(report.reportDefinition.id == null)}" >
 									<spring:bind path="report.reportDefinition.id">
@@ -192,28 +267,30 @@ h4 {
 					</form>
 				</div>				
 			</c:when>
-			<c:otherwise>
+			<c:otherwise>			
+
+			
+			
 				<table style="font-size:small; width:100%;">
 					<tr>
 						<td valign="top" style="width:35%;">
 						
-							<div <c:if test="${model.size != null}">style="width:${model.size};"</c:if>>
+							<div>
 								<b class="boxHeader" style="font-weight:bold; text-align:right;">
-									<span style="float:left;">Basic Details</span>									
-								</b>
+									<span style="float:left;">Basic Details</span>
+									<a style="color:lightyellow;" href="#" id="reportEditLink">Edit</a>
+								</b>		
+								
 								<div class="box">
 									<div class="metadataForm">
 										<div class="metadataField">
-											<label class="inline">Name:</label>${reportt.name}
-										</div>
-										<div class="metadataField">
-											<label class="inline" for="type">Query Type:</label>																								
-										</div>				
+											<label class="inline">Name:</label>${report.reportDefinition.name}
+										</div>			
 										<div class="metadataField">
 											<label class="inline">Description:</label>
 											<c:choose>
-												<c:when test="${!empty reportt.description}">
-													${reportt.description}
+												<c:when test="${!empty report.reportDefinition.description}">
+													${report.reportDefinition.description}
 												</c:when>
 												<c:otherwise>
 													<i><spring:message code="reporting.none"/></i>							
@@ -221,14 +298,39 @@ h4 {
 											</c:choose>
 										</div>
 									</div>
+									
+									
+				<div id="editBasicDetailsPopup">
+					<form id="editDetailsReportForm" method="post" action="report.form?reportId=${report.reportDefinition.id}&uuid=${report.reportDefinition.uuid}&type=${report.reportDefinition['class'].name}">						
+						<input type="hidden" name="editReportDetails" value="editreportdetails"/>
+						
+						<div style="margin:0; padding:0; width:100%;">
+							<div class="metadataField">
+								<label class="desc" for="name">Name</label>
+								<input type="text" id="name" tabindex="1" name="name" value="${report.reportDefinition.name}" size="50"/>
+							</div>
+							<div class="metadataField">
+								<label class="desc" for="description">Description</label>			
+								<textarea id="description" cols="80" rows="10" tabindex="2" name="description">${report.reportDefinition.description}</textarea>
+							</div>
+						</div>
+						<hr style="color:blue;"/>
+						<div style="width:100%; text-align:left;">
+							<input tabindex="3" type="button" id="basicDetailsSubmitButton" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
+							<input tabindex="4" type="button" id="basicDetailsCancelButton" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
+						</div>
+					</form>
+				</div>										
+									
+									
 								</div>
 							</div>													
 						
 							<br/>
 							<b class="boxHeader">Output Designs</b>
 							<div class="box">
-							<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">
-								<c:if test="${!empty designs}">
+							
+							<c:if test="${!empty design.id}">
 									<table width="100%" style="margin-bottom:5px;">
 										<tr>
 											<th style="text-align:left; border-bottom:1px solid black;">Name</th>
@@ -236,29 +338,73 @@ h4 {
 											<th style="text-align:left; border-bottom:1px solid black;">Download</th>
 											<th style="border-bottom:1px solid black;">[X]</th>
 										</tr>
-										<c:forEach items="${designs}" var="design" varStatus="designStatus">
+										
 											<tr>
 												<td nowrap><a href="#" id="${design.uuid}DesignEditLink">${design.name}</a></td>
 												<td width="100%">${design.rendererType.simpleName}</td>
-												<td nowrap><a href="downloadReportDesign.form?id=${design.id}">RPTDESIGN</a></td>
+												<td nowrap><a href="downloadReportDesign.form?uuid=${design.uuid}&id=${design.id}">RPTDESIGN</a></td>
 												<td nowrap align="center"><a href="javascript:removeReportDesign('${design.uuid}', '${design.name}');">[X]</a></td>												
 											</tr>
-										</c:forEach>
+										
 									</table>
 								</c:if>
+								<br/>
+						<c:choose>		
+								<c:when test="${!empty design.id}">
+									<a style="font-weight:bold;" href="#" id="editReportDesignPopupLink">[+] Edit</a>
+									<div id="editReportDesignPopup">
+								</c:when>
+								<c:otherwise>
+									<a style="font-weight:bold;" href="#" id="newReportDesignPopupLink">[+] Add</a>
+									<div id="addReportDesignPopup">
+								</c:otherwise>			
+						</c:choose>	
+							
+							
+							<form id="uploadReportForm" method="post" action="uploadReport.form" enctype="multipart/form-data">									
+									
+									<input type="hidden" name="resourceUuid" value="${resource.uuid}" />
+									<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
+									<input type="hidden" name="uuid" value="${report.reportDefinition.uuid}"/>
+									<c:if test="${!empty design.id}">
+										<input type="hidden" name="reportDesignUuid" value="${design.uuid}" />
+									</c:if>								
+
+								<div style="margin:0; padding:0; width:100%;">
+
+									<div class="metadataField">
+										<label class="desc" for="name">Name</label>								
+										<input type="text" name="name" tabindex="1" value="${design.name}" size="50"/>											
+									</div>									
+									<div class="metadataField">
+										<label class="desc" for="description">Description</label>
+										<wgt:widget id="description" name="description" object="${design}" property="description" attributes="cols=38|rows=2"/>																			
+									</div>									
+									<div class="metadataField">
+										<label class="desc" for="description">Report Definition</label>										
+										<span style="color:navy;">${report.reportDefinition.name}</span>																				
+									</div>									
+									<div class="metadataField">
+										<label class="desc" for="description">Renderer Type</label>																																	
+										<wgt:widget id="rendererType" name="rendererType" object="${design}" property="rendererType" attributes="type=org.openmrs.module.reporting.report.renderer.ReportRenderer|simple=true"/>										
+									</div>									
+									<div class="metadataField">
+										<label class="desc" for="description">Resource Files</label>
+										<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
+										<br/><c:if test="${!empty resource}"><a style="color:blue;" href="#">"${resource.name}.${resource.extension}"</a></c:if>
+										<input type="file" name="reportFile" size="40" />																				
+									</div>
+									<br/><br/><br/>								
+								</div>
+								<hr style="color:blue;"/>
+								<div style="width:100%; text-align:left;">
+									<input type="button" id="designCancelButton" class="ui-button ui-state-default ui-corner-all" value="Cancel"/>
+									<input type="button" id="designSubmitButton" class="ui-button ui-state-default ui-corner-all" value="Submit"/>
+								</div>				
+							</form>	
+						
 								
-										<table>
-											<tr>
-												<td><spring:message code="birt.report.reportDesign"/></td>
-												<td>
-													<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
-													<input type="file" name="reportFile" size="40" />
-													<input type="submit" class="smallButton" value='<spring:message code="birt.reportDesign.upload" />' />
-												</td>
-											</tr>
-										</table>				
-									</form>	
-								
+							</div>
 							</div>
 							<br/>							
 						
@@ -273,11 +419,10 @@ h4 {
 									<span>
 										<span style="font-weight:bold;float:left;">${dsd.key}</span>&nbsp;&nbsp;&nbsp;
 										<span>
-											&nbsp;|&nbsp;
+											<a style="color:blue;" href="downloadDataSet.form?uuid=${dsd.value.parameterizable.uuid}">Download CSV</a>&nbsp;|&nbsp;
 											<a style="color:blue;" href="javascript:deleteMapping('${dsd.key}');">Delete</a>											
 										</span>
 									</span>									
-
 												
 									<table style="font-size:smaller; color:grey; border:1px solid black;">
 										<tr>
@@ -286,8 +431,7 @@ h4 {
 												(<a href="../reporting/definition/editDefinition.form?type=${dsd.value.parameterizable['class'].name}&uuid=${dsd.value.parameterizable.uuid}">Edit this Definition</a>)
 											</th>
 										</tr>										
-									</table>
-										
+									</table>									
 							
 							<br/>
 							

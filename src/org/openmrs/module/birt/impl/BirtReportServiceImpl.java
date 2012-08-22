@@ -138,17 +138,12 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 	/**
 	 * Convenience method
-	 * @return	report object service.
+	 * @return	report definition service.
 	 */
 
-/*	public ReportObjectService getReportObjectService() { 
-		Context.getService(ReportObjectService.class);
-	}*/
-	
-
-/*	public ReportObjectService getReportObjectService() { 
-		return Context.getReportObjectService();
-	}*/
+	public ReportDefinitionService getReportDefinitionService() { 
+		return Context.getService(ReportDefinitionService.class);
+	}
 
 	public void getDatasets() {
 /*		DataSetDefinitionService service = Context.getService(DataSetDefinitionService.class);
@@ -193,6 +188,27 @@ public class BirtReportServiceImpl implements BirtReportService {
 		return designs;
 	}
 	
+	/**
+	 * Gets the report design with the given report identifier.
+	 * 
+	 * @param reportId
+	 * @return
+	 */
+	public ReportDesign getReportDesign(Integer reportId) { 
+
+		ReportDesign design = null; 
+		
+		List<ReportDesign> reportObjs = getReportDesigns();
+		for (ReportDesign rep : reportObjs) {			
+			if( rep.getReportDefinition().getId().equals(reportId)) {
+				design = rep;
+				return design;
+			}
+		}
+
+		return design;
+	}
+	
 	
 	/**
 	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
@@ -229,7 +245,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	    	
 			birtReports.add(birtReport);
 		}
-
+		
 		return birtReports;
 	}
 	
@@ -267,7 +283,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 			report.setReportDefinition(reportDefinition);		
 			
 			// Assumes there's at most one report design with one report design resource
-			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, BirtTemplateRenderer.class, false);
+			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, null, false);
 			
 			if (!reportDesigns.isEmpty()) { 
 				ReportDesign reportDesign = reportDesigns.iterator().next();
@@ -291,47 +307,48 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 */
 	public List<BirtReport> filterReports(String searchTerm) {
 		
-		List<BirtReport> reports = new Vector<BirtReport>();
-		
 		if(searchTerm == null) { 
 			searchTerm = BirtConstants.ALL_REPORTS;
 		}
-	
-		ReportDefinitionService reportService = Context.getService(ReportDefinitionService.class);	
 		
-		List<ReportDefinition> reportDefs = reportService.getAllDefinitions(true);
+		List<BirtReport> birtReports = new Vector<BirtReport>();		
+		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);			
+		List<ReportDefinition> reportDefinitions = reportDefinitionService.getAllDefinitions(true);
 		
-		for (ReportDefinition rep : reportDefs)
-		{
-			BirtReport report = new BirtReport();			
-			report.setReportDefinition(rep);
-			reports.add(report);
-		}
+		ReportService reportService = Context.getService(ReportService.class);			
+		
+		for (ReportDefinition reportDefinition : reportDefinitions) {
+			BirtReport birtReport = new BirtReport();			
+			birtReport.setReportDefinition(reportDefinition); 
+			
+			// Assumes there's at most one report design with one report design resource
+			List<ReportDesign> reportDesigns = reportService.getReportDesigns(reportDefinition, null, false);
 
-		return reports;
-		
-		
-		/*
-		List<BirtReport> reports = new Vector<BirtReport>();		
-
-		if(searchTerm == null) { 
-			searchTerm = BirtConstants.ALL_REPORTS;
-		}
-
-		// Iterate through the report definitions and wrap each with a BIRT report
-		List<ReportDefinition> reportObjs = getReportDefinitions();
-		for (AbstractReportObject obj : reportObjs) { 
-			ReportDefinition reportDefinition = (ReportDefinition) obj;
-			if (BirtConstants.ALL_REPORTS.equalsIgnoreCase(searchTerm.toLowerCase()) || 
-					reportDefinition.getName().toLowerCase().contains(searchTerm.toLowerCase())) { 
-				reports.add(getReportWithoutParameters(reportDefinition));
+			if (!reportDesigns.isEmpty()) { 
+				ReportDesign reportDesign = reportDesigns.iterator().next();
+				birtReport.setReportDesign(reportDesign); 
+				
+				if (reportDesign.getResources().isEmpty()) { 
+					ReportDesignResource reportDesignResource = reportDesign.getResources().iterator().next();
+					birtReport.setReportDesignResource(reportDesignResource);
+				}
 			}
-		}
-		sortByName(reports);
+			
+	    	List<DataSetDefinition> dataSetDefinitions = DefinitionContext.getDataSetDefinitionService().getAllDefinitions(true);
+	    	if (!dataSetDefinitions.isEmpty()) {
+	    		DataSetDefinition dataSetDefinition = dataSetDefinitions.iterator().next();
+	    		birtReport.setDataSetDefinition(dataSetDefinition);
+	    	}
+	    	
+	    	if (BirtConstants.ALL_REPORTS.equalsIgnoreCase(searchTerm.toLowerCase()) || 
+	    			reportDefinition.getName().toLowerCase().contains(searchTerm.toLowerCase())) { 
+	    		birtReports.add(birtReport);
+			}	    	
+			
+		}		
+		sortByName(birtReports);
 
-		
-		return new ArrayList<BirtReport>(); */
-
+		return birtReports;
 	}
 
 
@@ -388,9 +405,11 @@ public class BirtReportServiceImpl implements BirtReportService {
 							log.debug("Dataset " + datasetHandle.getExtensionID() + " = " + dataset.getParentFile().getAbsolutePath());
 
 							// First we need to set the data source to the dataset's current directory
-							datasetHandle.getDataSource().setProperty("HOME", dataset.getParentFile().getAbsolutePath());
+							//datasetHandle.getDataSource().setProperty("HOME", dataset.getParentFile().getAbsolutePath());
 							// First we need to set the data source to the dataset's current directory
 							//String uriPath = "file:/" + pathDir + designResource.getName() + ".csv";
+							String uriPath = "file:/" + report.getOutputDirectory().replace("\\", "/") + report.getCsvFileNames().get(0);
+							datasetHandle.getDataSource().setProperty("URI", uriPath);
 
 							// TODO Refactor to use a better query parser ... 
 							// this one does not handle more complex queries 
@@ -750,9 +769,9 @@ public class BirtReportServiceImpl implements BirtReportService {
 	 * @param reportDefinition	the report definition
 	 * @return	a birt report object
 	 */
-/*	public BirtReport getReportWithoutParameters(ReportDefinition reportDefinition) { 
+	public BirtReport getReportWithoutParameters(ReportDefinition reportDefinition) { 
 		return getReport(reportDefinition, false);
-	}*/
+	}
 
 	
 	

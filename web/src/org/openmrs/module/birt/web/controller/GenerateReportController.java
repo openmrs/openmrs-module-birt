@@ -15,13 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.birt.core.exception.BirtException;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortDefinition;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.model.ParameterDefinition;

@@ -67,7 +67,7 @@ public class BirtReport implements Serializable {
 	private File output = null;
 	
 	/* Report output filename */
-	private String outputFilename = null;
+	private String outputFilename = null; 
 	
 	/* Report output directory */
 	private String outputDirectory = null;	

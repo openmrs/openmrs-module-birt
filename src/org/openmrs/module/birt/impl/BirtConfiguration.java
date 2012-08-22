@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.HTMLRenderContext;
 //import org.eclipse.birt.report.engine.api.HTMLRenderContext;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IPDFRenderOption;
@@ -184,9 +185,9 @@ public class BirtConfiguration {
 		else if(BirtConstants.PDF_FORMAT.equalsIgnoreCase(report.getOutputFormat())) { 
 			PDFRenderOption pdfOptions = new PDFRenderOption( options );
 			pdfOptions.setOption(PDFRenderOption.PAGE_OVERFLOW, IPDFRenderOption.FIT_TO_PAGE_SIZE);
-			//pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, new Boolean(true));
+			pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, new Boolean(true));
 			pdfOptions.setOption( IRenderOption.HTML_PAGINATION, Boolean.FALSE );
-			//pdfOptions.setOption(IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, new Boolean(true));
+			pdfOptions.setOption(IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, new Boolean(true));
 			pdfOptions.setSupportedImageFormats("PNG;GIF;JPG;BMP;SWF;SVG");
 			pdfOptions.setOutputFormat("pdf");
 
@@ -239,8 +240,8 @@ public class BirtConfiguration {
 	 * 
 	 * @return
 	 */
-	/*
-	public static Map getRenderContext() { 
+	
+/*	public static Map getRenderContext() { 
 		
 		HashMap<String, RenderContext> contextMap = new HashMap<String, RenderContext>();
 		HTMLRenderContext renderContext = new HTMLRenderContext();
@@ -251,8 +252,8 @@ public class BirtConfiguration {
 		renderContext.setSupportedImageFormats(SUPPORTED_IMAGE_FORMATS);				
 		contextMap.put( EngineConstants.APPCONTEXT_HTML_RENDER_CONTEXT, renderContext );
 		return contextMap;
-	}
-	*/
+	}*/
+	
 	
 	/**
 	 * Convenience method for getting global properties.

@@ -20,6 +20,10 @@ import org.openmrs.module.Module;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.service.ReportService;
 //import org.openmrs.reporting.Report;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -60,6 +64,21 @@ public class ListReportController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
+		
+				
+		if (request.getParameter("removeReport") != null ) {
+			String uuid = request.getParameter("uuid");
+			
+			ReportService rs = Context.getService(ReportService.class);
+						
+			List<ReportDesign> designs = Context.getService(ReportService.class).getReportDesigns(getReportService().getDefinitionByUuid(uuid), null, false);
+			if ( designs != null ) {
+				for ( ReportDesign design : designs ) {
+					rs.purgeReportDesign(design);
+				}
+			}
+			getReportService().purgeDefinition(getReportService().getDefinitionByUuid(uuid));
+		}
 
 		if (Context.isAuthenticated()) {
 			String[] reportList = request.getParameterValues("reportId");
@@ -104,6 +123,11 @@ public class ListReportController extends SimpleFormController {
 			
 		return new ModelAndView(new RedirectView(view));
 	}
+	
+	
+    protected ReportDefinitionService getReportService() {
+    	return Context.getService(ReportDefinitionService.class);
+    }
 
 	/**
 	 * 
@@ -115,13 +139,19 @@ public class ListReportController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	// default empty object
-		List<BirtReport> reportList = new ArrayList<BirtReport>();
+		List<BirtReport> reportList = new ArrayList<BirtReport>();	
 		
 		//only fill the Object is the user has authenticated properly
-		if (Context.isAuthenticated()) {
+/*		if (Context.isAuthenticated()) {
 	    	reportList = ((BirtReportService)
 	    		Context.getService(BirtReportService.class)).getAllBirtReports();
-		}		
+		}*/
+		
+		if (Context.isAuthenticated()) {
+	    	reportList = ((BirtReportService)
+	    		Context.getService(BirtReportService.class)).filterReports( request.getParameter("filter"));
+		}
+		
 		return reportList;
     }
 

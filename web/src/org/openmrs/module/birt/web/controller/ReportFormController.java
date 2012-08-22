@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,6 +46,7 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
@@ -77,7 +79,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ReportFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass()); 
+    protected final Log log = LogFactory.getLog(getClass());    
 
 	/**
 	 * Allows for Integers to be used as values in input tags.
@@ -113,9 +115,11 @@ public class ReportFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
+				
+		HttpSession httpSession = request.getSession();					
 		String view = null;
 		boolean formRedirect = false;
+		
 		BirtReport report = (BirtReport) obj;
 		
 		String mapped = ServletRequestUtils.getStringParameter(request, "mapped", "");
@@ -134,6 +138,20 @@ public class ReportFormController extends SimpleFormController {
 
 				// TODO redirect create report requests to the report form 
 				formRedirect = true;
+			}
+			// Update report details
+			else if (request.getParameter("editReportDetails")  != null) {
+				ReportDefinitionService rs = Context.getService(ReportDefinitionService.class);
+				String uuid = request.getParameter("uuid");
+				ReportDefinition r = rs.getDefinitionByUuid(uuid);
+				String reportId = request.getParameter("reportId");
+				String name = request.getParameter("name");
+				String description = request.getParameter("description");
+				r.setName(name);
+				r.setDescription(description);
+				rs.saveDefinition(r);				
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.saveReport.success");
+				view = request.getContextPath() + "/module/birt/report.form?reportId=" + reportId + "&uuid=" + uuid;
 			}
 			// Delete the report definition from the database
 			else if (request.getParameter("delete") != null) { 
@@ -167,8 +185,6 @@ public class ReportFormController extends SimpleFormController {
 			else if (request.getParameter("downloadDataset") != null) { 	
 				try { 
 					response.setContentType("text/xml; charset=utf-8");
-					// to do Mike
-					//response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getDataExport().getName().replace(" ", "_") + ".xml");
 					response.getOutputStream().print(report.getDatasetXml());				
 				} catch (Exception e) { 
 					log.error("An error occurred while downloading dataset", e);
@@ -190,12 +206,14 @@ public class ReportFormController extends SimpleFormController {
 				String uuid = request.getParameter("uuid");
 				ReportService rs = Context.getService(ReportService.class);
 		    	ReportDesign design = rs.getReportDesignByUuid(uuid);
-		    	rs.purgeReportDesign(design);		    	
+		    	rs.purgeReportDesign(design);
+		    	//view = request.getContextPath() + "/module/birt/report.form?reportId=" + reportId + "&uuid=" + uuid;
 			}
 			else if ("mappedForm".equals(mapped)) {
 				String newKey = request.getParameter("newKey");
 				String definitionName = ServletRequestUtils.getStringParameter(request, "definitionName", "");
 				String uuid = request.getParameter("uuid");
+				String reportId = request.getParameter("reportId");
 				String property  = request.getParameter("property");
 				Class<? extends Parameterizable> type = (Class<? extends Parameterizable>) Class.forName(request.getParameter("type")); 
 				String mappedUuid = request.getParameter("mappedUuid");
@@ -276,14 +294,13 @@ public class ReportFormController extends SimpleFormController {
 		    		}
 		    	}
 		    	
-		    	ParameterizableUtil.saveParameterizable(parent);					    	
-		    
-				System.out.println("keyName " + newKey);
-				System.out.println("definitionName " + definitionName);	
-				System.out.println("mappedUuid " + mappedUuid);	
+		    	ParameterizableUtil.saveParameterizable(parent);
+		    	
+		    	view = request.getContextPath() + "/module/birt/report.form?reportId=" + reportId + "&uuid=" + uuid + "&type=" + type;
+
 			}
 			else if ("removeDatasetMapping".equals(removeMappedProperty)) {				
-				String uuid = request.getParameter("uuid");
+				String uuid = request.getParameter("uuid");				
 				String property  = request.getParameter("property");
 				Class<? extends Parameterizable> type = (Class<? extends Parameterizable>) Class.forName(request.getParameter("type")); 				
 				String currentKey =  request.getParameter("currentKey");
@@ -319,6 +336,10 @@ public class ReportFormController extends SimpleFormController {
 			log.error(e);
 		}
 
+		if ( view != null ) {
+			return new ModelAndView(new RedirectView(view));
+		} 
+		
 		// For posts that should be redirected to the form
 		if (formRedirect) { 
 			return showForm(request, response, errors);
@@ -347,17 +368,9 @@ public class ReportFormController extends SimpleFormController {
 		
 		data.put("reports", reportService.getReports());
 		data.put("cohorts", Context.getService(CohortService.class).getAllCohorts());
-		
-		String reportId = request.getParameter("reportId");
-		String uuid = request.getParameter("uuid");
-		String type = request.getParameter("type");
-		
-		BirtReport report = null;
 
-    	if (reportId != null) {    		
-    		report = reportService.getReport(Integer.valueOf(reportId));
-    	}    	
- 	    	
+		String uuid = request.getParameter("uuid");
+				
     	ReportDefinitionService rs = Context.getService(ReportDefinitionService.class); 
     	ReportDefinition r = rs.getDefinition(uuid, ReportDefinition.class); 
     	data.put("reportt", r);
@@ -380,19 +393,63 @@ public class ReportFormController extends SimpleFormController {
     		existingKeys.add(key);    		
     	}
     	
-    	data.put("existingKeys", existingKeys);    	
+    	data.put("existingKeys", existingKeys);     	
     	
+    	ReportService rrs = Context.getService(ReportService.class);
+    	String reportDesignUuid = request.getParameter("reportDesignUuid");
+    	String reportId = request.getParameter("reportId");		
+		ReportDesign design = null;
+/*		if (reportId != null ){
+			if ( reportService.getReportDesign(reportId) != null )
+			design = rrs.getReportDesignByUuid(reportDesignUuid); 
+			if (design == null)
+				reportDesignUuid = "";		
+		} */
 		
-		if (reportId != null){
-			List<ReportDesign> designs = new ArrayList<ReportDesign>();
-			
-			//only fill the Object is the user has authenticated properly
-			if (Context.isAuthenticated()) {
-				//designs = reportService.getReportDesigns();
-				designs = reportService.filterReportDesigns(Integer.valueOf(reportId));
-			}		
-			data.put("designs", designs);
+		if ( rrs.getReportDesignByUuid(reportDesignUuid) == null )
+			reportDesignUuid = "";
+		
+		if (StringUtils.isNotEmpty(reportDesignUuid)) {
+			design = rrs.getReportDesignByUuid(reportDesignUuid);
 		}
+		else if ( reportService.getReportDesign(Integer.valueOf(reportId)) != null ) {
+			design = reportService.getReportDesign(Integer.valueOf(reportId));
+		}
+		else  {
+			design = new ReportDesign();
+			if (StringUtils.isNotEmpty(uuid)) {
+				design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+			}
+		}
+		data.put("design", design);
+		
+/*		String reportId = request.getParameter("reportId");
+		ReportService rrs = Context.getService(ReportService.class);
+		ReportDesign design = null; 
+		if (reportId != null ) {			
+			design =  reportService.getReportDesign(Integer.valueOf(reportId));		
+		}		
+		else {
+			design = new ReportDesign();
+			if (StringUtils.isNotEmpty(uuid)) {
+				design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+			}
+		}
+		data.put("design", design);*/
+		
+    	
+    	ReportDesignResource resource = null;
+    	if ( design != null ) {
+    		if (!design.getResources().isEmpty()) {
+    			for ( ReportDesignResource rdr : design.getResources() ) {
+    				if ( rdr.getReportDesign().getId() == design.getId() ) {
+    					resource = rdr;
+    					break;
+    				}
+    			}
+    			data.put("resource", resource);
+    		}
+    	}
 		
     	return data;
     }

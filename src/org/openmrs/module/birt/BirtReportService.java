@@ -59,6 +59,14 @@ public interface BirtReportService {
 	 */
 	@Transactional(readOnly=true)
 	public List<ReportDesign> getReportDesigns();
+	
+	/**
+	 * Gets the report design with the given report identifier.
+	 * 
+	 * @param reportId
+	 * @return
+	 */
+	public ReportDesign getReportDesign(Integer reportId);
 
     /**
      * Find reports whose name/title matches the given search term.

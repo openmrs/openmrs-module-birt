@@ -7,20 +7,20 @@
 
 <script type="text/javascript" charset="utf-8">	
 	
-	function confirmDelete(name, uuid) {
+	function confirmDelete(name, id) {
 		if (confirm("Are you sure you want to delete " + name + " ?")) {
-		$j.ajax({
-				  type: "POST",
-				  url: "report.list",				  
-				  data: { reportId : uuid },
-				  success: function() { window.location.reload(true); },
-				})			
+			$j.ajax({
+				type: "POST",
+				url: "report.list",				  
+				data: { uuid : id, removeReport : name },
+				success: function() { window.location.reload(true); },  
+			})			
 		}
 	}
 
 </script>
  
- 
+<div class="spacer" style="height: 15px"><!--  --></div>
 <h2><spring:message code="birt.manage.title"/></h2>	
 
 <br />
@@ -59,6 +59,7 @@
 <br/>
 --%>
 <!-- <b><spring:message code="birt.list.title"/></b> -->
+
 <b class="boxHeader"><spring:message code="birt.list.title"/></b>
 <div class="box">
 	<div id="reportList">
@@ -98,9 +99,9 @@
 					</td>
 					<td valign="middle" align="left">${report.reportDefinition.name}</td>
 					<td valign="middle" align="left">${report.reportDefinition.description}</td>
-					<td valign="middle" align="left">					
+					<td id="o-report-deliver" valign="middle" align="left">					
 						<c:if test="${report.reportDesign != null }">							
-							<a href="downloadReportDesign.form?uuid=${report.reportDesign.uuid}">RPTDESIGN</a>						
+							<a href="downloadReportDesign.form?uuid=${report.reportDesign.uuid}&id=${report.reportDesign.id}" title="Deliver report to file system">RPTDESIGN</a>						
 						</c:if>
 					</td>
 				</tr>

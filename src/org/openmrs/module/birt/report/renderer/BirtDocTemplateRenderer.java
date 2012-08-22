@@ -89,7 +89,9 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 		try {
 			log.debug("Attempting to render report with BirtDocTemplateRenderer");
 			
-			ReportDesign design = getDesign(argument);			
+			ReportDesign design = getDesign(argument);	
+			
+			Integer reportId = design.getReportDefinition().getId();
 			
 			ReportDesignResource r = getTemplate(design); 
 			
@@ -97,14 +99,26 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 			
 			String pathName = pathDir + r.getName() + ".rptdesign";
 			
-			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class); 
-			BirtReport report = reportService.getReport(design.getId());
-			report.setReportDesign(design);
-			report.setReportDesignPath(pathName);
+			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
+			BirtReport report = reportService.getReport(reportId);
+			
+			report.setReportDesignPath(pathName);			
 			report.setReportDesignResource(r);
 			report.setOutputFormat("doc");
-			report.setOutputFilename(pathDir + r.getName() + ".doc");
 			report.setOutputDirectory(pathDir);
+			
+			// Setting the report output file name
+			if (report.getOutputFilename() == null) { 
+				String name = report.getReportDefinition().getName();
+				String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
+				report.setOutputFilename(filename);
+			}
+			
+			if (report.getOutputFilename().isEmpty()) { 				
+				report.setOutputFilename(pathDir + report.getReportDefinition().getName() + ".doc");
+			}
+			
+			log.debug("Setting report output filename " + report.getOutputFilename());
 			
 			/* Generate a report design file */
 			reportService.createReportDesign(report);
@@ -254,16 +268,14 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 			//Set the RenderOption to create a DOC file into the task.
 			 IRenderOption options = new RenderOption();
 			 options.setOutputFileName(report.getOutputFilename());			
-			 options.setOutputFormat("doc");
+			 options.setOutputFormat(report.getOutputFormat());
 			 task.setRenderOption(options);			 
 
 			//task.setRenderOption(BirtConfiguration.getRenderOption(report));    
 			
 			// Render report design
 			task.run();
-			task.close();
-			engine.destroy();
-
+			
 			//log.debug("Output file: " + report.getOutputFile().getAbsolutePath());
 		} 
 		catch (EngineException e) { 

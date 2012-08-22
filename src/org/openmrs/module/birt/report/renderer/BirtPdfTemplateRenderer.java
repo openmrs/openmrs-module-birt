@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.IPDFRenderOption;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
@@ -49,6 +50,7 @@ import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.DelimitedTextReportRenderer;
 import org.openmrs.module.reporting.report.renderer.RenderingException;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
@@ -88,7 +90,9 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 		try {
 			log.debug("Attempting to render report with BirtPdfTemplateRenderer");
 			
-			ReportDesign design = getDesign(argument);			
+			ReportDesign design = getDesign(argument);
+			
+			Integer reportId = design.getReportDefinition().getId();
 			
 			ReportDesignResource r = getTemplate(design); 
 			
@@ -96,14 +100,25 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 			
 			String pathName = pathDir + r.getName() + ".rptdesign";
 			
-			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class); 
-			BirtReport report = reportService.getReport(design.getId());
-			report.setReportDesign(design);
-			report.setReportDesignPath(pathName);
-			report.setReportDesignResource(r);
-			report.setOutputFormat("pdf");
-			report.setOutputFilename(pathDir + r.getName() + ".pdf");
+			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
+			BirtReport report = reportService.getReport(reportId);
+			
+			report.setReportDesignPath(pathName);			
+			report.setReportDesignResource(r);			
 			report.setOutputDirectory(pathDir);
+			
+			// Setting the report output file name
+			if (report.getOutputFilename() == null) { 
+				String name = report.getReportDefinition().getName();
+				String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
+				report.setOutputFilename(filename);
+			}
+			
+			if (report.getOutputFilename().isEmpty()) { 				
+				report.setOutputFilename(pathDir + report.getReportDefinition().getName() + ".pdf");
+			}
+
+			log.debug("Setting report output filename " + report.getOutputFilename());
 			
 			/* Generate a report design file */
 			reportService.createReportDesign(report);
@@ -118,6 +133,7 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 			InputStream fileInputStream = new FileInputStream(new File(report.getOutputFilename()));
 
 			FileCopyUtils.copy(fileInputStream, out);
+			fileInputStream.close();
 
 		} catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
@@ -251,14 +267,16 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 			//task.setRenderOption(BirtConfiguration.getRenderOption(report));
 			PDFRenderOption options = new PDFRenderOption();
 			options.setOutputFileName(report.getOutputFilename());
-			options.setOutputFormat("pdf");
+			options.setOutputFormat(report.getOutputFormat());
+			options.setOption( IPDFRenderOption.FIT_TO_PAGE, new Boolean(true) );
+			options.setOption( IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, new Boolean(true) );
 			task.setRenderOption(options);
 			//task.setRenderOption(BirtConfiguration.getRenderOption(report));    
 			
 			// Render report design
 			task.run();
-			task.close();
-			engine.destroy();
+			
+			//engine.destroy();
 
 			//log.debug("Output file: " + report.getOutputFile().getAbsolutePath());
 		} 
