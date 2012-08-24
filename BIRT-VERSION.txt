@@ -1,3 +1,0 @@
-Requires BIRT Runtime Engine v2.3.2.  More specifically, we're using 
-BIRT APIs v2.3.2.2, but this is just a maintenance release and should
-be fully compatible with runtime engine v2.3.2.
