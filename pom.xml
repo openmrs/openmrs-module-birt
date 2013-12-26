@@ -12,9 +12,9 @@
 	<url>http://openmrs.org</url>
 
 	<scm>
-		<connection>scm:git:https://github.com/mseaton/openmrs-module-birt.git</connection>
-		<developerConnection>scm:git:https://github.com/mseaton/openmrs-module-birt/</developerConnection>
-		<url>https://github.com/mseaton/openmrs-module-birt/</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-module-birt.git</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-module-birt/</developerConnection>
+		<url>https://github.com/openmrs/openmrs-module-birt/</url>
 	</scm>
 
 	<modules>
