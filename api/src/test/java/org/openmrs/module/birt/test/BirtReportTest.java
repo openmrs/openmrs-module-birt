@@ -783,7 +783,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 
 	/**
      * Open an existing report
-     * @param reportName
+     * @param reportPath
      * @return
      */
     public ReportDesignHandle openReportDesign(String reportPath) {

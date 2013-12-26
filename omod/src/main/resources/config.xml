@@ -3,10 +3,10 @@
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
-	<id>birt</id>
-	<name>BIRT Report Module</name>
-	<version>3.7.2.1</version>
-	<package>org.openmrs.module.@MODULE_ID@</package>
+	<id>@MODULE_ID@</id>
+	<name>@MODULE_NAME@</name>
+	<version>@MODULE_VERSION@</version>
+	<package>@MODULE_PACKAGE@</package>
 	<author>Justin Miranda</author>
 	<description>The BIRT Report Module provides integration between OpenMRS and the BIRT Report and Design Engine APIs.</description>
 	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
