@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -104,7 +104,7 @@ public class UploadReportController extends SimpleFormController {
 						design.setRendererType(rendererType);
 						
 						ReportDesignResource resource = null;
-						if (StringUtils.isNotEmpty(resourceUuid)) { 
+						if (StringUtils.isNotEmpty(resourceUuid)) {
 							resource = rs.getReportDesignByUuid(reportDesignUuid).getResourceByUuid(resourceUuid);
 						}
 						if (resource == null) {
