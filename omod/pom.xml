@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>birt</artifactId>
-		<version>3.7.2.1-SNAPSHOT</version>
+		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>birt-omod</artifactId>
@@ -25,83 +25,82 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-			<resource>
-				<directory>src/main/webapp</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>resources</exclude>
-				</excludes>
-				<targetPath>web/module</targetPath>
-			</resource>
-			<resource>
-				<directory>src/main/webapp</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>resources</include>
-				</includes>
-				<targetPath>web/module</targetPath>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*.xml</include>
-					<include>**/*.txt</include>
-				</includes>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.xml</exclude>
-					<exclude>**/*.txt</exclude>
+					<exclude>**/*.properties</exclude>
 				</excludes>
-			</testResource>
-		</testResources>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<configuration>
-						<includeEmptyDirs>true</includeEmptyDirs>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/webapp</directory>
+				<filtering>false</filtering>
+				<targetPath>web/module</targetPath>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.openmrs.maven.plugins</groupId>
 				<artifactId>maven-openmrs-plugin</artifactId>
-				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>init</id>
-						<phase>initialize</phase>
+						<id>Expand resources</id>
 						<goals>
-							<goal>initialize-module</goal>
+							<goal>unpack-dependencies</goal>
 						</goals>
-					</execution>
-					<execution>
-						<id>pack</id>
-						<phase>package</phase>
-						<goals>
-							<goal>package-module</goal>
-						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<includeGroupIds>${project.parent.groupId}</includeGroupIds>
+							<includeArtifactIds>${project.parent.artifactId}-api</includeArtifactIds>
+							<includeScope>compile</includeScope>
+							<includes>**\/*.xml,**\/*.properties</includes>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
 
-	<properties>
-		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
-		<MODULE_NAME>${project.parent.name}</MODULE_NAME>
-		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
-		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
-	</properties>
-
+	<profiles>
+		<profile>
+			<id>deploy-web</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<copy todir="${deploy.path}/WEB-INF/view/module/${project.parent.artifactId}">
+											<fileset dir="src/main/webapp" includes="**/*" />
+										</copy>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
