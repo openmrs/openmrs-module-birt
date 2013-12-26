@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
@@ -23,11 +22,11 @@
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>@MODULE_PACKAGE@.extension.html.BirtAdminListExt</class>
+		<class>@MODULE_PACKAGE@.web.extension.BirtAdminListExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.patientDashboardTab</point>
-		<class>@MODULE_PACKAGE@.extension.html.BirtPatientDashboardTabExt</class>
+		<class>@MODULE_PACKAGE@.web.extension.BirtPatientDashboardTabExt</class>
 	</extension>	
 	
 	<!-- /Extensions -->
@@ -120,17 +119,6 @@
 		</signatures>	
 	</dwr>
 
-	
-	<!-- Servlets -->
-	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
-	<servlet>
-		<servlet-name>generateReport</servlet-name>
-		<servlet-class>@MODULE_PACKAGE@.web.GenerateReportServlet</servlet-class>
-	</servlet>
-	-->
-	<!-- /Servlets -->
-	
-	
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>
