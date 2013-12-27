@@ -26,8 +26,7 @@ public class BirtModuleActivator implements Activator {
 		log.debug("Starting BIRT Reporting Module ...");
 
 		// Define global properties
-		String [] globalProperties = { 
-			/* BirtConstants.PROPERTY_BIRT_HOME,*/ 
+		String [] globalProperties = {
 			BirtConfiguration.PROPERTY_DATASET_DIR,
 			BirtConfiguration.PROPERTY_LOGGING_DIR,
 			BirtConfiguration.PROPERTY_LOGGING_LEVEL,
@@ -55,17 +54,11 @@ public class BirtModuleActivator implements Activator {
 		
 		try {					
 			log.debug("Starting BIRT Report Engine ... ");
-			Platform.startup(BirtConfiguration.getEngineConfig());
+			Platform.startup(BirtConfiguration.getReportEngine().getConfig());
 		} 
 		catch (BirtException e) {
-			throw new ModuleException(
-					"Failure starting BIRT platform with error '" + e.getMessage() + "'.  " + 
-					"This is usually an indication that your 'birt.birtHome' is invalid.  Please update your implementation's 'birt.birtHome' global property." + 
-					"\n\nMake yours look like mine ... " + 
-					"\n\tYours: 'birt.birtHome' = '" + BirtConfiguration.BIRT_HOME + "'. " +
-					"\n\tMine: 'birt.birtHome' = '/path/to/birt-runtime-x_y_z/ReportEngine'\n\n", e);
+			throw new ModuleException("Error starting BIRT report engine", e);
 		}
-		
 	}
 
 	/**

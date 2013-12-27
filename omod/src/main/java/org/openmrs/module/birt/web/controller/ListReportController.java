@@ -268,7 +268,6 @@ private IDesignEngine designEngine = null;
 
 public void startDesignEngine() throws Exception {
    DesignConfig config = new DesignConfig();
-   config.setBIRTHome("");
    Platform.startup(config);
    IDesignEngineFactory factory = (IDesignEngineFactory)
       Platform.createFactoryObject(

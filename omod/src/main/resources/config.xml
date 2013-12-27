@@ -40,12 +40,7 @@
 	<!-- /Required Privileges -->
 
 	<!-- Required Global Properties -->
-	<!-- 
-	<globalProperty>
-		<property>@MODULE_ID@.birtHome</property>
-		<defaultValue/>
-		<description>Specifies the absolute path to the BIRT Report Engine.  Should include ReportEngine subdirectory. (ex. C:/birt-runtime-2_2_2/ReportEngine)</description>
-	</globalProperty> -->
+
 	<globalProperty>
 		<property>@MODULE_ID@.loggingDir</property>
 		<defaultValue/>

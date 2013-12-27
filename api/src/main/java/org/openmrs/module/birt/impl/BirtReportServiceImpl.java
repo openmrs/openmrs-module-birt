@@ -128,7 +128,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	public void initialize() {     	
 		try { 			
 			log.debug("Initializing the BIRT report engine");
-			Platform.startup( BirtConfiguration.getEngineConfig());
+			Platform.startup( BirtConfiguration.getReportEngine().getConfig());
 			reportEngine = BirtConfiguration.getReportEngine();
 			designEngine = BirtConfiguration.getDesignEngine();		
 		} catch (Exception e) { 

@@ -48,7 +48,7 @@ public class BirtConfiguration {
 	public static String LOGGING_PATH = getGlobalProperty(PROPERTY_LOGGING_DIR);
 	public static final String PROPERTY_LOGGING_LEVEL		 	=   "birt.loggingLevel";
 	public static Level LOGGING_LEVEL = Level.parse(getGlobalProperty(PROPERTY_LOGGING_LEVEL));
-	public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";
+
 	public static final String PROPERTY_REPORT_DIR				= 	"birt.reportDir";
 	public static String REPORT_DIR = getGlobalProperty(PROPERTY_REPORT_DIR);
 	public static final String PROPERTY_OUTPUT_DIR 				= 	"birt.outputDir";
@@ -91,8 +91,9 @@ public class BirtConfiguration {
 	public static String BASE_URL = getGlobalProperty(PROPERTY_BASE_URL_DEFAULT);
 	public static final String PROPERTY_BASE_IMAGE_URL_DEFAULT = "http://localhost/openmrs/images";
 	public static final String PROPERTY_SUPPORTED_IMAGE_FORMATS_DEFAULT = "JPG;PNG;BMP;SVG";
+
 	/* Default properties values - currently not used */
-	public static final String DEFAULT_BIRT_HOME 				= 	"c:/java/birt-runtime-2.2.2";
+
 	public static final String DEFAULT_BASE_DIR 				= 	System.getProperty("user.home");
 	public static final String DEFAULT_REPORT_DIR				= 	DEFAULT_BASE_DIR + File.separator + "reports";
 	public static final String DEFAULT_DATASET_DIR				= 	DEFAULT_REPORT_DIR + File.separator + "datasets";
@@ -109,52 +110,13 @@ public class BirtConfiguration {
 	public static final String DEFAULT_BASE_IMAGE_URL 			= 	"http://localhost/images";
 	public static final String DEFAULT_IMAGE_DIR 				= 	"images";
 	public static final String DEFAULT_SUPPORTED_IMAGE_FORMATS 	= 	"JPG;PNG;BMP;SVG";
-	/* BIRT Engine properties */
-	public static String BIRT_HOME = ".";
+
 	// Logger
 	private static Log log = LogFactory.getLog(BirtConfiguration.class);
-
-
-			
-	/* BIRT runtime and design configuration */  
-	private static EngineConfig engineConfig;
-	private static DesignConfig designConfig;
 	
 	/* BIRT runtime and design engines */
 	private static IReportEngine reportEngine;
 	private static IDesignEngine designEngine;
-	
-	/** 
-	 * Get the configuration object for the BIRT report engine.
-	 * 
-	 * @return
-	 */
-	public synchronized static EngineConfig getEngineConfig() {
-		if (engineConfig == null) {
-			log.debug("Creating BIRT engine config with BIRT_HOME = " + BIRT_HOME + ", the Current Directory");
-			engineConfig = new EngineConfig();
-			engineConfig.setEngineHome(BIRT_HOME);
-			engineConfig.setLogConfig(LOGGING_PATH, LOGGING_LEVEL);
-	    }
-	    return engineConfig;
-	}
-	
-	
-
-	/**
-	 * Gets the configuration for the BIRT design engine.
-	 * 
-	 * @return
-	 */
-	public synchronized static DesignConfig getDesignConfig() { 
-		if (designConfig == null) { 
-			log.debug("Creating BIRT design config with BIRT_HOME = " + BIRT_HOME);
-			designConfig = new DesignConfig( );
-			designConfig.setProperty(Platform.PROPERTY_BIRT_HOME, BIRT_HOME);
-		}
-		
-		return designConfig;
-	}
 
 	/**
 	 * Configures a report engine if it doesn't already exist.
@@ -163,6 +125,10 @@ public class BirtConfiguration {
 	 */	
 	public synchronized static IReportEngine getReportEngine() throws BirtReportException { 
 		if (reportEngine == null) {
+
+			EngineConfig engineConfig = new EngineConfig();
+			engineConfig.setLogConfig(LOGGING_PATH, LOGGING_LEVEL);
+
 			try { 
 				
 				log.debug("Creating instance of the BIRT Report Engine Factory " 
@@ -171,7 +137,7 @@ public class BirtConfiguration {
 				IReportEngineFactory factory = (IReportEngineFactory) 
 					Platform.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 								
-				reportEngine = factory.createReportEngine( getEngineConfig() );
+				reportEngine = factory.createReportEngine(engineConfig);
 								
 			} catch (Exception e) { 
 				log.error("The BIRT Report Module failed to initialize the report engine: " + e.getMessage(), e);
@@ -189,8 +155,9 @@ public class BirtConfiguration {
 	public synchronized static IDesignEngine getDesignEngine() { 
 		if (designEngine == null) { 
 			//Configure the Engine and start the Platform
+			DesignConfig designConfig = new DesignConfig();
 			try{
-				Platform.startup( designConfig );
+				Platform.startup(designConfig);
 				IDesignEngineFactory factory = (IDesignEngineFactory) Platform
 					.createFactoryObject( IDesignEngineFactory.EXTENSION_DESIGN_ENGINE_FACTORY );
 				designEngine = factory.createDesignEngine(designConfig);

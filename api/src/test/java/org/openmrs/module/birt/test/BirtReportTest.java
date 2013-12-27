@@ -75,7 +75,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
 		try {
-			Platform.startup( BirtConfiguration.getEngineConfig());
+			Platform.startup( BirtConfiguration.getReportEngine().getConfig());
 			reportEngine = BirtConfiguration.getReportEngine();
 			designEngine = BirtConfiguration.getDesignEngine();
 			logger = reportEngine.getLogger();
