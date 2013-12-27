@@ -11,13 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.birt.BirtConstants;
+import org.openmrs.module.birt.BirtConfiguration;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.propertyeditor.AbstractReportObjectEditor;
 import org.openmrs.propertyeditor.CohortEditor;
-import org.openmrs.reporting.AbstractReportObject;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -70,7 +66,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
      */
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	log.debug("Initializing binders");
-    	binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT), false));
+    	binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT), false));
 /*		binder.registerCustomEditor(AbstractReportObject.class, new AbstractReportObjectEditor());*/
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
     }

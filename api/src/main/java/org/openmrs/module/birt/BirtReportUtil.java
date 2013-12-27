@@ -39,7 +39,7 @@ public class BirtReportUtil {
 	 */
 	public static File getReportRepository() {
 		
-		String reportDirectory = Context.getAdministrationService().getGlobalProperty(BirtConstants.PROPERTY_REPORT_DIR);
+		String reportDirectory = Context.getAdministrationService().getGlobalProperty(BirtConfiguration.PROPERTY_REPORT_DIR);
 		
 		return createDirectory(reportDirectory);
 	}
@@ -94,7 +94,7 @@ public class BirtReportUtil {
 	public static String getDataExportPath(String filename) { 
     	// Copy the generated data export to the location expected by the report module 
     	String datasetDir = 
-    		Context.getAdministrationService().getGlobalProperty(BirtConstants.PROPERTY_DATASET_DIR);
+    		Context.getAdministrationService().getGlobalProperty(BirtConfiguration.PROPERTY_DATASET_DIR);
     	
     	// Create the filename for the final data export
     	StringBuffer buffer = new StringBuffer();
@@ -120,7 +120,7 @@ public class BirtReportUtil {
 		log.debug("Name: " + name + " " + format);
 		
 		String extension = (format != null) ? 
-				format.toLowerCase() : BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT;
+				format.toLowerCase() : BirtConfiguration.DEFAULT_REPORT_OUTPUT_FORMAT;
 		
 		log.info("Output directory " + getOutputDirectory());
 		log.info("File separator " + File.separator);
@@ -145,7 +145,7 @@ public class BirtReportUtil {
 	 * @return
 	 */
 	public static String getOutputDirectory() { 
-		return BirtConstants.OUTPUT_DIR;
+		return BirtConfiguration.OUTPUT_DIR;
 	}
 	
 	
@@ -263,16 +263,16 @@ public class BirtReportUtil {
 		else if ( DesignChoiceConstants.PARAM_TYPE_DATETIME.equals( type ) )  { 
 			//java.util.Date
 			log.debug("Parsing datetime value '" + value + "'");  
-			return new SimpleDateFormat(BirtConstants.DEFAULT_DATETIME_FORMAT).parse(value);
+			return new SimpleDateFormat(BirtConfiguration.DEFAULT_DATETIME_FORMAT).parse(value);
 		}
 		else if ( DesignChoiceConstants.PARAM_TYPE_DATE.equals( type ) ) { 
 			// java.sql.Date
-			java.util.Date datetimeValue = new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT).parse(value);
+			java.util.Date datetimeValue = new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT).parse(value);
 			return new java.sql.Date(datetimeValue.getTime());	
 		}
 		else if ( DesignChoiceConstants.PARAM_TYPE_TIME.equals( type ) ) { 
 			// java.sql.Time
-			java.util.Date datetimeValue = new SimpleDateFormat(BirtConstants.DEFAULT_TIME_FORMAT).parse(value);
+			java.util.Date datetimeValue = new SimpleDateFormat(BirtConfiguration.DEFAULT_TIME_FORMAT).parse(value);
 			return new java.sql.Time(datetimeValue.getTime());
 		}
 		else if ( DesignChoiceConstants.PARAM_TYPE_STRING.equals( type ) ) { 

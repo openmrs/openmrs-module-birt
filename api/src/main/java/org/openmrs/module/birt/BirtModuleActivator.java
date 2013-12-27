@@ -28,24 +28,24 @@ public class BirtModuleActivator implements Activator {
 		// Define global properties
 		String [] globalProperties = { 
 			/* BirtConstants.PROPERTY_BIRT_HOME,*/ 
-			BirtConstants.PROPERTY_DATASET_DIR, 
-			BirtConstants.PROPERTY_LOGGING_DIR, 
-			BirtConstants.PROPERTY_LOGGING_LEVEL,
-			BirtConstants.PROPERTY_REPORT_DIR, 
-			BirtConstants.PROPERTY_REPORT_OUTPUT_FORMAT, 
-			BirtConstants.PROPERTY_OUTPUT_DIR,
+			BirtConfiguration.PROPERTY_DATASET_DIR,
+			BirtConfiguration.PROPERTY_LOGGING_DIR,
+			BirtConfiguration.PROPERTY_LOGGING_LEVEL,
+			BirtConfiguration.PROPERTY_REPORT_DIR,
+			BirtConfiguration.PROPERTY_REPORT_OUTPUT_FORMAT,
+			BirtConfiguration.PROPERTY_OUTPUT_DIR,
 		};
 				
 		String [] directoryProperties = { 
-			BirtConstants.PROPERTY_DATASET_DIR, 
-			BirtConstants.PROPERTY_LOGGING_DIR, 
-			BirtConstants.PROPERTY_REPORT_DIR, 
-			BirtConstants.PROPERTY_OUTPUT_DIR				
+			BirtConfiguration.PROPERTY_DATASET_DIR,
+			BirtConfiguration.PROPERTY_LOGGING_DIR,
+			BirtConfiguration.PROPERTY_REPORT_DIR,
+			BirtConfiguration.PROPERTY_OUTPUT_DIR
 		};
 		String [] deprecatedProperties = { 
-			BirtConstants.PROPERTY_REPORT_OUTPUT_FILE, 
-			BirtConstants.PROPERTY_REPORT_PREVIEW_FILE, 
-			BirtConstants.PROPERTY_DEFAULT_REPORT_DESIGN_FILE
+			BirtConfiguration.PROPERTY_REPORT_OUTPUT_FILE,
+			BirtConfiguration.PROPERTY_REPORT_PREVIEW_FILE,
+			BirtConfiguration.PROPERTY_DEFAULT_REPORT_DESIGN_FILE
 		};
 
 		// Warn implementers about deprecated properties
@@ -62,7 +62,7 @@ public class BirtModuleActivator implements Activator {
 					"Failure starting BIRT platform with error '" + e.getMessage() + "'.  " + 
 					"This is usually an indication that your 'birt.birtHome' is invalid.  Please update your implementation's 'birt.birtHome' global property." + 
 					"\n\nMake yours look like mine ... " + 
-					"\n\tYours: 'birt.birtHome' = '" + BirtConstants.BIRT_HOME + "'. " + 
+					"\n\tYours: 'birt.birtHome' = '" + BirtConfiguration.BIRT_HOME + "'. " +
 					"\n\tMine: 'birt.birtHome' = '/path/to/birt-runtime-x_y_z/ReportEngine'\n\n", e);
 		}
 		

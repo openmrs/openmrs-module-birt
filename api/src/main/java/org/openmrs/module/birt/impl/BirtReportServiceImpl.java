@@ -431,7 +431,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 							// Admin needs to set global property 'birt.alwaysUseOpenmrsJdbcProperties'='true'
 							// TODO We need to be able to support this at the individual report > data source level.  
 							// In other words, a user should be able to specify this property for each JDBC data source in a report design.
-							if (BirtConstants.ALWAYS_USE_OPENMRS_JDBC_PROPERTIES) { 
+							if (BirtConfiguration.ALWAYS_USE_OPENMRS_JDBC_PROPERTIES) {
 
 								// Get all of the required ODA connection properties
 								String odaUser = Context.getRuntimeProperties().getProperty("connection.username");

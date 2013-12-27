@@ -1,3 +1,4 @@
+<%@ page import="org.openmrs.module.birt.BirtConfiguration" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt" %>
 
@@ -96,13 +97,13 @@
 										<c:when test="${parameter.dataType=='dateTime'}">								
 											<input type="text" name="${parameter.name}" size="30" 
 											   value="${parameterValue}" />
-											(Format: <%= org.openmrs.module.birt.BirtConstants.DEFAULT_DATETIME_FORMAT %>)
+											(Format: <%= BirtConfiguration.DEFAULT_DATETIME_FORMAT %>)
 										</c:when>
 										<%-- Date parameter --%>
 										<c:when test="${parameter.dataType=='date'}">
 											<input type="text" name="${parameter.name}" size="30" 
 											   value="${parameterValue}" />
-											(Format: <%= org.openmrs.module.birt.BirtConstants.DEFAULT_DATE_FORMAT %>)
+											(Format: <%= BirtConfiguration.DEFAULT_DATE_FORMAT %>)
 										</c:when>
 										<%-- All other parameters displayed as TEXT BOX or SELECT LIST --%>
 										<c:otherwise>			

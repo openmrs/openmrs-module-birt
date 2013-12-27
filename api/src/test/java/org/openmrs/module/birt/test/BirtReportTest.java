@@ -152,7 +152,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 			emailProperties.put(BirtConstants.REPORT_EMAIL_BODY, "Testing body");
 					
 			BirtReport report = service.getReport(new Integer(285));		
-			report.setOutputFormat(BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT);
+			report.setOutputFormat(BirtConfiguration.DEFAULT_REPORT_OUTPUT_FORMAT);
 			report.setCohort(new Cohort());
 			report.setEmailProperties(emailProperties);
 			report.addParameters(reportParameters);
@@ -362,7 +362,7 @@ public class BirtReportTest extends BaseModuleContextSensitiveTest {
 		BirtReportService service = (BirtReportService)
 			Context.getService(BirtReportService.class);
 		
-		String newPath = BirtConstants.REPORT_DIR + File.separator + "100.rptdesign";
+		String newPath = BirtConfiguration.REPORT_DIR + File.separator + "100.rptdesign";
 		
 		System.out.println("Copy old report design " + resource.getFilename());
 		service.duplicateReportDesign(resource.getFilename(), newPath);

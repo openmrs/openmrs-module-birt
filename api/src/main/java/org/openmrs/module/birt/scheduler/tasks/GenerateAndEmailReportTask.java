@@ -13,47 +13,22 @@
  */
 package org.openmrs.module.birt.scheduler.tasks;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.birt.BirtConfiguration;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.notification.Message;
-import org.openmrs.notification.MessageException;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  *  Implementation of a task that generates and sends an email 
@@ -85,7 +60,7 @@ public class GenerateAndEmailReportTask extends AbstractTask {
 			// Get report and populate parameters
 			BirtReport report = service.getReport(reportId);	
 			report.addParameters(getReportParameters());
-			report.setOutputFormat(BirtConstants.DEFAULT_REPORT_OUTPUT_FORMAT);
+			report.setOutputFormat(BirtConfiguration.DEFAULT_REPORT_OUTPUT_FORMAT);
 			report.setEmailProperties(getEmailProperties());
 	
 			// Add default start date parameter

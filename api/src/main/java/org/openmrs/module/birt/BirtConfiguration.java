@@ -29,6 +29,9 @@ import org.eclipse.birt.report.model.api.DesignConfig;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.IDesignEngineFactory;
 
+import java.io.File;
+import java.util.logging.Level;
+
 
 /**
  * Contains configuration information for the BIRT runtime engine.
@@ -37,7 +40,77 @@ import org.eclipse.birt.report.model.api.IDesignEngineFactory;
  * @version 1.0
  */
 public class BirtConfiguration {
-	
+
+	/* Required BIRT module properties.
+	 * Names correspond to global properties in the database */
+	public static final String PROPERTY_LOGGING_DIR 			= 	"birt.loggingDir";
+	/* BIRT Logging properties */
+	public static String LOGGING_PATH = getGlobalProperty(PROPERTY_LOGGING_DIR);
+	public static final String PROPERTY_LOGGING_LEVEL		 	=   "birt.loggingLevel";
+	public static Level LOGGING_LEVEL = Level.parse(getGlobalProperty(PROPERTY_LOGGING_LEVEL));
+	public static final String PROPERTY_BIRT_HOME 				= 	"birt.birtHome";
+	public static final String PROPERTY_REPORT_DIR				= 	"birt.reportDir";
+	public static String REPORT_DIR = getGlobalProperty(PROPERTY_REPORT_DIR);
+	public static final String PROPERTY_OUTPUT_DIR 				= 	"birt.outputDir";
+	public static String OUTPUT_DIR = getGlobalProperty(PROPERTY_OUTPUT_DIR);
+	public static final String PROPERTY_DATASET_DIR				= 	"birt.datasetDir";
+	/* OpenMRS specific properties */
+	public static String DATASET_DIR = getGlobalProperty(PROPERTY_DATASET_DIR);
+	public static final String PROPERTY_REPORT_OUTPUT_FORMAT 	= 	"birt.reportOutputFormat";
+	public static String REPORT_OUTPUT_FORMAT = getGlobalProperty(PROPERTY_REPORT_OUTPUT_FORMAT);
+	public static final String PROPERTY_REPORT_OUTPUT_FILE 		= 	"birt.reportOutputFile";
+	public static String REPORT_OUTPUT_FILE = getGlobalProperty(PROPERTY_REPORT_OUTPUT_FILE);
+	public static final String PROPERTY_REPORT_PREVIEW_FILE 	= 	"birt.reportPreviewFile";
+	public static String REPORT_PREVIEW_FILE = getGlobalProperty(PROPERTY_REPORT_PREVIEW_FILE);
+	/**
+	 * New
+	 */
+	public static final String PROPERTY_ALWAYS_USE_OPENMRS_JDBC_PROPERTIES
+																= 	"birt.alwaysUseOpenmrsJdbcProperties";
+	public static Boolean ALWAYS_USE_OPENMRS_JDBC_PROPERTIES =
+		getBooleanGlobalProperty(PROPERTY_ALWAYS_USE_OPENMRS_JDBC_PROPERTIES, "false");
+	/* OpenMRS properties not used yet */
+	public static final String PROPERTY_DEFAULT_REPORT_DESIGN_FILE	= 	"birt.defaultReportDesignFile";
+	public static String DEFAULT_REPORT_DESIGN_FILE = getGlobalProperty(PROPERTY_DEFAULT_REPORT_DESIGN_FILE);
+	/* Optional BIRT module properties. */
+	public static final String PROPERTY_BASE_URL 				= 	"birt.baseUrl";
+	public static final String PROPERTY_BASE_IMAGE_URL 			= 	"birt.baseImageUrl";
+	public static String BASE_IMAGE_URL = getGlobalProperty(PROPERTY_BASE_IMAGE_URL);
+	public static final String PROPERTY_IMAGE_DIR	 			= 	"birt.imageDir";
+	public static String IMAGE_DIR = getGlobalProperty(PROPERTY_IMAGE_DIR);
+	public static final String PROPERTY_SUPPORTED_IMAGE_FORMATS = 	"birt.supportImageFormats";
+	public static String SUPPORTED_IMAGE_FORMATS = getGlobalProperty(PROPERTY_SUPPORTED_IMAGE_FORMATS);
+	/* Optional BIRT module properties. */
+	public static final String PROPERTY_ODA_USER 				= 	"birt.odaUser";
+	public static final String PROPERTY_ODA_PASSWORD 			= 	"birt.odaPassword";
+	public static final String PROPERTY_ODA_URL	 				= 	"birt.odaURL";
+	/* BIRT image properties */
+	/* TODO These values do not seem to be working for generated images (graphs/charts) */
+	public static final String PROPERTY_BASE_URL_DEFAULT = "http://localhost";
+	/* BIRT Image properties */
+	public static String BASE_URL = getGlobalProperty(PROPERTY_BASE_URL_DEFAULT);
+	public static final String PROPERTY_BASE_IMAGE_URL_DEFAULT = "http://localhost/openmrs/images";
+	public static final String PROPERTY_SUPPORTED_IMAGE_FORMATS_DEFAULT = "JPG;PNG;BMP;SVG";
+	/* Default properties values - currently not used */
+	public static final String DEFAULT_BIRT_HOME 				= 	"c:/java/birt-runtime-2.2.2";
+	public static final String DEFAULT_BASE_DIR 				= 	System.getProperty("user.home");
+	public static final String DEFAULT_REPORT_DIR				= 	DEFAULT_BASE_DIR + File.separator + "reports";
+	public static final String DEFAULT_DATASET_DIR				= 	DEFAULT_REPORT_DIR + File.separator + "datasets";
+	public static final String DEFAULT_OUTPUT_DIR 				= 	DEFAULT_REPORT_DIR + File.separator + "output";
+	public static final String DEFAULT_REPORT_PREVIEW_FILE 		= 	DEFAULT_OUTPUT_DIR + File.separator + "ReportPreview.pdf";
+	public static final String DEFAULT_REPORT_OUTPUT_FILE 		= 	DEFAULT_OUTPUT_DIR + File.separator + "ReportOutput.pdf";
+	public static final String DEFAULT_LOGGING_DIR 				= 	DEFAULT_REPORT_DIR + File.separator + "logs";
+	/* Used for BIRT report parameters */
+	public static final String DEFAULT_DATETIME_FORMAT 			= "yyyy-MM-dd hh:ss:mm a";
+	public static final String DEFAULT_DATE_FORMAT 				= "yyyy-MM-dd";
+	public static final String DEFAULT_TIME_FORMAT 				= "hh:ss:mm a";
+	public static final String DEFAULT_REPORT_OUTPUT_FORMAT 	= 	"pdf";
+	public static final String DEFAULT_BASE_URL 				= 	"http://localhost";
+	public static final String DEFAULT_BASE_IMAGE_URL 			= 	"http://localhost/images";
+	public static final String DEFAULT_IMAGE_DIR 				= 	"images";
+	public static final String DEFAULT_SUPPORTED_IMAGE_FORMATS 	= 	"JPG;PNG;BMP;SVG";
+	/* BIRT Engine properties */
+	public static String BIRT_HOME = ".";
 	// Logger
 	private static Log log = LogFactory.getLog(BirtConfiguration.class);
 
@@ -58,10 +131,10 @@ public class BirtConfiguration {
 	 */
 	public synchronized static EngineConfig getEngineConfig() {
 		if (engineConfig == null) {
-			log.debug("Creating BIRT engine config with BIRT_HOME = " + BirtConstants.BIRT_HOME + ", the Current Directory");
+			log.debug("Creating BIRT engine config with BIRT_HOME = " + BIRT_HOME + ", the Current Directory");
 			engineConfig = new EngineConfig();
-			engineConfig.setEngineHome(BirtConstants.BIRT_HOME);
-			engineConfig.setLogConfig(BirtConstants.LOGGING_PATH, BirtConstants.LOGGING_LEVEL);	
+			engineConfig.setEngineHome(BIRT_HOME);
+			engineConfig.setLogConfig(LOGGING_PATH, LOGGING_LEVEL);
 	    }
 	    return engineConfig;
 	}
@@ -75,9 +148,9 @@ public class BirtConfiguration {
 	 */
 	public synchronized static DesignConfig getDesignConfig() { 
 		if (designConfig == null) { 
-			log.debug("Creating BIRT design config with BIRT_HOME = " + BirtConstants.BIRT_HOME);
+			log.debug("Creating BIRT design config with BIRT_HOME = " + BIRT_HOME);
 			designConfig = new DesignConfig( );
-			designConfig.setProperty(Platform.PROPERTY_BIRT_HOME, BirtConstants.BIRT_HOME);
+			designConfig.setProperty(Platform.PROPERTY_BIRT_HOME, BIRT_HOME);
 		}
 		
 		return designConfig;
@@ -156,7 +229,7 @@ public class BirtConfiguration {
 		IRenderOption options = new RenderOption();
 		if(BirtConstants.HTML_FORMAT.equalsIgnoreCase(report.getOutputFormat())){
 			HTMLRenderOption htmlOptions = new HTMLRenderOption( options);
-			htmlOptions.setImageDirectory(BirtConstants.OUTPUT_DIR + "/images/");
+			htmlOptions.setImageDirectory(OUTPUT_DIR + "/images/");
 			htmlOptions.setHtmlPagination(false);
 
 			//set this if you want your image source url to be altered
@@ -181,8 +254,8 @@ public class BirtConfiguration {
 
 		//Web based images.  Allows setBaseImageURL to prepend to img src tag
 		options.setImageHandler(new HTMLServerImageHandler());
-		options.setBaseURL(BirtConstants.BASE_URL);
-		options.setSupportedImageFormats(BirtConstants.SUPPORTED_IMAGE_FORMATS);		
+		options.setBaseURL(BASE_URL);
+		options.setSupportedImageFormats(SUPPORTED_IMAGE_FORMATS);
 		
 		
 		// Setting the report output file name

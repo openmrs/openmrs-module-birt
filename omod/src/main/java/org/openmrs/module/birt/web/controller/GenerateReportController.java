@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.birt.BirtConfiguration;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportService;
@@ -67,7 +68,7 @@ public class GenerateReportController extends SimpleFormController {
 	        
 	        // Register default date parameter
 			log.debug("bind customer date editor");
-	        SimpleDateFormat format = new SimpleDateFormat(BirtConstants.DEFAULT_DATE_FORMAT);
+	        SimpleDateFormat format = new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT);
 	        format.setLenient(true);
 	        binder.registerCustomEditor(Date.class, new CustomDateEditor(format, true));        
 	        
