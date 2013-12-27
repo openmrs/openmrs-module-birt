@@ -67,17 +67,11 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 	public BirtPdfTemplateRenderer() {
 		super();
 	}
-	
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportDefinition, java.lang.String)
-	 */
+
 	public String getRenderedContentType(ReportDefinition schema, String argument) {
 		return "application/pdf";
 	}
 
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportDefinition)
-	 */
 	public String getFilename(ReportDefinition schema, String argument) {
 		return schema.getName() + ".pdf";
 	}
@@ -197,24 +191,15 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 		}
 		report.setCsvFileNames(fileNames);
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getBeforeColumnDelimiter()
-	 */
+
 	public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getBeforeRowDelimiter()
-	 */
+
 	public String getBeforeRowDelimiter() {
 		return "";
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getAfterRowDelimiter()
-	 */
+
 	public String getAfterRowDelimiter() {
 		return "\n";
 	}
@@ -233,10 +218,7 @@ public class BirtPdfTemplateRenderer extends BirtTemplateRenderer {
 			return text.replaceAll("\"", "\\\"");
 		}
 	}	
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getAfterColumnDelimiter()
-	 */
+
 	public String getAfterColumnDelimiter() {
 		return "\",";
 	}

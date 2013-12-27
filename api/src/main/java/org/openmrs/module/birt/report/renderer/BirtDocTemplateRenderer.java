@@ -67,17 +67,11 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 	public BirtDocTemplateRenderer() {
 		super();
 	}
-	
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportDefinition, java.lang.String)
-	 */
+
 	public String getRenderedContentType(ReportDefinition schema, String argument) {
 		return "application/msword";
 	}
 
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportDefinition)
-	 */
 	public String getFilename(ReportDefinition schema, String argument) {
 		return schema.getName() + ".doc";
 	}
@@ -198,24 +192,15 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 		
 		report.setCsvFileNames(fileNames);
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getBeforeColumnDelimiter()
-	 */
+
 	public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getBeforeRowDelimiter()
-	 */
+
 	public String getBeforeRowDelimiter() {
 		return "";
 	}
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getAfterRowDelimiter()
-	 */
+
 	public String getAfterRowDelimiter() {
 		return "\n";
 	}
@@ -234,10 +219,7 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 			return text.replaceAll("\"", "\\\"");
 		}
 	}	
-	
-	/**
-	 * @see DelimitedTextReportRenderer#getAfterColumnDelimiter()
-	 */
+
 	public String getAfterColumnDelimiter() {
 		return "\",";
 	}

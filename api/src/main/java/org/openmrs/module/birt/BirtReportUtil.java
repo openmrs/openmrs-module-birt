@@ -35,10 +35,7 @@ public class BirtReportUtil {
 	private static Log log = LogFactory.getLog(BirtReportUtil.class);
 		
 	/**
-	 * Gets the folder where reports are stored. 
-	 * 
-	 * @throws ReportException on errors
-	 * @return folder containing modules
+	 * Gets the folder where reports are stored.
 	 */
 	public static File getReportRepository() {
 		
@@ -352,12 +349,6 @@ public class BirtReportUtil {
 	
 	/**
 	 * Creates a parameter based on the BIRT report parameter.
-	 * 
-	 * @param task
-	 * @param scalar
-	 * @param report
-	 * @param group
-	 * @return
 	 */
 	public static ParameterDefinition getParameter(
 			IGetParameterDefinitionTask task, 

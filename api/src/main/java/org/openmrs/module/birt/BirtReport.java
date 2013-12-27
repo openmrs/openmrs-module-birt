@@ -263,7 +263,6 @@ public class BirtReport implements Serializable {
 	
 	/**
 	 * Sets the directory path of the report.
-	 * @param path
 	 */
 	public void setReportDesignPath(String reportDesignPath) { 
 		this.reportDesignPath = reportDesignPath;
@@ -271,8 +270,6 @@ public class BirtReport implements Serializable {
 	 
 	/**
 	 * Set report design handle.
-	 * 
-	 * @param reportDesign
 	 */
 	public void setReportDesign(ReportDesignHandle reportDesignHandle) { 
 		this.reportDesignHandle = reportDesignHandle;

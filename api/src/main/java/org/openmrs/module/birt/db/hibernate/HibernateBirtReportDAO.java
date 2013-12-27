@@ -40,8 +40,6 @@ public class HibernateBirtReportDAO implements BirtReportDAO {
 	
 	/**
 	 * Creates a report definition.
-	 * 
-	 * @param	the report definition to be created.
 	 */
 	public void createReportDefinition(ReportDefinition report) throws DAOException {
 		sessionFactory.getCurrentSession().save(report);
@@ -79,8 +77,6 @@ public class HibernateBirtReportDAO implements BirtReportDAO {
 
 	/**
 	 * Updates the given report definition.
-	 * 
-	 * @param	the report definition to update
 	 */
 	public void updateReportDefinition(ReportDefinition reportDef)
 			throws DAOException {
@@ -96,8 +92,6 @@ public class HibernateBirtReportDAO implements BirtReportDAO {
 	
 	/**
 	 * Deletes the given report definition.
-	 * 
-	 * @param	the report definition to delete
 	 */
 	public void deleteReportDefinition(ReportDefinition report) throws DAOException {
 		sessionFactory.getCurrentSession().delete(report);
@@ -106,8 +100,6 @@ public class HibernateBirtReportDAO implements BirtReportDAO {
 	
 	/**
 	 * Gets the report definition by user.
-	 * @param	the user who created or updated the report
-	 * @return	a list of reports created or updated by the given user
 	 */
 	public List<ReportDefinition> getReportDefinitions(User user)
 			throws DAOException {
@@ -118,8 +110,6 @@ public class HibernateBirtReportDAO implements BirtReportDAO {
 	
 	/**
 	 * Get the report definitions based on the given search term.
-	 * @param	the name of the report
-	 * @return	a list of report definitions
 	 */
 	public List<ReportDefinition> getReportDefinitions(String name)
 			throws DAOException {

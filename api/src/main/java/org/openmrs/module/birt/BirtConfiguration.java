@@ -147,9 +147,7 @@ public class BirtConfiguration {
 	 */
 
 	/**
-	 * Creates a render option with the specified output file and format options. 
-	 * @param filename	the filename of the to-be-rendered output
-	 * @param format	the format of the to-be-rendered output
+	 * Creates a render option with the specified output file and format options.
 	 * @return
 	 */
 	public static IRenderOption getRenderOption(BirtReport report) { 

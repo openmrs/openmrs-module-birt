@@ -34,9 +34,6 @@ public abstract class BirtTemplateRenderer extends ReportTemplateRenderer {
 		super();
 	}
 	
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getLinkUrl(org.openmrs.report.ReportDefinition)
-	 */
 	public String getLinkUrl(ReportDefinition schema) {
 		return null;
 	}	

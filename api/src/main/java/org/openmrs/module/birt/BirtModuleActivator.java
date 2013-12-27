@@ -114,7 +114,6 @@ public class BirtModuleActivator implements Activator {
 
 	/**
 	 * Checks the global properties to make sure there are values for each required property.
-	 * @param	directories		the directories to create
 	 */
 	public void createDirectories(String [] directoryProperties) { 
 		for (String propertyName : directoryProperties) {

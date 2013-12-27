@@ -78,9 +78,7 @@ public class ParameterDefinition implements Serializable {
 	}
 	
 	/**
-	 * Public constructor. 
-	 * @param name
-	 * @param value
+	 * Public constructor.
 	 */
 	public ParameterDefinition(String name, Object [] values) { 
 		this.name = name;

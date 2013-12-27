@@ -211,7 +211,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	
 	
 	/**
-	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
+	 * @see org.openmrs.module.birt.BirtReportService#getAllBirtReports()
 	 */
 	public List<BirtReport> getAllBirtReports() {	
 		List<BirtReport> birtReports = new Vector<BirtReport>();		
@@ -303,7 +303,7 @@ public class BirtReportServiceImpl implements BirtReportService {
 	}
 	
 	/**
-	 * @see org.openmrs.module.birt.BirtReportService#findReports(String)
+	 * @see org.openmrs.module.birt.BirtReportService#filterReports(String)
 	 */
 	public List<BirtReport> filterReports(String searchTerm) {
 		
@@ -817,8 +817,6 @@ public class BirtReportServiceImpl implements BirtReportService {
 
 	/**
 	 * Saves the report to the database and filesystem.
-	 * 
-	 * @param definition
 	 */
 	public void saveReport(BirtReport report) { 
 		log.debug("Saving report " + report);
