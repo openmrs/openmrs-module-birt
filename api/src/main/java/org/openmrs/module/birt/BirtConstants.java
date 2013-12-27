@@ -5,8 +5,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 
-import org.openmrs.module.birt.impl.BirtConfiguration;
-
 public class BirtConstants { 
 	
 	/* Constants used for parsing the BIRT ODA query text */

@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Activator;
 import org.openmrs.module.ModuleException;
-import org.openmrs.module.birt.impl.BirtConfiguration;
 import org.openmrs.util.OpenmrsUtil;
 
 import org.eclipse.birt.core.exception.BirtException;
@@ -56,7 +55,7 @@ public class BirtModuleActivator implements Activator {
 		
 		try {					
 			log.debug("Starting BIRT Report Engine ... ");
-			Platform.startup( BirtConfiguration.getEngineConfig());
+			Platform.startup(BirtConfiguration.getEngineConfig());
 		} 
 		catch (BirtException e) {
 			throw new ModuleException(

@@ -40,7 +40,7 @@ import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
 import org.openmrs.module.birt.BirtReportService;
 import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.module.birt.impl.BirtConfiguration;
+import org.openmrs.module.birt.BirtConfiguration;
 import org.openmrs.module.reporting.common.Localized;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
