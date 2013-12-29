@@ -13,17 +13,16 @@
  */
 package org.openmrs.module.birt.web.dwr;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.module.birt.model.ParameterDefinition;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.web.dwr.ListItem;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -36,12 +35,8 @@ public class DwrBirtReportService {
 		
 		Vector<Object> reportList = new Vector<Object>();
 
-		BirtReportService reportService = 
-			(BirtReportService) Context.getService(BirtReportService.class);
-		
-		
-		List<BirtReport> reports = 
-			reportService.filterReports(BirtConstants.PATIENT_REPORTS);
+		BirtReportService reportService = Context.getService(BirtReportService.class);
+		List<BirtReport> reports = reportService.getReportsByName(BirtConstants.PATIENT_REPORTS);
 		
 		if (reports.size() > 0) {
 			reportList = new Vector<Object>(reports.size());
@@ -49,9 +44,11 @@ public class DwrBirtReportService {
 				ListItem item = new ListItem();
 				item.setId(report.getId());
 				item.setName(report.getName());
-				if (report.getParameters() != null ) { 
+				/*
+				// TODO: MS commenting out since I don't know what it does or how to implement it
+				if (report.getParameters() != null ) {
 					StringBuffer paramBuffer = new StringBuffer();
-					for (ParameterDefinition param : report.getParameters()) { 
+					for (ParameterDefinition param : report.getParameters()) {
 						// We only care about non-patientId parameters and null default values
 						if (!"patientId".equals(param.getName()) && param.getDefaultValue() != null) {
 							paramBuffer.append(param.getName()).append("=").append(param.getDefaultValue()).append("&");
@@ -59,6 +56,7 @@ public class DwrBirtReportService {
 					}
 					item.setDescription(paramBuffer.toString());
 				}
+				*/
 				reportList.add(item);
 			}
 		}		

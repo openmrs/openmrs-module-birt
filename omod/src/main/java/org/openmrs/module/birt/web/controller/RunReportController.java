@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
-import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;

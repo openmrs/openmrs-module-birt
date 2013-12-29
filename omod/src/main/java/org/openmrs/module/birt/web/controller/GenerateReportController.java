@@ -1,38 +1,28 @@
 package org.openmrs.module.birt.web.controller;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtConfiguration;
-import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.module.birt.model.ParameterDefinition;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -118,7 +108,9 @@ public class GenerateReportController extends SimpleFormController {
     			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Report.not.exists");    			
     		}
     		
-    	
+    	/*
+    		MS: Commenting all this out until I can figure out how to do it in the new way TODO
+
     		
     		// Make sure there's a cohort specified, otherwise we just use default cohort
     		String cohortKey = ServletRequestUtils.getStringParameter(request, COHORT_KEY, "0");
@@ -224,14 +216,14 @@ public class GenerateReportController extends SimpleFormController {
 			// message to display correctly.  Perhaps an immediate redirect to the report listing page?
 			//
 			//request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.generateReport.success");
-						
+		*/
 		} catch (Exception e) { 
 			log.error("Unable to generate report due to the following error(s): " + e.getMessage(), e);
 			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.generateReport.error");
 			errors.reject(e.getMessage());
 			return showForm(request, response, errors);
 		}
-		
+
 		return new ModelAndView("report.list");
 	}
 	

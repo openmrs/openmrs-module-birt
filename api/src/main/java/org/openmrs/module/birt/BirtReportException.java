@@ -1,60 +1,30 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.birt;
-
-import java.util.List;
 
 /**
  * Represents exceptions that occur within the Birt Reporting module
- * 
- * @author Justin Miranda
- * @version 1.0
  */
 public class BirtReportException extends RuntimeException {
 
-	private List errors;
-	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6581096406721446434L;
-
-	public BirtReportException(Throwable cause) { 
-		super(cause);
-	}
-	
 	public BirtReportException(String message) {
     	super(message);
     }
-	
-	public BirtReportException(List errors) { 
-		this.errors = errors;
-	}
-	
-	public BirtReportException(String message, List errors) { 		
-		super(message);
-		this.errors = errors;
-	}
     
 	public BirtReportException(String message, Throwable cause) {
         super(message, cause);
     }
-	
-	public BirtReportException(String message, String reportName) {
-		super (message + " Report: " + reportName);
-	}
-	
-	public BirtReportException(String message, String reportName, Throwable cause) {
-		super (message + " Report: " + reportName, cause);
-	}
-
-	public List getErrors() { 		
-		return this.errors;
-	}
-	
-	public void setErrors(List errors) { 
-		this.errors = errors;
-	}
-	
 }
 
 

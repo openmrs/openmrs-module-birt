@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="birtUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="mappings">
+            <props>
+				<prop key="module/birt/report.list">listReports</prop>
+				<prop key="module/birt/report.form">updateReport</prop>
+				<prop key="module/birt/downloadReport.form">downloadReport</prop>
+				<prop key="module/birt/generateReport.form">generateReport</prop>
+				<prop key="module/birt/generateReportWizard.form">generateReportWizard</prop>
+				<prop key="module/birt/previewReport.form">previewReport</prop>
+				<prop key="module/birt/uploadReport.form">uploadReport</prop>
+				<prop key="module/birt/downloadReportDesign.form">downloadReportDesign</prop>
+				<prop key="module/birt/downloadDataSet.form">downloadDataSet</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="downloadReportDesign" class="org.openmrs.module.birt.web.controller.DownloadReportDesignController"/>
+	<bean id="downloadDataSet" class="org.openmrs.module.birt.web.controller.DownloadDataSetController"/>
+	
+	<bean id="listReports" class="org.openmrs.module.birt.web.controller.ListReportController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>reportList</value></property>
+		<property name="formView"><value>/module/birt/reportList</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="updateReport" class="org.openmrs.module.birt.web.controller.ReportFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>report</value></property>
+		<property name="formView"><value>/module/birt/reportForm</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="uploadReport" class="org.openmrs.module.birt.web.controller.UploadReportController">
+		<property name="commandName"><value>report</value></property>
+		<property name="formView"><value>/module/birt/reportUpload</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="designReport" class="org.openmrs.module.birt.web.controller.ReportFormController">
+		<property name="commandName"><value>report</value></property>
+		<property name="formView"><value>/module/birt/reportDesign</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="previewReport" class="org.openmrs.module.birt.web.controller.ReportFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>report</value></property>
+		<property name="formView"><value>/module/birt/reportForm</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="downloadReport" class="org.openmrs.module.birt.web.controller.DownloadReportController">
+		<property name="commandName"><value>report</value></property>
+		<property name="formView"><value>/module/birt/reportForm</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+
+	<bean id="generateReport" class="org.openmrs.module.birt.web.controller.GenerateReportController">
+		<property name="commandName"><value>report</value></property>
+		<property name="commandClass"><value>org.openmrs.module.birt.BirtReport</value></property>
+		<property name="formView"><value>/module/birt/generateReportForm</value></property>
+		<property name="successView"><value>report.list</value></property>
+	</bean>
+	
+	<bean id="generateReportWizard" class="org.openmrs.module.birt.web.controller.GenerateReportWizardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>report</value></property>
+		<property name="commandClass"><value>org.openmrs.module.birt.BirtReport</value></property>
+	</bean>
+
+</beans>

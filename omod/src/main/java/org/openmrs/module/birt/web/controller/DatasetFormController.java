@@ -1,48 +1,15 @@
 package org.openmrs.module.birt.web.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-// Apache 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-// BIRT
-import org.eclipse.birt.report.model.api.ScalarParameterHandle;
-
-
-// Openmrs Core
 import org.openmrs.Cohort;
-import org.openmrs.annotation.Authorized;
-//import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
-//import org.openmrs.reporting.AbstractReportObject;
-//import org.openmrs.reporting.Report;
-//import org.openmrs.reporting.export.DataExportReportObject;
-import org.openmrs.web.WebConstants;
+import org.openmrs.module.birt.service.BirtReportService;
+import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.propertyeditor.CohortEditor;
-//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
-
-// Spring
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
@@ -51,6 +18,26 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+// Apache
+// BIRT
+// Openmrs Core
+//import org.openmrs.api.ReportService;
+//import org.openmrs.reporting.AbstractReportObject;
+//import org.openmrs.reporting.Report;
+//import org.openmrs.reporting.export.DataExportReportObject;
+//import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+// Spring
 
 
 /**
@@ -123,75 +110,13 @@ public class DatasetFormController extends SimpleFormController {
 			}
 			// Generate a quick preview of the report 
 			else if (request.getParameter("preview") != null) {				
-				log.debug("Previewing report " + report);
-				reportService.previewReport(report);
-				
-				File file = report.getOutputFile();			
-				if ( file != null) {
-					try { 
-						InputStream fileInputStream = new FileInputStream(file);
-						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
-						log.debug("Report preview mime type: " + mimeType);
-						response.setContentType(mimeType);
-						String filename = report.getReportDefinition().getId() + ".pdf";
-						//String filename = report.getReportDefinition().getReportObjectId() + ".pdf";
-						response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-						FileCopyUtils.copy(fileInputStream, response.getOutputStream());
-						return null;
-					} catch (Exception e) { 
-						request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.previewReport.error");						
-					}
-				}			
+				// MS: Removed this.  TODO: figure out what to do here
 			}
-			/*
-			// Add a parameter to the report definition 
-			// NOTE: Binding to BirtReport.parameters because we needed to use a LazyList
-			// implementation to make the list function properly with no values in the list.
-			else if (request.getParameter("addParameter")!=null) { 
-				log.debug("Adding parameters to the report definition");
-				report.getReportDefinition().getParameters().clear();
-				
-				for(ParameterDefinition parameter : report.getParameters()) { 
-					log.debug("\n\n ****** Add Parameter = " + parameter);
-					report.getReportDefinition().getParameters().add(parameter);
-					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.addParameter.success");
-				}
-				reportService.saveReport(report);
-				formRedirect = true;
-			} 
-			// Removes a parameters from the report definition
-			else if (request.getParameter("removeParameter")!=null) { 
-				log.debug("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
-				if (request.getParameter("parameterIndex")!=null) { 
-					int parameterIndex = Integer.valueOf(request.getParameter("parameterIndex"));
-					report.getReportDefinition().getParameters().remove(parameterIndex);
-					reportService.saveReport(report);
-					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.parameterRemoved.success");
-				} 
-				else { 
-					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.parameterRemove.failure");					
-				}
-				formRedirect = true;
-			}			
-			else if (request.getParameter("removeAllParameters")!=null) { 
-				log.debug("\n\n ****** Remove parameter " + request.getParameter("parameterIndex"));
-				report.getReportDefinition().getParameters().clear();
-				reportService.saveReport(report);
-				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.parameterRemoved.success");
-				formRedirect = true;
-			}
-			*/
-			else if (request.getParameter("download") != null) { 
-				// Get the report file
-				String reportDesignPath = report.getReportDesignPath();
-				File reportDesignFile = new File(reportDesignPath);
-	
-				// Write report design file to response
-				InputStream fileInputStream = new FileInputStream(reportDesignFile);
+			else if (request.getParameter("download") != null) {
+				ReportDesignResource designFile = report.getDesignFile();
 				response.setContentType("text/xml; charset=utf-8");
-				response.setHeader("Content-Disposition", "attachment; filename=" + 
-						report.getReportDefinition().getId() + ".rptdesign");
-				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
+				response.setHeader("Content-Disposition", "attachment; filename=" + designFile.getResourceFilename());
+				FileCopyUtils.copy(designFile.getContents(), response.getOutputStream());
 			}			
 			else { 
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.noAction");
@@ -229,7 +154,7 @@ public class DatasetFormController extends SimpleFormController {
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		
 		BirtReport report = (BirtReport) command; 
-		data.put("reports", reportService.getAllBirtReports());
+		data.put("reports", reportService.getAllReports());
     	// TO DO Mike
     	//data.put("cohorts", Context.getCohortService().getCohorts());
     	//data.put("dataExports", reportService.getDataExports());    	

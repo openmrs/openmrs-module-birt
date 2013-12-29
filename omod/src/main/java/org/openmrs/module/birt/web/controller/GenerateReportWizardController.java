@@ -147,7 +147,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
 /*		
 		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
 		//BirtReport report = (BirtReport) command;    	
-		data.put("reports", reportService.getReports());
+		data.put("reports", reportService.getAllReports());
 		data.put("cohorts", Context.getCohortService().getCohorts());
 		// TO DO Mike
 		//data.put("dataExports", reportService.getDataExports());    	

@@ -34,7 +34,7 @@ public class DownloadDataSetController implements Controller {
 		/**
 		 * 33cfd5be-3f49-4483-9980-06e25773c8a5
 		 */
-		System.out.println("DownloadDataSetController.handleRequest() method called");
+		System.out.println("org.openmrs.module.birt.controller.DownloadDataSetController.handleRequest() method called");
 		
 		// If you want to write directly to the response
 		try {

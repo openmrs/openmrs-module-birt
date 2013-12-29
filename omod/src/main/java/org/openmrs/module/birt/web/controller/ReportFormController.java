@@ -1,24 +1,5 @@
 package org.openmrs.module.birt.web.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,19 +7,11 @@ import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.module.htmlwidgets.web.WidgetUtil;
 import org.openmrs.module.reporting.common.MessageUtil;
 import org.openmrs.module.reporting.common.ReflectionUtil;
-import org.openmrs.module.reporting.data.encounter.definition.PatientToEncounterDataDefinition;
-import org.openmrs.module.reporting.data.encounter.definition.PersonToEncounterDataDefinition;
-import org.openmrs.module.reporting.data.patient.definition.PatientDataSetDataDefinition;
-import org.openmrs.module.reporting.data.patient.definition.PersonToPatientDataDefinition;
-import org.openmrs.module.reporting.data.person.definition.AgeAtDateOfOtherDataDefinition;
-import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.EncounterDataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.MultiPeriodIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.definition.DefinitionContext;
 import org.openmrs.module.reporting.evaluation.Definition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -50,12 +23,10 @@ import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.module.reporting.web.controller.ManageDefinitionsController.DefinitionNameComparator;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -63,6 +34,21 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 //import org.openmrs.propertyeditor.DataExportReportObjectEditor;
 //import org.openmrs.reporting.export.DataExportReportObject;
 
@@ -162,45 +148,14 @@ public class ReportFormController extends SimpleFormController {
 			}
 			// Generate a quick preview of the report 
 			else if (request.getParameter("preview") != null) {				
-				log.debug("Previewing report " + report);
-				reportService.previewReport(report);
-				
-				File file = report.getOutputFile();			
-				if ( file != null) {
-					try { 
-						InputStream fileInputStream = new FileInputStream(file);
-						String mimeType = this.getServletContext().getMimeType(file.getAbsolutePath());
-						log.debug("Report preview mime type: " + mimeType);
-						response.setContentType(mimeType);
-						String filename = report.getReportDefinition().getId() + ".pdf";
-						response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-						FileCopyUtils.copy(fileInputStream, response.getOutputStream());
-						return null;
-					} catch (Exception e) { 
-						log.error("An error occurred while previewing report", e);
-						request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.previewReport.error");						
-					}
-				}			
+				// MS: TODO I got rid of this, can re-implement if we need it
 			}
-			else if (request.getParameter("downloadDataset") != null) { 	
-				try { 
-					response.setContentType("text/xml; charset=utf-8");
-					response.getOutputStream().print(report.getDatasetXml());				
-				} catch (Exception e) { 
-					log.error("An error occurred while downloading dataset", e);
-					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.datasetDownload.error");
-				}
+			else if (request.getParameter("downloadDataset") != null) {
+				// MS: TODO I got rid of this, can re-implement if we need it
 			}
-			else if (request.getParameter("downloadReport") != null) { 
-				// Get the report file
-				String reportDesignPath = report.getReportDesignPath();
-				File reportDesignFile = new File(reportDesignPath);
-	
-				// Write report design file to response
-				InputStream fileInputStream = new FileInputStream(reportDesignFile);
-				response.setContentType("text/xml; charset=utf-8");
-				response.setHeader("Content-Disposition", "attachment; filename=" + report.getReportDefinition().getId() + ".rptdesign");
-				FileCopyUtils.copy(fileInputStream, response.getOutputStream());
+			else if (request.getParameter("downloadReport") != null) {
+				// MS: TODO I got rid of this, can re-implement if we need it
+				// This is also in the datasetformcontroller.  There is so much repeated everywhere!
 			}
 			else if (request.getParameter("removeReportDesign") != null) { 
 				String uuid = request.getParameter("uuid");
@@ -362,11 +317,9 @@ public class ReportFormController extends SimpleFormController {
 	 */
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
-		
-		//BirtReport report = (BirtReport) command;
-		
-		data.put("reports", reportService.getReports());
+		BirtReportService reportService = Context.getService(BirtReportService.class);
+
+		data.put("reports", reportService.getAllReports());
 		data.put("cohorts", Context.getService(CohortService.class).getAllCohorts());
 
 		String uuid = request.getParameter("uuid");
@@ -398,29 +351,13 @@ public class ReportFormController extends SimpleFormController {
     	try {
     		ReportService rrs = Context.getService(ReportService.class);
     		String reportDesignUuid = request.getParameter("reportDesignUuid");
-    		String reportId = request.getParameter("reportId");		
     		ReportDesign design = null;
-/*		if (reportId != null ){
-			if ( reportService.getReportDesign(reportId) != null )
-			design = rrs.getReportDesignByUuid(reportDesignUuid); 
-			if (design == null)
-				reportDesignUuid = "";		
-		} */
-		
+
     		if ( rrs.getReportDesignByUuid(reportDesignUuid) == null )
     			reportDesignUuid = "";
 		
     		if (StringUtils.isNotEmpty(reportDesignUuid)) {
     			design = rrs.getReportDesignByUuid(reportDesignUuid);
-    		}
-    		else if ( reportId != null ) {
-    			design = reportService.getReportDesign(Integer.valueOf(reportId));
-    			if (design == null) {
-    				design = new ReportDesign();
-    				if (StringUtils.isNotEmpty(uuid)) {
-    					design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
-    				}
-    			}
     		}
     		else {
 				design = new ReportDesign();
@@ -429,41 +366,24 @@ public class ReportFormController extends SimpleFormController {
 				}
 			}
     		data.put("design", design);
-		
 
-		
-/*		String reportId = request.getParameter("reportId");
-		ReportService rrs = Context.getService(ReportService.class);
-		ReportDesign design = null; 
-		if (reportId != null ) {			
-			design =  reportService.getReportDesign(Integer.valueOf(reportId));		
-		}		
-		else {
-			design = new ReportDesign();
-			if (StringUtils.isNotEmpty(uuid)) {
-				design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
+			ReportDesignResource resource = null;
+			if ( design != null ) {
+				if (!design.getResources().isEmpty()) {
+					for ( ReportDesignResource rdr : design.getResources() ) {
+						if ( rdr.getReportDesign().getId().equals(design.getId()) ) {
+							resource = rdr;
+							break;
+						}
+					}
+					data.put("resource", resource);
+				}
 			}
-		}
-		data.put("design", design);*/
-		
     	
-    	ReportDesignResource resource = null;
-    	if ( design != null ) {
-    		if (!design.getResources().isEmpty()) {
-    			for ( ReportDesignResource rdr : design.getResources() ) {
-    				if ( rdr.getReportDesign().getId().equals(design.getId()) ) {
-    					resource = rdr;
-    					break;
-    				}
-    			}
-    			data.put("resource", resource);
-    		}
     	}
-    	
-    	} catch(NumberFormatException nfe) {
+		catch(NumberFormatException nfe) {
  		   System.out.println("Could not parse " + nfe);
- 	} 
-		
+ 		}
     	return data;
     }
 	

@@ -1,10 +1,7 @@
 package org.openmrs.module.birt.web.controller;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,14 +11,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.Module;
 import org.openmrs.module.birt.BirtReport;
-import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.module.birt.BirtReportService;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.module.reporting.report.ReportDesign;
-import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
 //import org.openmrs.reporting.Report;
@@ -149,7 +142,7 @@ public class ListReportController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 	    	reportList = ((BirtReportService)
-	    		Context.getService(BirtReportService.class)).filterReports( request.getParameter("filter"));
+	    		Context.getService(BirtReportService.class)).getReportsByName(request.getParameter("filter"));
 		}
 		
 		return reportList;

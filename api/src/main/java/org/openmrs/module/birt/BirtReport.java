@@ -1,461 +1,150 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.birt;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.openmrs.Cohort;
-import org.openmrs.module.birt.model.ParameterDefinition;
-//import org.openmrs.reporting.ReportObjectXMLEncoder;
-//import org.openmrs.reporting.export.DataExportReportObject;
-//import org.openmrs.reporting.report.ReportDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.birt.report.model.api.ReportDesignHandle;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.birt.renderer.BirtReportRenderer;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 /**
- * Model class used to hold information for a BIRT report.  
- * 
- * TODO Inherit from a base Report object once we refactor the reporting code.
- * 
- * @author Justin Miranda
+ * Encapsulates the logic for representing a Birt Report
  */
-public class BirtReport implements Serializable {
-	
-	/* Serial version UID */
-	private static final long serialVersionUID = -3597505787229438074L;	
+public class BirtReport {
 
-    /* Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
-	/* Directory path to the report design (.rptdesign) */
-	private String reportDesignPath;
+	protected final Log log = LogFactory.getLog(this.getClass());
 
-	/* Report design object - transient because we can get it from the filesystem. */
-	private transient ReportDesignHandle reportDesignHandle;
-	
-	// Report definition object 
-	private ReportDefinition reportDefinition = new ReportDefinition();
-	
-	private ReportDesign reportDesign = null;
-	private ReportDesignResource reportDesignResource = null;
-	
-	private DataSetDefinition dataSetDefinition = null; 
-	
-	public ReportDesign getReportDesign() { return reportDesign; } 
-	public ReportDesignResource getReportDesignResource() { return reportDesignResource; } 
-	public void setReportDesign(ReportDesign reportDesign) { this.reportDesign = reportDesign; } 
-	public void setReportDesignResource(ReportDesignResource reportDesignResource) { this.reportDesignResource = reportDesignResource; } 		
-	
-	/*	 Desired Columns 
-	private DataExportReportObject dataExport = new DataExportReportObject();*/
+	//***** PROPERTIES *****
 
-	// Desired Rows 
-	private Cohort cohort = new Cohort();
-	
-	/* Output format (default = pdf) */
-	private String format = "pdf";
+	private ReportDesign reportDesign;
 
-	/* Report output */
-	private File output = null;
-	
-	/* Report output filename */
-	private String outputFilename = null; 
-	
-	/* Report output directory */
-	private String outputDirectory = null;	
-	
-	/* Report parameters */
-	private List<ParameterDefinition> parameters = new ArrayList<ParameterDefinition>();
-	 	
-	/* Report errors */
-	private List errors = null;
-	
-	/* Csv File Names */
-	private List<String> csvFileNames = null;
+	//***** CONSTRUCTORS *****
 
-	/* Email properties */
-	private Map<String,String> emailProperties = new HashMap<String,String>();	
-	
-	/**
-	 * Public default constructor.
-	 *
-	 */
-	public BirtReport() { }
+	public BirtReport() {}
 
-	/**
-	 * Public default constructor.
-	 * 
-	 * @param reportDefinition
-	 */
-	public BirtReport(ReportDefinition reportDefinition) { 
-		this.reportDefinition = reportDefinition;
+	public BirtReport(ReportDesign reportDesign) {
+		this.reportDesign = reportDesign;
+	}
+
+	//***** INSTANCE METHODS *****
+
+	public BirtReportRenderer getReportRenderer() {
+		try {
+			return (BirtReportRenderer)reportDesign.getRendererType().newInstance();
+		}
+		catch (Exception e) {
+			throw new BirtReportException("Unable to load report renderer for Birt Report", e);
+		}
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return the contentType for this Birt Report
+	 */
+	public ReportDesignResource getDesignFile() {
+		return getReportRenderer().getBirtDesignResource(reportDesign);
+	}
+
+	/**
+	 * @return the contentType for this Birt Report
+	 */
+	public String getContentType() {
+		return getReportRenderer().getRenderedContentType(reportDesign.getReportDefinition(), reportDesign.getUuid());
+	}
+
+	/**
+	 * @return the filename for this PatientSummary for use when exporting
+	 */
+	public String getExportFilename() {
+		return getReportRenderer().getFilename(reportDesign.getReportDefinition(), reportDesign.getUuid());
+	}
+
+	/**
+	 * @return the primary key id
 	 */
 	public Integer getId() {
-		return this.reportDefinition.getId();	
-	}
-	
-	public String getName() { 		
-		return this.reportDefinition.getName();
-	}
-	
-	public String getVersion() { 
-		return "0.0";
-	}
-	
-	public boolean getPublished() { 
-		return true; 
-	}
-	 
-	/**
-	 * Gets the directory path of the report.
-	 * @return
-	 */
-	public String getReportDesignPath() { 
-		return reportDesignPath;
-	}
-	
-	/**
-	 * Gets the csv file names.
-	 */
-	public List<String> getCsvFileNames (){
-		return csvFileNames;
-	}
-	
-	/**
-	 * Sets the csv file names.
-	 */
-	public void setCsvFileNames( List<String> csvFileNames ){
-		this.csvFileNames = csvFileNames;
-	}
-	
-	/**
-	 * Get report design handle.
-	 * @return
-	 */
-	public ReportDesignHandle getReportDesignHandle() { 
-		return reportDesignHandle;
-	}
-	
-	/**
-	 * Get dataset definition.
-	 * @return
-	 */
-	public DataSetDefinition getDataSetDefinition() { 
-		return dataSetDefinition;
+		return getReportDesign() != null ? getReportDesign().getId() : null;
 	}
 
 	/**
-	 * Get report definition.
-	 * @return	the report definition object
+	 * @return the uuid
 	 */
-	public ReportDefinition getReportDefinition() { 
-		return reportDefinition;
-	}
-	
-	/**
-	 * Returns whether the report has an associated data export object.
-	 * @return	true if data export exists, false otherwise
-	 */
-	public boolean hasFlatfileDataSet() {
-		return getReportDefinition().hasDataSetDefinitions();
-		//return getReportDefinition().getDataExport() != null && getReportDefinition().getDataExport().getReportObjectId() != null;		
+	public String getUuid() {
+		return getReportDesign() != null ? getReportDesign().getUuid() : null;
 	}
 
 	/**
-	 * Gets the assigned cohort that is to populate the data set.
-	 * @return	a cohort of patients
+	 * @return the name
 	 */
-	public Cohort getCohort() { 
-		return cohort;
-	}
-	
-	/** 
-	 * Gets the generated output file.
-	 * @return
-	 */
-	public File getOutputFile() { 
-		return output;
-	}
-	
-	/**
-	 * Gets the desired output format.
-	 * @return
-	 */
-	public String getOutputFormat() { 
-		return format;
+	public String getName() {
+		return getReportDesign() != null ? getReportDesign().getName() : null;
 	}
 
 	/**
-	 * Gets the output filename.
-	 * @return
+	 * @return the associated patient summary report definition
 	 */
-	public String getOutputFilename() { 
-		return outputFilename;
+	public ReportDefinition getReportDefinition() {
+		return getReportDesign() != null ? getReportDesign().getReportDefinition() : null;
 	}
-	
+
 	/**
-	 * Gets the output directory.
-	 * @return
+	 * @see Object#equals(Object)
 	 */
-	public String getOutputDirectory() { 
-		return outputDirectory;
-	}
-	
-	/**
-	 * Sets the output directory.
-	 * @return
-	 */
-	public void setOutputDirectory(String outputDirectory) { 
-		this.outputDirectory = outputDirectory;
-	}
-	
-	/**
-	 * Gets the report parameters.
-	 * 
-	 * @return
-	 */
-	public List<ParameterDefinition> getParameters() { 
-		return parameters;
-	}
-	
-	/**
-	 * Gets the default values for all parameters.
-	 * @return
-	 */
-	public Map<String, Object> getParameterValues() { 
-		Map<String, Object> parameterValues = new HashMap<String,Object>();
-		for (ParameterDefinition parameter : parameters) { 
-			// TODO Need to add support for multiple values
-			parameterValues.put(parameter.getName(), parameter.getValue());
+	@Override
+	public boolean equals(Object o) {
+		if (o != null && o instanceof BirtReport) {
+			BirtReport that = (BirtReport)o;
+			if (this.getReportDesign() != null && that.getReportDesign() != null) {
+				return this.getReportDesign().equals(that.getReportDesign());
+			}
 		}
-		return parameterValues;
-	}
-	
-	
-	/**
-	 * Gets the properties used to send an email.
-	 * @return
-	 */
-	public Map<String,String> getEmailProperties() { 
-		return emailProperties;
-	}	
-	
-	/**
-	 * Set the report identifier.
-	 * @param id	the report identifier
-	 */
-	public void setReportId(Integer id) { 
-		//this.reportDefinition.setReportObjectId(id);
-	}	
-	
-	/**
-	 * Sets the directory path of the report.
-	 */
-	public void setReportDesignPath(String reportDesignPath) { 
-		this.reportDesignPath = reportDesignPath;
-	}
-	 
-	/**
-	 * Set report design handle.
-	 */
-	public void setReportDesign(ReportDesignHandle reportDesignHandle) { 
-		this.reportDesignHandle = reportDesignHandle;
-	}	
-	
-	/**
-	 * Set dataset definition.
-	 * 
-	 * @param dataSetDefinition
-	 */
-	public void setDataSetDefinition(DataSetDefinition dataSetDefinition) { 
-		this.dataSetDefinition = dataSetDefinition;
-	}
-	
-	/** 
-	 * Set report definition.
-	 * 
-	 * @param reportDefinition
-	 */
-	public void setReportDefinition(ReportDefinition reportDefinition) {
-		this.reportDefinition = reportDefinition;
+		return super.equals(o);
 	}
 
 	/**
-	 * Sets the default data export object.
-	 * @param dataExport
+	 * @see Object#hashCode()
 	 */
-/*	public void setDataExport(DataExportReportObject dataExport) { 
-		this.dataExport = dataExport;	
-	}*/
-	
-	/** 
-	 * 
-	 * @param cohort
-	 */
-	public void setCohort(Cohort cohort) { 
-		this.cohort = cohort;
-	}
-
-	/** 
-	 * Sets the generated output file.
-	 * 
-	 * @return
-	 */
-	public void setOutputFile(File output) { 		
-		this.output = output;
-	}
-			
-	/**
-	 * Sets the desired output format.
-	 * 
-	 * @return
-	 */
-	public void setOutputFormat(String format) { 		
-		this.format = format;
-	}
-	
-	
-	/**
-	 * Adds the report parameters.
-	 * @param parameters
-	 */
-	public void addParameters(List<ParameterDefinition> parameters) { 
-		this.parameters.addAll(parameters);
-	}
-		
-	/**
-	 * Adds the given parameters to the report.
-	 * @param parameters
-	 */
-	public void addParameters(Map<String, Object> parameters) { 
-		for (String name : parameters.keySet()) {
-			Object value = parameters.get(name);			
-			addParameter(name, value);			
+	@Override
+	public int hashCode() {
+		if (this.getReportDesign() != null) {
+			return this.getReportDesign().hashCode();
 		}
+		return super.hashCode();
 	}
 
 	/**
-	 * Adds a parameter to the report.
-	 * @param name
-	 * @param value
+	 * @see Object#toString()
 	 */
-	public void addParameter(String name, Object value) { 
-		this.parameters.add(new ParameterDefinition(name, value));
-	}
-	
-	/**
-	 * Sets the properties for sending a report via email.
-	 * 
-	 * @param emailProperties
-	 */
-	public void setEmailProperties(Map<String,String> emailProperties) { 
-		this.emailProperties = emailProperties;
-	}
-	
-	
-	
-	/**
-	 * Convenience method to check if the file exists.
-	 * 
-	 * @return
-	 */
-	public boolean getReportDesignExists() { 
-		try { 
-			return new File(reportDesignPath).exists();
-		} catch (Exception e) { 
-			return false;
+	@Override
+	public String toString() {
+		if (getReportDesign() != null) {
+			if (getReportDesign().getReportDefinition() != null) {
+				return getReportDesign().getReportDefinition().getName() + " (" + getReportDesign().getName() + ")";
+			}
+			return getReportDesign().getName();
 		}
+		return super.toString();
 	}
 
-	
-	/**
-	 * Returns an encoded XML string that represents the report definition object.
-	 * 
-	 * @return
-	 */
-	public String getReportXml() {
-		return null;
-		//return new ReportObjectXMLEncoder(this.getReportDefinition()).toXmlString();
-	}
-	
-	/**
-	 * Retuns an encoded XML string that represents the dataset definition object.
-	 * 
-	 * @return
-	 */
-	public String getDatasetXml() { 
-		return null;
-		//return new ReportObjectXMLEncoder(this.getReportDefinition().getDataExport()).toXmlString();		
-	}
-	
-	/**
-	 * Returns a list of errors that occur during the report generation phase.
-	 * 
-	 * @return	list of errors
-	 */
-	public List getErrors() { 
-		return errors;
+	//***** PROPERTY ACCESS *****
+
+	public ReportDesign getReportDesign() {
+		return reportDesign;
 	}
 
-	/**
-	 * Sets errors that occur during the report generation phase.
-	 * 
-	 * @param errors	list of errors
-	 */
-	public void setErrors(List errors) { 
-		this.errors = errors;		
+	public void setReportDesign(ReportDesign reportDesign) {
+		this.reportDesign = reportDesign;
 	}
-		
-	/**
-	 * Returns whether the report has errors.
-	 * 
-	 * @return
-	 */
-	public boolean hasErrors() { 
-		return errors != null && !errors.isEmpty();
-	}
-	
-	
-	/**
-	 * Sets the output filename.
-	 * @return
-	 */
-	public void setOutputFilename(String filename) { 
-		this.outputFilename = filename;
-	}
-	
-	/**
-	 * Convert birt report to 
-	 */
-	public String toString() { 
-		return null;
-/*		return new StringBuffer().
-			append("[").
-			append("id=").append(this.getReportDefinition().getReportObjectId()).
-			append(", name=").append(this.getReportDefinition().getName()).
-			append(", description=").append(this.getReportDefinition().getDescription()).
-			append(", format=").append(this.getOutputFormat()).
-			append(", parameters=").append(this.getParameters()).
-			//append(", cohort=").append(this.getCohort()).
-			//append(", dataExport=").append(this.getDataExport().getColumns()).
-			append("]").
-			toString();*/
-	}
-
-	
-	
-	
 }

@@ -15,10 +15,6 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-
-/**
- *
- */
 public class DownloadReportDesignController implements Controller {
 	
     /** Logger for this class and subclasses */

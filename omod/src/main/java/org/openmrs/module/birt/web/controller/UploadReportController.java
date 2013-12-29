@@ -1,34 +1,18 @@
 package org.openmrs.module.birt.web.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.BirtReportException;
-import org.openmrs.module.birt.BirtReportService;
-import org.openmrs.module.birt.BirtReportUtil;
-import org.openmrs.module.birt.report.renderer.BirtTemplateRenderer;
-import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
+import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.web.WebConstants;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +20,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class UploadReportController extends SimpleFormController {
@@ -100,7 +90,6 @@ public class UploadReportController extends SimpleFormController {
 						design.setName(name);
 						design.setDescription(description);
 						design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid));
-						//design.setReportDefinition(Context.getService(ReportDefinitionService.class).getDefinition(Integer.parseInt(reportId)));
 						design.setRendererType(rendererType);
 						
 						ReportDesignResource resource = null;
@@ -110,9 +99,7 @@ public class UploadReportController extends SimpleFormController {
 						if (resource == null) {
 							resource = new ReportDesignResource();
 						}
-						
 
-						//ReportDesignResource resource = new ReportDesignResource();
 						int index = fileName.lastIndexOf(".");
 						resource.setReportDesign(design);
 						resource.setContentType(reportFile.getContentType());
@@ -138,12 +125,6 @@ public class UploadReportController extends SimpleFormController {
 						// Copy report design file to 
 						log.debug("Content type: " + contentType);
 
-						File reportDirectory = BirtReportUtil.getReportRepository();
-						String reportFilename = reportDirectory.getAbsolutePath() + System.getProperty("file.separator") + reportId + ".rptdesign";				        
-
-						FileCopyUtils.copy(inputStream, new FileOutputStream(reportFilename));
-
-						// On successful upload, save message to request
 						request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "birt.uploadReport.success");
 
 					}
@@ -174,25 +155,4 @@ public class UploadReportController extends SimpleFormController {
 		httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "birt.reportDesign.notSaved");
 		return showForm(request, response, errors);
 	}
-
-	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		List<ReportDesign> report = new ArrayList<ReportDesign>();
-		BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
-		
-		//only fill the Object is the user has authenticated properly
-		if (Context.isAuthenticated()) {
-	    	report = reportService.getReportDesigns();
-		}		
-		return report;	
-	}
-
-
 }
