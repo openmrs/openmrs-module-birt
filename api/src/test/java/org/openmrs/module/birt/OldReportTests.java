@@ -20,6 +20,7 @@ import java.net.URL;
 /**
  * Test cases for BIRT Report Module capabilities
  */
+@Ignore
 public class OldReportTests extends BaseModuleContextSensitiveTest {
 
 	private static Log log = LogFactory.getLog(OldReportTests.class);
