@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.birt.core.data.DataType;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.HTMLServerImageHandler;
 import org.eclipse.birt.report.engine.api.IPDFRenderOption;
@@ -50,6 +51,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -158,10 +160,43 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		}
 	}
 
+	/**
+	 * @return the birt data type name for the given class
+	 */
+	public static String getBirtDataType(Class<?> type) {
+		String ret = DataType.STRING_TYPE_NAME;
+		if (Date.class.isAssignableFrom(type)) {
+			ret = DataType.DATE_TYPE_NAME;
+		}
+		else if (Boolean.class.isAssignableFrom(type)) {
+			ret = DataType.BOOLEAN_TYPE_NAME;
+		}
+		else if (Number.class.isAssignableFrom(type)) {
+			if (Integer.class.isAssignableFrom(type)) {
+				ret = DataType.INTEGER_TYPE_NAME;
+			}
+			else {
+				ret = DataType.DOUBLE_TYPE_NAME;
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * @return the birt data type name for the given class
+	 */
+	public static String getBirtFormattedValue(Class<?> type, Object value) {
+		String format = null;
+		if (Date.class.isAssignableFrom(type)) {
+			format = "yyyy-MM-dd HH:mm:ss.S";
+		}
+		return ObjectUtil.format(value, format);
+	}
+
 	public static void writeDataSetToCsv(DataSet dataSet, File outputFile) throws IOException {
 		FileWriter fileWriter = null;
 		try {
-			fileWriter = new FileWriter(outputFile, true);
+			fileWriter = new FileWriter(outputFile, false);
 			CSVWriter csvWriter = new CSVWriter(fileWriter, ',');
 			DataSetMetaData metadata = dataSet.getMetaData();
 			String[] columns = new String[metadata.getColumns().size()];
@@ -169,10 +204,18 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 				columns[i] = metadata.getColumns().get(i).getName();
 			}
 			csvWriter.writeNext(columns);
+			String[] types = new String[metadata.getColumns().size()];
+			for (int i=0; i<metadata.getColumns().size(); i++) {
+				types[i] = getBirtDataType(metadata.getColumns().get(i).getDataType());
+			}
+			csvWriter.writeNext(types);
+
 			for (DataSetRow dataSetRow : dataSet) {
 				String[] row = new String[metadata.getColumns().size()];
 				for (int i = 0; i < metadata.getColumns().size(); i++) {
-					row[i] = ObjectUtil.format(dataSetRow.getColumnValue(metadata.getColumns().get(i)));
+					Class<?> type = metadata.getColumns().get(i).getDataType();
+					Object columnValue = dataSetRow.getColumnValue(metadata.getColumns().get(i));
+					row[i] = getBirtFormattedValue(type, columnValue);
 				}
 				csvWriter.writeNext(row);
 			}

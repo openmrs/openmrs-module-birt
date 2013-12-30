@@ -19,8 +19,6 @@ import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.model.api.DesignConfig;
-import org.eclipse.birt.report.model.api.IDesignEngine;
-import org.eclipse.birt.report.model.api.IDesignEngineFactory;
 import org.openmrs.module.ModuleException;
 
 /**
@@ -32,7 +30,6 @@ public class BirtRuntime {
 	private static Log log = LogFactory.getLog(BirtRuntime.class);
 	private static BirtConfiguration configuration;
 	private static IReportEngine reportEngine;
-	private static IDesignEngine designEngine;
 
 	/**
 	 * Start up the Birt Platform.
@@ -73,24 +70,6 @@ public class BirtRuntime {
 			}
 		}
 		return reportEngine;
-	}
-
-	/**
-	 * Retrieves the Birt Design Engine, creating a new one if it doesn't exist,
-	 * otherwise re-using the cached version
-	 */
-	public static synchronized IDesignEngine getDesignEngine() {
-		if (designEngine == null) {
-			try {
-				log.debug("Creating Birt design engine.");
-				IDesignEngineFactory factory = (IDesignEngineFactory) Platform.createFactoryObject(IDesignEngineFactory.EXTENSION_DESIGN_ENGINE_FACTORY);
-				designEngine = factory.createDesignEngine(new DesignConfig());
-			}
-			catch (Exception e) {
-				throw new BirtReportException("Unable to create Birt design engine: " + e.getMessage(), e);
-			}
-		}
-		return designEngine;
 	}
 
 	/**

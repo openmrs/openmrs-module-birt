@@ -27,7 +27,7 @@
 		<reportingVersion>0.8</reportingVersion>
 		<serializationVersion>0.2.7</serializationVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
-		<calculationVersion>1.0</calculationVersion>
+		<calculationVersion>1.1-SNAPSHOT</calculationVersion>
 		<birtVersion>4.2.0</birtVersion>
 	</properties>
 
