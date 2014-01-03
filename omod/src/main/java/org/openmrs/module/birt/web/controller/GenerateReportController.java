@@ -57,10 +57,7 @@ public class GenerateReportController extends SimpleFormController {
 			binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));	        
 	        
 	        // Register default date parameter
-			log.debug("bind customer date editor");
-	        SimpleDateFormat format = new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT);
-	        format.setLenient(true);
-	        binder.registerCustomEditor(Date.class, new CustomDateEditor(format, true));        
+	        binder.registerCustomEditor(Date.class, new CustomDateEditor(Context.getDateFormat(), true));
 	        
 	        
 		} catch (Exception e) { 

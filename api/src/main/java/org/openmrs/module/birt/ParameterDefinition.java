@@ -30,22 +30,6 @@ import java.util.Map;
 public class ParameterDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    // Parameter value display types
-	public static final String TEXT_BOX = "text";
-	public static final String LIST_BOX = "select";
-	public static final String RADIO_BUTTON = "radio";
-	public static final String CHECK_BOX = "checkbox";
-	public static final String DATE_CHOOSER = "date";
-	
-	// Parameter data types
-	public static final String TYPE_BOOLEAN = "boolean";
-	public static final String TYPE_DATE = "date";
-	public static final String TYPE_DATE_TIME = "dateTime";
-	public static final String TYPE_DECIMAL = "decimal";
-	public static final String TYPE_FLOAT = "float";
-	public static final String TYPE_STRING = "string";
-	public static final String TYPE_TIME = "time";
 
 	// Parameter
 	private Integer id;

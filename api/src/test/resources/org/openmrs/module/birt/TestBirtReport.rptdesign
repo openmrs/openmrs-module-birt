@@ -12,7 +12,7 @@
             <property name="DELIMTYPE">COMMA</property>
             <property name="CHARSET">UTF-8</property>
             <property name="INCLCOLUMNNAME">YES</property>
-            <property name="INCLTYPELINE">NO</property>
+            <property name="INCLTYPELINE">YES</property>
             <property name="TRAILNULLCOLS">NO</property>
         </oda-data-source>
     </data-sources>

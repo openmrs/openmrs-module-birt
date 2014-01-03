@@ -67,24 +67,25 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 	public static final String OUTPUT_FORMAT_HTML = "html";
 	public static final String OUTPUT_FORMAT_PDF = "pdf";
 	public static final String OUTPUT_FORMAT_DOC = "doc";
+	public static final String OUTPUT_FORMAT_XLS = "xls";
 
 	public BirtReportRenderer() {
 		super();
 	}
 
-	@Override
-	public String getFilename(ReportDefinition definition, String argument) {
+	public String getOutputFormat(String argument) {
 		ReportDesign design = getDesign(argument);
-		String format = design.getPropertyValue(PROPERTY_OUTPUT_FORMAT, OUTPUT_FORMAT_PDF);
-		return design.getReportDefinition().getName() + "." + format;
+		return design.getPropertyValue(PROPERTY_OUTPUT_FORMAT, OUTPUT_FORMAT_HTML);
 	}
 
 	@Override
 	public String getRenderedContentType(ReportDefinition definition, String argument) {
-		ReportDesign design = getDesign(argument);
-		String format = design.getPropertyValue(PROPERTY_OUTPUT_FORMAT, OUTPUT_FORMAT_PDF);
+		String format = getOutputFormat(argument);
 		if (OUTPUT_FORMAT_DOC.equals(format)) {
 			return "application/msword";
+		}
+		else if (OUTPUT_FORMAT_XLS.equals(format)) {
+			return "application/vnd.ms-excel";
 		}
 		else if (OUTPUT_FORMAT_PDF.equals(format)) {
 			return "application/pdf";
@@ -92,6 +93,12 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		else {
 			return "text/html";
 		}
+	}
+
+	@Override
+	public String getFilename(ReportDefinition definition, String argument) {
+		ReportDesign design = getDesign(argument);
+		return design.getReportDefinition().getName() + "." + getOutputFormat(argument);
 	}
 
 	/**
@@ -129,20 +136,30 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 			}
 
 			IDataSource dataSource = reportRunnable.getDesignInstance().getDataSource(BIRT_DATA_SOURCE_NAME);
+			OdaDataSourceHandle handle = null;
+
 			if (dataSource != null && dataSource instanceof OdaDataSourceHandle) {
-				((OdaDataSourceHandle)dataSource).setProperty(CommonConstants.CONN_FILE_URI_PROP, "file:/" + tempDir.getAbsolutePath());
+				handle = (OdaDataSourceHandle)dataSource;
+				handle.setProperty(CommonConstants.CONN_FILE_URI_PROP, "file:/" + tempDir.getAbsolutePath());
 			}
 
 			for (String dataSetKey : reportData.getDataSets().keySet()) {
-				File outputFile = new File(tempDir, dataSetKey); // TODO: Make this filename safe
-				writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), outputFile);
+				File outputFile = new File(tempDir, dataSetKey);
+				boolean includeTypeRow = true;
+				if (handle != null) {
+					Object includeTypeProp = handle.getProperty(CommonConstants.CONN_INCLTYPELINE_PROP);
+					includeTypeRow = includeTypeProp != null && "TRUE".equalsIgnoreCase(includeTypeProp.toString());
+				}
+				writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), includeTypeRow, outputFile);
 			}
 
 			IRunAndRenderTask task = birtEngine.createRunAndRenderTask(reportRunnable);
 			task.setParameterValues(reportData.getContext().getParameterValues());
 
-			String outputFormat = design.getPropertyValue(PROPERTY_OUTPUT_FORMAT, OUTPUT_FORMAT_PDF);
-			String outputFilename = outputDir + SystemUtils.FILE_SEPARATOR + getFilename(design.getReportDefinition(), argument);
+			// TODO: Properly handle parameters, and test this
+
+			String outputFormat = getOutputFormat(argument);
+			String outputFilename = tempDir + SystemUtils.FILE_SEPARATOR + getFilename(design.getReportDefinition(), argument);
 
 			task.setRenderOption(getRenderOption(outputFormat, outputFilename));
 
@@ -193,7 +210,7 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		return ObjectUtil.format(value, format);
 	}
 
-	public static void writeDataSetToCsv(DataSet dataSet, File outputFile) throws IOException {
+	public static void writeDataSetToCsv(DataSet dataSet, boolean includeTypeRow, File outputFile) throws IOException {
 		FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(outputFile, false);
@@ -204,12 +221,13 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 				columns[i] = metadata.getColumns().get(i).getName();
 			}
 			csvWriter.writeNext(columns);
-			String[] types = new String[metadata.getColumns().size()];
-			for (int i=0; i<metadata.getColumns().size(); i++) {
-				types[i] = getBirtDataType(metadata.getColumns().get(i).getDataType());
+			if (includeTypeRow) {
+				String[] types = new String[metadata.getColumns().size()];
+				for (int i=0; i<metadata.getColumns().size(); i++) {
+					types[i] = getBirtDataType(metadata.getColumns().get(i).getDataType());
+				}
+				csvWriter.writeNext(types);
 			}
-			csvWriter.writeNext(types);
-
 			for (DataSetRow dataSetRow : dataSet) {
 				String[] row = new String[metadata.getColumns().size()];
 				for (int i = 0; i < metadata.getColumns().size(); i++) {

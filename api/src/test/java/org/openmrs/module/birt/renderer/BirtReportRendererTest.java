@@ -7,6 +7,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 /**
@@ -20,7 +21,7 @@ public class BirtReportRendererTest extends BaseBirtTest {
 		ReportData data = getReportDefinitionService().evaluate(birtReport.getReportDefinition(), new EvaluationContext());
 		ReportDesign design = birtReport.getReportDesign();
 		BirtReportRenderer renderer = new BirtReportRenderer();
-		FileOutputStream fos = new FileOutputStream(birtReport.getExportFilename());
+		FileOutputStream fos = new FileOutputStream(new File("/home/mseaton/Desktop", birtReport.getExportFilename()));
 		renderer.render(data, design.getUuid(), fos);
 		fos.close();
 	}

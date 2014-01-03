@@ -38,135 +38,6 @@ import java.util.Map;
 public class BirtReportUtil {
 
 	private static Log log = LogFactory.getLog(BirtReportUtil.class);
-
-	/**
-	 * Return an array of objects of the given type parsed from an array of strings.
-	 * @param type
-	 * @param values
-	 * @return
-	 * @throws ParseException
-	 */
-	public static final Object [] parseParameterValues(String type, String [] values) throws ParseException { 
-		Object [] objects = null;
-		if (values != null && values.length > 0) { 
-			objects = new Object[values.length];
-			for (int i=0; i<values.length; i++) {  
-				objects[i] = parseParameterValue(type, values[i]);
-			}
-		}		
-		return objects;
-	}
-	
-	
-	
-	/**
-	 * Return an object of given type that has been parsed from a string.
-	 * @param type
-	 * @param value
-	 * @return
-	 * @throws ParseException
-	 */
-	public static final Object parseParameterValue(String type, String value) throws ParseException { 
-
-		if ( DesignChoiceConstants.PARAM_TYPE_DECIMAL.equals( type ) ) { 
-			// java.lang.Number
-			DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance();
-			return formatter.parse(value);
-		} 
-		else if ( DesignChoiceConstants.PARAM_TYPE_INTEGER.equals( type ) ) { 
-			return new Integer(NumberFormat.getInstance().parse(value).intValue());
-			
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_FLOAT.equals( type ) ) { 
-			// java.lang.Number number = null;
-			return NumberFormat.getInstance().parse(value);
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_DATETIME.equals( type ) )  { 
-			//java.util.Date
-			log.debug("Parsing datetime value '" + value + "'");  
-			return new SimpleDateFormat(BirtConfiguration.DEFAULT_DATETIME_FORMAT).parse(value);
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_DATE.equals( type ) ) { 
-			// java.sql.Date
-			java.util.Date datetimeValue = new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT).parse(value);
-			return new java.sql.Date(datetimeValue.getTime());	
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_TIME.equals( type ) ) { 
-			// java.sql.Time
-			java.util.Date datetimeValue = new SimpleDateFormat(BirtConfiguration.DEFAULT_TIME_FORMAT).parse(value);
-			return new java.sql.Time(datetimeValue.getTime());
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_STRING.equals( type ) ) { 
-			// java.lang.String
-			return value.toString( ).trim( );							
-		}
-		else if ( DesignChoiceConstants.PARAM_TYPE_BOOLEAN.equals( type ) ) { 
-			// java.lang.Boolean
-			String stringValue = value.toString( ).trim( );
-			return Boolean.parseBoolean(stringValue);
-		}	
-		else {
-			return value.toString().trim();
-		}
-		
-	}
-	
-	
-	public static final String getDataType(int dataType) { 
-		log.debug("Get data type: " + dataType);
-		switch (dataType) {
-		
-			case IScalarParameterDefn.TYPE_STRING:  
-				return ParameterDefinition.TYPE_STRING;
-				
-			case IScalarParameterDefn.TYPE_FLOAT:  
-				return ParameterDefinition.TYPE_FLOAT;
-				
-			case IScalarParameterDefn.TYPE_DECIMAL:  
-				return ParameterDefinition.TYPE_DECIMAL;
-				
-			case IScalarParameterDefn.TYPE_DATE:
-				return ParameterDefinition.TYPE_DATE;
-				
-			case IScalarParameterDefn.TYPE_DATE_TIME:  
-				return ParameterDefinition.TYPE_DATE_TIME;
-				
-			case IScalarParameterDefn.TYPE_BOOLEAN:  
-				return ParameterDefinition.TYPE_BOOLEAN;
-				
-			default:  
-				return ParameterDefinition.TYPE_STRING;
-		}
-	}
-	
-	public static final String getControlType(int controlType) { 
-		log.debug("Get control type: " + controlType);
-		switch (controlType) {
-			case IScalarParameterDefn.TEXT_BOX:  
-				return ParameterDefinition.TEXT_BOX; 
-				
-			case IScalarParameterDefn.LIST_BOX:  
-				return ParameterDefinition.LIST_BOX; 
-				
-			case IScalarParameterDefn.RADIO_BUTTON:  
-				return ParameterDefinition.RADIO_BUTTON; 
-				
-			case IScalarParameterDefn.CHECK_BOX:  
-				return ParameterDefinition.CHECK_BOX; 
-				
-			default: 
-				return ParameterDefinition.TEXT_BOX; 
-		}
-	}
-
-	public static final String getParameterType(int parameterType) { 
-		log.debug("Get parameter type: " + parameterType);
-		switch (parameterType) {
-			default: 
-				return ParameterDefinition.TEXT_BOX; 
-		}
-	}
-	
 	
 	/**
 	 * Creates a parameter based on the BIRT report parameter.
@@ -190,7 +61,10 @@ public class BirtReportUtil {
 		parameter.setHidden(scalar.isHidden());
 		parameter.setConceal(scalar.isValueConcealed());
 
-		// Intrepret the display type (select, text, radio, etc) 
+		/**
+		 * TODO: MS: Re-add the below, but in a way that htmlwidgets can use
+
+
 		parameter.setControlType(BirtReportUtil.getControlType(scalar.getControlType()));
 
 		// Interpret data type (integer, string, date, datetime)
@@ -198,7 +72,7 @@ public class BirtReportUtil {
 
 		// Interpret the parameter type (simple, multi-value, ?)
 		// parameter.setParameterType(BirtReportUtil.getParameterType(scalar.getParameterType()));
-
+		 */
 		
 		// Get report design and find default value, prompt text and data set expression using the DE API
 		ReportDesignHandle reportHandle = (ReportDesignHandle) reportRunnable.getDesignHandle( );

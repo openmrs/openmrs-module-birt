@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.BirtConfiguration;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.propertyeditor.CohortEditor;
@@ -66,8 +67,7 @@ public class GenerateReportWizardController extends AbstractWizardFormController
      */
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	log.debug("Initializing binders");
-    	binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(BirtConfiguration.DEFAULT_DATE_FORMAT), false));
-/*		binder.registerCustomEditor(AbstractReportObject.class, new AbstractReportObjectEditor());*/
+    	binder.registerCustomEditor(Date.class, new CustomDateEditor(Context.getDateFormat(), false));
 		binder.registerCustomEditor(Cohort.class, new CohortEditor());
     }
 
