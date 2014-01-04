@@ -56,6 +56,7 @@ import java.util.UUID;
 
 /**
  * Renders a Report using the Birt Runtime Engine and a Birt report design configuration
+ * http://www.eclipse.org/birt/phoenix/deploy/reportEngineAPI.php for more information
  */
 public class BirtReportRenderer extends ReportDesignRenderer {
 
