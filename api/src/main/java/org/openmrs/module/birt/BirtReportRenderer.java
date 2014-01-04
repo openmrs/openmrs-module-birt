@@ -11,11 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.birt.renderer;
+package org.openmrs.module.birt;
 
 import liquibase.csv.opencsv.CSVWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,11 +30,11 @@ import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
-import org.eclipse.birt.report.engine.api.script.element.IDataSource;
-import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
+import org.eclipse.birt.report.model.api.DataSourceHandle;
+import org.eclipse.birt.report.model.api.ModuleHandle;
 import org.eclipse.datatools.connectivity.oda.flatfile.CommonConstants;
-import org.openmrs.module.birt.BirtConfiguration;
-import org.openmrs.module.birt.BirtRuntime;
+import org.hibernate.cfg.Environment;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetMetaData;
@@ -52,6 +53,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -61,7 +63,8 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	public static final String BIRT_DATA_SOURCE_NAME = "reportData";
+	public static final String REPORT_DATA_DATASOURCE_NAME = "reportData";
+	public static final String OPENMRS_DATABASE_DATASOURCE_NAME = "openmrs";
 	public static final String RPT_DESIGN_EXTENSION = ".rptdesign";
 	public static final String PROPERTY_OUTPUT_FORMAT = "outputFormat";
 	public static final String OUTPUT_FORMAT_HTML = "html";
@@ -125,7 +128,6 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 			ReportDesign design = getDesign(argument);
 			ReportDesignResource rptDesign = getBirtDesignResource(design);
 
-			BirtRuntime.startup(new BirtConfiguration());
 			IReportEngine birtEngine = BirtRuntime.getReportEngine();
 			IReportRunnable reportRunnable = birtEngine.openReportDesign(new ByteArrayInputStream(rptDesign.getContents()));
 
@@ -135,28 +137,41 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 				tempDir.mkdirs();
 			}
 
-			IDataSource dataSource = reportRunnable.getDesignInstance().getDataSource(BIRT_DATA_SOURCE_NAME);
-			OdaDataSourceHandle handle = null;
+			ModuleHandle moduleHandle = reportRunnable.getDesignHandle().getModuleHandle();
 
-			if (dataSource != null && dataSource instanceof OdaDataSourceHandle) {
-				handle = (OdaDataSourceHandle)dataSource;
-				handle.setProperty(CommonConstants.CONN_FILE_URI_PROP, "file:/" + tempDir.getAbsolutePath());
+			// If the report design references a data source named reportData, export the reportData to the file system
+			// and change references within the report design so that it points to the appropriate files
+			// TODO: Document on the wiki that this data source name is a convention, as are the data set names
+
+			DataSourceHandle reportDataSource = moduleHandle.findDataSource(REPORT_DATA_DATASOURCE_NAME);
+			if (reportDataSource != null) {
+				reportDataSource.setProperty(CommonConstants.CONN_HOME_DIR_PROP, tempDir.getAbsolutePath());
+				for (String dataSetKey : reportData.getDataSets().keySet()) {
+					File outputFile = new File(tempDir, dataSetKey);
+					Object includeTypeProp = reportDataSource.getProperty(CommonConstants.CONN_INCLTYPELINE_PROP);
+					boolean includeTypeRow = includeTypeProp != null && CommonConstants.INC_TYPE_LINE_YES.equalsIgnoreCase(includeTypeProp.toString());
+					writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), includeTypeRow, outputFile);
+				}
 			}
 
-			for (String dataSetKey : reportData.getDataSets().keySet()) {
-				File outputFile = new File(tempDir, dataSetKey);
-				boolean includeTypeRow = true;
-				if (handle != null) {
-					Object includeTypeProp = handle.getProperty(CommonConstants.CONN_INCLTYPELINE_PROP);
-					includeTypeRow = includeTypeProp != null && "TRUE".equalsIgnoreCase(includeTypeProp.toString());
+			// If the report design references a data source named openmrs, set credentials to those in runtime properties
+			// TODO: Document on the wiki that this data source name is a convention, as are the data set names
+
+			DataSourceHandle openmrsDataSource = moduleHandle.findDataSource(OPENMRS_DATABASE_DATASOURCE_NAME);
+			if (openmrsDataSource != null) {
+				Properties runtimeProperties = Context.getRuntimeProperties();
+				String driverClass = runtimeProperties.getProperty(Environment.DRIVER);
+				if (StringUtils.isNotBlank(driverClass)) {
+					openmrsDataSource.setProperty("odaDriverClass", driverClass);
 				}
-				writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), includeTypeRow, outputFile);
+				openmrsDataSource.setProperty("odaURL", runtimeProperties.getProperty("connection.url"));
+				openmrsDataSource.setProperty("odaUser", runtimeProperties.getProperty("connection.username"));
+				openmrsDataSource.setProperty("odaPassword", runtimeProperties.getProperty("connection.password"));
+				openmrsDataSource.setEncryption("odaPassword", null);
 			}
 
 			IRunAndRenderTask task = birtEngine.createRunAndRenderTask(reportRunnable);
 			task.setParameterValues(reportData.getContext().getParameterValues());
-
-			// TODO: Properly handle parameters, and test this
 
 			String outputFormat = getOutputFormat(argument);
 			String outputFilename = tempDir + SystemUtils.FILE_SEPARATOR + getFilename(design.getReportDefinition(), argument);
@@ -256,18 +271,21 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		if (OUTPUT_FORMAT_HTML.equalsIgnoreCase(outputFormat)) {
 			HTMLRenderOption htmlOptions = new HTMLRenderOption(options);
 			htmlOptions.setImageDirectory(BirtRuntime.getConfiguration().getOutputDirectory() + "/images/");
-			htmlOptions.setHtmlPagination(false);
 		}
 		else if(OUTPUT_FORMAT_PDF.equalsIgnoreCase(outputFormat)) {
 			PDFRenderOption pdfOptions = new PDFRenderOption( options );
 			pdfOptions.setOption(PDFRenderOption.PAGE_OVERFLOW, IPDFRenderOption.FIT_TO_PAGE_SIZE);
-			pdfOptions.setOption(IRenderOption.HTML_PAGINATION, Boolean.FALSE);
 		}
 		options.setImageHandler(new HTMLServerImageHandler());
-		options.setBaseURL(BirtConfiguration.DEFAULT_BASE_URL);
-		options.setSupportedImageFormats(BirtConfiguration.DEFAULT_SUPPORTED_IMAGE_FORMATS);
 
 		// TODO: options.setImageHandler(new HTMLCompleteImageHandler())
+
+		options.setBaseURL(BirtConfiguration.DEFAULT_BASE_URL);
+
+		// TODO: Is this really needed?
+		options.setSupportedImageFormats(BirtConfiguration.DEFAULT_SUPPORTED_IMAGE_FORMATS);
+
+
 
 		return options;
 	}

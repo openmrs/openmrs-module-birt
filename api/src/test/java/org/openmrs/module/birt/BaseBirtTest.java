@@ -1,13 +1,15 @@
 package org.openmrs.module.birt;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.birt.renderer.BirtReportRenderer;
 import org.openmrs.module.birt.service.BirtReportService;
-import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
+import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -16,7 +18,10 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Base class for testing BIRT Report Module capabilities
@@ -24,44 +29,62 @@ import java.io.InputStream;
 public abstract class BaseBirtTest extends BaseModuleContextSensitiveTest {
 
 	protected static Log log = LogFactory.getLog(BaseBirtTest.class);
-	protected Integer testBirtReportId;
-	protected String testBirtReportName = "Test Birt Report";
 
-	/**
-	 * Set up some Birt Reports in the database
-	 * @throws Exception
-	 */
+	@Override
+	public Properties getRuntimeProperties() {
+		Properties p = super.getRuntimeProperties();
+		p.setProperty("connection.url", "jdbc:hsqldb:mem:openmrs");
+		return p;
+	}
+
 	@Before
-	public void setup() throws Exception {
+	public void startupBirt() {
+		BirtRuntime.startup(new BirtConfiguration());
+	}
 
-		ReportDefinition rd = new ReportDefinition();
-		rd.setName(testBirtReportName);
+	@After
+	public void shutdownBirt() {
+		BirtRuntime.shutdown();
+	}
 
-		SqlDataSetDefinition patients = new SqlDataSetDefinition();
-		patients.setSqlQuery("select p.patient_id, n.gender, n.birthdate from patient p, person n where p.patient_id = n.person_id and p.voided = 0 and n.voided = 0");
-		rd.addDataSetDefinition("patients", patients, null);
-
-		SqlDataSetDefinition encounters = new SqlDataSetDefinition();
-		encounters.setSqlQuery("select e.encounter_id, e.patient_id, e.encounter_datetime, t.name from encounter e, encounter_type t where e.encounter_type = t.encounter_type_id and e.voided = 0");
-		rd.addDataSetDefinition("encounters", encounters, null);
-
-		getReportDefinitionService().saveDefinition(rd);
-
+	protected BirtReport createBirtReport(ReportDefinition rd, String resourceName) throws Exception {
 		ReportDesign design = new ReportDesign();
-		design.setName(testBirtReportName);
+		design.setName(rd.getName());
 		design.setRendererType(BirtReportRenderer.class);
 		design.setReportDefinition(rd);
 
 		ReportDesignResource resource = new ReportDesignResource();
-		resource.setName("Design1.rptdesign");
+		resource.setName(resourceName);
 		resource.setReportDesign(design);
-		InputStream is = OpenmrsClassLoader.getInstance().getResourceAsStream("org/openmrs/module/birt/TestBirtReport.rptdesign");
+		InputStream is = OpenmrsClassLoader.getInstance().getResourceAsStream("org/openmrs/module/birt/"+resourceName+".rptdesign");
 		resource.setContents(IOUtils.toByteArray(is));
 		IOUtils.closeQuietly(is);
 		design.addResource(resource);
-
 		design = getReportService().saveReportDesign(design);
-		testBirtReportId = design.getId();
+		return new BirtReport(design);
+	}
+
+	protected String getRenderedReportAsString(BirtReport birtReport) throws Exception {
+		ReportData data = getReportDefinitionService().evaluate(birtReport.getReportDefinition(), new EvaluationContext());
+		ReportDesign design = birtReport.getReportDesign();
+		BirtReportRenderer renderer = new BirtReportRenderer();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		renderer.render(data, design.getUuid(), os);
+		String ret = os.toString("UTF-8");
+		os.close();
+		return ret;
+	}
+
+	protected void writeReportDataToDisk(BirtReport birtReport) throws Exception {
+		File dir = new File(SystemUtils.getUserHome(), "birtDataSets");
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		ReportData data = getReportDefinitionService().evaluate(birtReport.getReportDefinition(), new EvaluationContext());
+		for (String dsName : data.getDataSets().keySet()) {
+			File outputFile = new File(dir, dsName);
+			BirtReportRenderer.writeDataSetToCsv(data.getDataSets().get(dsName), true, outputFile);
+		}
 	}
 
 	protected ReportDefinitionService getReportDefinitionService() {

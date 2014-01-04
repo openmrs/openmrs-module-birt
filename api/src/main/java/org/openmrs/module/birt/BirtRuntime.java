@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
-import org.eclipse.birt.report.model.api.DesignConfig;
+import org.eclipse.core.internal.registry.RegistryProviderFactory;
 import org.openmrs.module.ModuleException;
 
 /**
@@ -30,21 +30,33 @@ public class BirtRuntime {
 	private static Log log = LogFactory.getLog(BirtRuntime.class);
 	private static BirtConfiguration configuration;
 	private static IReportEngine reportEngine;
+	private static boolean started = false;
 
 	/**
 	 * Start up the Birt Platform.
 	 */
-	public static void startup(BirtConfiguration configuration) {
-		try {
-			BirtRuntime.configuration = configuration;
-			log.debug("Starting BIRT report engine platform...");
-			Platform.startup(configuration.getBirtEngineConfig());
-			log.debug("Starting BIRT design platform");
-			Platform.startup(new DesignConfig());
+	public static synchronized void startup(BirtConfiguration configuration) {
+		if (started) {
+			log.warn("Attempted to startup a Birt Runtime that was already started! Ignoring new configuration");
 		}
-		catch (Exception e) {
-			throw new ModuleException("Error starting BIRT platforms", e);
+		else {
+			try {
+				BirtRuntime.configuration = configuration;
+				log.debug("Starting BIRT report engine platform...");
+				Platform.startup(configuration.getBirtEngineConfig());
+				started = true;
+			}
+			catch (Exception e) {
+				throw new ModuleException("Error starting BIRT platforms", e);
+			}
 		}
+	}
+
+	/**
+	 * @return true if the Birt Platform is already started
+	 */
+	public static boolean isStarted() {
+		return started;
 	}
 
 	/**
@@ -76,6 +88,26 @@ public class BirtRuntime {
 	 * Shutdown the Birt Platform
 	 */
 	public static void shutdown() {
-		Platform.shutdown();
+		try {
+			reportEngine.destroy();
+		}
+		catch (Exception e) {
+			log.warn("Error destroying report engine", e);
+		}
+		try {
+			Platform.shutdown();
+		}
+		catch (Exception e) {
+			log.warn("Error shutting down the platform", e);
+		}
+		try {
+			RegistryProviderFactory.releaseDefault();
+		}
+		catch (Exception e) {
+			log.warn("Error releasing the registry provider factory", e);
+		}
+		configuration = null;
+		reportEngine = null;
+		started = false;
 	}
 }
