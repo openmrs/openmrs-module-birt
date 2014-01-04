@@ -46,17 +46,4 @@ public class BirtConfiguration {
 	private String getConfigurationValue(String gpName, String defaultValue) {
 		return Context.getAdministrationService().getGlobalProperty(gpName, defaultValue);
 	}
-
-	// TODO: Figure out whether the below are needed
-
-	public static final String PROPERTY_ALWAYS_USE_OPENMRS_JDBC_PROPERTIES = "birt.alwaysUseOpenmrsJdbcProperties";
-	public static final String PROPERTY_ODA_USER =	"birt.odaUser";
-	public static final String PROPERTY_ODA_PASSWORD = "birt.odaPassword";
-	public static final String PROPERTY_ODA_URL = "birt.odaURL";
-
-	public static final String PROPERTY_BASE_URL = "birt.baseUrl";
-	public static final String DEFAULT_BASE_URL = "http://localhost";
-
-	public static final String PROPERTY_SUPPORTED_IMAGE_FORMATS = "birt.supportImageFormats";
-	public static final String DEFAULT_SUPPORTED_IMAGE_FORMATS = "JPG;PNG;BMP;SVG";
 }

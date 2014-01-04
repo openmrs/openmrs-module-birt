@@ -17,7 +17,6 @@ import liquibase.csv.opencsv.CSVWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.core.data.DataType;
@@ -48,7 +47,6 @@ import org.openmrs.module.reporting.report.renderer.ReportDesignRenderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -139,6 +137,8 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 
 			ModuleHandle moduleHandle = reportRunnable.getDesignHandle().getModuleHandle();
 
+			// TODO: We should look into replacing the need for the below with a custom OpenMRS ODA Driver
+
 			// If the report design references a data source named reportData, export the reportData to the file system
 			// and change references within the report design so that it points to the appropriate files
 			// TODO: Document on the wiki that this data source name is a convention, as are the data set names
@@ -174,16 +174,27 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 			task.setParameterValues(reportData.getContext().getParameterValues());
 
 			String outputFormat = getOutputFormat(argument);
-			String outputFilename = tempDir + SystemUtils.FILE_SEPARATOR + getFilename(design.getReportDefinition(), argument);
 
-			task.setRenderOption(getRenderOption(outputFormat, outputFilename));
+			IRenderOption option = new RenderOption();
+			option.setOutputFormat(outputFormat);
+			option.setOutputStream(out);
+
+			// TODO: Allow properties set in the reporting module report design to influence the render option
+			// TODO: Investigate creating a servlet that will expose any image uploaded as a report design resource at a url
+			// TODO: Investigate creating a custom image handler
+
+			if (OUTPUT_FORMAT_HTML.equalsIgnoreCase(outputFormat)) {
+				HTMLRenderOption htmlOptions = new HTMLRenderOption(option);
+				htmlOptions.setImageHandler(new HTMLServerImageHandler());
+			}
+			else if(OUTPUT_FORMAT_PDF.equalsIgnoreCase(outputFormat)) {
+				PDFRenderOption pdfOptions = new PDFRenderOption(option);
+				pdfOptions.setOption(PDFRenderOption.PAGE_OVERFLOW, IPDFRenderOption.FIT_TO_PAGE_SIZE);
+			}
+			task.setRenderOption(option);
 
 			task.run();
 			task.close();
-
-			FileInputStream fis = new FileInputStream(new File(outputFilename));
-			IOUtils.copy(fis, out);
-			fis.close();
 
 			FileUtils.deleteDirectory(tempDir);
 		}
@@ -257,36 +268,5 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		finally {
 			IOUtils.closeQuietly(fileWriter);
 		}
-	}
-
-	/**
-	 * Creates a render option with the specified output file and format options.
-	 */
-	public static IRenderOption getRenderOption(String outputFormat, String outputFilename) {
-
-		IRenderOption options = new RenderOption();
-		options.setOutputFormat(outputFormat);
-		options.setOutputFileName(outputFilename);
-
-		if (OUTPUT_FORMAT_HTML.equalsIgnoreCase(outputFormat)) {
-			HTMLRenderOption htmlOptions = new HTMLRenderOption(options);
-			htmlOptions.setImageDirectory(BirtRuntime.getConfiguration().getOutputDirectory() + "/images/");
-		}
-		else if(OUTPUT_FORMAT_PDF.equalsIgnoreCase(outputFormat)) {
-			PDFRenderOption pdfOptions = new PDFRenderOption( options );
-			pdfOptions.setOption(PDFRenderOption.PAGE_OVERFLOW, IPDFRenderOption.FIT_TO_PAGE_SIZE);
-		}
-		options.setImageHandler(new HTMLServerImageHandler());
-
-		// TODO: options.setImageHandler(new HTMLCompleteImageHandler())
-
-		options.setBaseURL(BirtConfiguration.DEFAULT_BASE_URL);
-
-		// TODO: Is this really needed?
-		options.setSupportedImageFormats(BirtConfiguration.DEFAULT_SUPPORTED_IMAGE_FORMATS);
-
-
-
-		return options;
 	}
 }

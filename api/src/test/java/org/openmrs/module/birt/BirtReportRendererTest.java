@@ -15,6 +15,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
  * 	TODO: Test including types in csv and not doing so
  * 	TODO: Test html, doc, pdf, excel output formats
  * 	TODO: Test filesystem is cleaned up appropriately
+ * 	TODO: Test embedding images
  */
 public class BirtReportRendererTest extends BaseBirtTest {
 
