@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module configVersion="1.0">
-	
-	<!-- Base Module Properties -->
+
 	<id>@MODULE_ID@</id>
 	<name>@MODULE_NAME@</name>
 	<version>@MODULE_VERSION@</version>
 	<package>@MODULE_PACKAGE@</package>
-	<author>Justin Miranda</author>
-	<description>The BIRT Report Module provides integration between OpenMRS and the BIRT Report and Design Engine APIs.</description>
+	<author>Partners In Health</author>
+	<description>The BIRT Report Module provides integration between the OpenMRS reporting module and the Birt reporting engine</description>
 	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
-	<require_version>1.6.0</require_version>   
-	<!-- /Base Module Properties -->
-	
-	<!-- Required Modules -->
+	<require_version>1.7.0</require_version>
+
 	<require_modules>
 		<require_module>org.openmrs.module.reporting</require_module>
 	</require_modules>
-	<!-- /Required Modules -->
-	
-	<!-- Extensions -->
+
 	<extension>
 		<point>org.openmrs.admin.list</point>
 		<class>@MODULE_PACKAGE@.web.extension.BirtAdminListExt</class>
@@ -28,18 +23,11 @@
 		<point>org.openmrs.patientDashboardTab</point>
 		<class>@MODULE_PACKAGE@.web.extension.BirtPatientDashboardTabExt</class>
 	</extension>	
-	
-	<!-- /Extensions -->
-	
-	
-	<!-- Required Privileges -->
+
 	<privilege>
 		<name>Manage Reports</name>
 		<description>Allows user to access all reporting use cases.</description>
 	</privilege>
-	<!-- /Required Privileges -->
-
-	<!-- Required Global Properties -->
 
 	<globalProperty>
 		<property>@MODULE_ID@.loggingDir</property>
@@ -52,51 +40,10 @@
 		<description>Specifies the logging level for BIRT Report Engine.  Possible values: OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST and ALL</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.reportDir</property>
-		<defaultValue/>
-		<description>Specifies the absolute path where report design files are uploaded.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports)</description>
-	</globalProperty>
-	<globalProperty>
 		<property>@MODULE_ID@.outputDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path to the report output file when reports are generated. (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output)</description>
 	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.datasetDir</property>
-		<defaultValue/>
-		<description>Specifies the absolute path to the reports dataset directory (for CSV/XML data sources). (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/datasets)</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.reportOutputFormat</property>
-		<defaultValue>pdf</defaultValue>
-		<description>Specifies the absolute path to the reports output format.	(ex. pdf)</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.reportOutputFile</property>
-		<defaultValue/>
-		<description>Specifies the absolute path to the reports output file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportOutput.pdf)</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.reportPreviewFile</property>
-		<defaultValue/>
-		<description>Specifies the absolute path to the report preview file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportPreview.pdf)</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.defaultReportDesignFile</property>
-		<defaultValue>default.rptdesign</defaultValue>
-		<description>Specifies the name of the default report design file.
-		Example: default.rptdesign</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.alwaysUseOpenmrsJdbcProperties</property>
-		<defaultValue>false</defaultValue>
-		<description>
-			If 'true', then the module will always replace the JDBC data source properties with values from OpenMRS runtime properties.  
-			If 'false', then the module will use the JDBC data source properties defined in the report.
-		</description>
-	</globalProperty>
-
-	<!-- /Required Global Properties -->
 
 	<dwr>
 		<allow>
@@ -114,8 +61,6 @@
 		</signatures>	
 	</dwr>
 
-	<!-- Internationalization -->
-	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
@@ -128,12 +73,5 @@
 		<lang>es</lang>
 		<file>messages_es.properties</file>
 	</messages>
-	<!-- /Internationalization -->
-		
-	<!--  	
-	<mappingFiles>
-		ReportDefinition.hbm.xml 
-	</mappingFiles>
-	-->
-	
+
 </module>
