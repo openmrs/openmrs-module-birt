@@ -16,7 +16,6 @@ package org.openmrs.module.birt.web.dwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.birt.BirtConstants;
 import org.openmrs.module.birt.BirtReport;
 import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.web.dwr.ListItem;
@@ -25,18 +24,20 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- *
+ * TODO: Remove this class and do this another way
  */
 public class DwrBirtReportService {
 
 	protected final Log log = LogFactory.getLog(getClass());
+
+	public static final String PATIENT_REPORTS = "patient";
 	
 	public Vector getReports() {
 		
 		Vector<Object> reportList = new Vector<Object>();
 
 		BirtReportService reportService = Context.getService(BirtReportService.class);
-		List<BirtReport> reports = reportService.getReportsByName(BirtConstants.PATIENT_REPORTS);
+		List<BirtReport> reports = reportService.getReportsByName(PATIENT_REPORTS);
 		
 		if (reports.size() > 0) {
 			reportList = new Vector<Object>(reports.size());

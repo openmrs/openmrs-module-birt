@@ -57,20 +57,6 @@ public class BirtReport {
 	}
 
 	/**
-	 * @return the contentType for this Birt Report
-	 */
-	public String getContentType() {
-		return getReportRenderer().getRenderedContentType(reportDesign.getReportDefinition(), reportDesign.getUuid());
-	}
-
-	/**
-	 * @return the filename for this PatientSummary for use when exporting
-	 */
-	public String getExportFilename() {
-		return getReportRenderer().getFilename(reportDesign.getReportDefinition(), reportDesign.getUuid());
-	}
-
-	/**
 	 * @return the primary key id
 	 */
 	public Integer getId() {
@@ -141,9 +127,5 @@ public class BirtReport {
 
 	public ReportDesign getReportDesign() {
 		return reportDesign;
-	}
-
-	public void setReportDesign(ReportDesign reportDesign) {
-		this.reportDesign = reportDesign;
 	}
 }

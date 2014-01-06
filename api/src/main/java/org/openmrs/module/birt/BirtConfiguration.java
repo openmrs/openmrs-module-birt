@@ -23,6 +23,7 @@ import java.util.logging.Level;
 
 /**
  * Encapsulates all of the configuration logic for the module
+ * TODO: Find a way to remove this class by directing logging output to log4j if no other configuration is needed
  */
 public class BirtConfiguration {
 

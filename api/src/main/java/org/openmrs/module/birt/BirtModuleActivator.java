@@ -16,25 +16,24 @@ package org.openmrs.module.birt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Activator;
+import org.openmrs.module.BaseModuleActivator;
 
 /**
- * @see org.openmrs.module.Activator
+ * @see org.openmrs.module.ModuleActivator
  */
-public class BirtModuleActivator implements Activator {
+public class BirtModuleActivator extends BaseModuleActivator {
 
 	private Log log = LogFactory.getLog(BirtModuleActivator.class);
 
-	/**
-	 * @see org.openmrs.module.Activator#startup()
-	 */
-	public void startup() {
-		log.debug("Starting BIRT Reporting Module ...");
+	@Override
+	public void started() {
+		log.info("Birt module started");
+		BirtRuntime.startup(new BirtConfiguration());
 	}
 
-	/**
-	 *  @see org.openmrs.module.Activator#shutdown()
-	 */
-	public void shutdown() {
-		log.debug("Shutting down BIRT Reporting Module ...");
+	@Override
+	public void stopped() {
+		log.info("Birt module stopped");
+		BirtRuntime.shutdown();
 	}
 }
