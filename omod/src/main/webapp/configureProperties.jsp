@@ -3,11 +3,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp"%>
 
-<openmrs:htmlInclude file="/dwr/interface/DWRAdministrationService.js" />
-<openmrs:htmlInclude file="/dwr/util.js" />
-
 <h2><spring:message code="birt.configure.title"/></h2>	
-
 
 <b class="boxHeader"><spring:message code="birt.configure.title"/></b>
 <div class="box">

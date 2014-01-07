@@ -23,7 +23,7 @@ public class BirtAdminListExt extends AdministrationSectionExt {
 	public Map<String, String> getLinks() {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("module/birt/configureProperties.htm", "birt.configure.title");
-		map.put("module/birt/report.list", "birt.manage.title");
+		map.put("module/birt/listReports.list", "birt.manage.title");
 		return map;
 	}
 	

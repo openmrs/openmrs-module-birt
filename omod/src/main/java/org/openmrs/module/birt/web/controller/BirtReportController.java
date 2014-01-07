@@ -1,5 +1,6 @@
 package org.openmrs.module.birt.web.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -11,15 +12,31 @@ import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Controller
 public class BirtReportController {
 
     protected final Log log = LogFactory.getLog(getClass());
+
+	@RequestMapping("/module/birt/listReports")
+	public void listReports(@RequestParam(value="nameToMatch") String nameToMatch,
+							ModelMap model) throws Exception {
+
+		List<BirtReport> reports;
+		if (StringUtils.isBlank(nameToMatch)) {
+			reports = getBirtReportService().getAllReports();
+		}
+		else {
+			reports = getBirtReportService().getReportsByName(nameToMatch);
+		}
+		model.addAttribute("reports", reports);
+	}
 
 	@RequestMapping("/module/birt/downloadReportDesignXml")
 	public void downloadReportDesignXml(@RequestParam(value="id") Integer id,
