@@ -19,15 +19,6 @@
 		<point>org.openmrs.admin.list</point>
 		<class>@MODULE_PACKAGE@.web.extension.BirtAdminListExt</class>
 	</extension>
-	<extension>
-		<point>org.openmrs.patientDashboardTab</point>
-		<class>@MODULE_PACKAGE@.web.extension.BirtPatientDashboardTabExt</class>
-	</extension>	
-
-	<privilege>
-		<name>Manage Reports</name>
-		<description>Allows user to access all reporting use cases.</description>
-	</privilege>
 
 	<globalProperty>
 		<property>@MODULE_ID@.loggingDir</property>
@@ -44,22 +35,6 @@
 		<defaultValue/>
 		<description>Specifies the absolute path to the report output file when reports are generated. (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output)</description>
 	</globalProperty>
-
-	<dwr>
-		<allow>
-			<create creator="new" javascript="DwrBirtReportService">
-				<param name="class" value="@MODULE_PACKAGE@.web.dwr.DwrBirtReportService"/>
-				<include method="getReports"/>
-			</create>
-		</allow>
-
-		<signatures>
-			<![CDATA[
-				import @MODULE_PACKAGE@.web.dwr.DwrBirtReportService;
-				DwrBirtReportService.getReports();
-			]]>
-		</signatures>	
-	</dwr>
 
 	<messages>
 		<lang>en</lang>

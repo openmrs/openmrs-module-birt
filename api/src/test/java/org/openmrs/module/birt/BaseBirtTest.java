@@ -4,8 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.birt.service.BirtReportService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -20,6 +18,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -35,16 +34,6 @@ public abstract class BaseBirtTest extends BaseModuleContextSensitiveTest {
 		Properties p = super.getRuntimeProperties();
 		p.setProperty("connection.url", "jdbc:hsqldb:mem:openmrs");
 		return p;
-	}
-
-	@Before
-	public void startupBirt() {
-		BirtRuntime.startup(new BirtConfiguration());
-	}
-
-	@After
-	public void shutdownBirt() {
-		BirtRuntime.shutdown();
 	}
 
 	protected BirtReport createBirtReport(ReportDefinition rd, String resourceName) throws Exception {
@@ -82,8 +71,9 @@ public abstract class BaseBirtTest extends BaseModuleContextSensitiveTest {
 		}
 		ReportData data = getReportDefinitionService().evaluate(birtReport.getReportDefinition(), new EvaluationContext());
 		for (String dsName : data.getDataSets().keySet()) {
-			File outputFile = new File(dir, dsName);
-			BirtReportRenderer.writeDataSetToCsv(data.getDataSets().get(dsName), true, outputFile);
+			FileWriter writer = new FileWriter(new File(dir, dsName));
+			BirtReportRenderer.writeDataSetToCsv(data.getDataSets().get(dsName), true, writer);
+			IOUtils.closeQuietly(writer);
 		}
 	}
 

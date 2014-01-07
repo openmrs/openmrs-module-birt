@@ -128,4 +128,8 @@ public class BirtReport {
 	public ReportDesign getReportDesign() {
 		return reportDesign;
 	}
+
+	public void setReportDesign(ReportDesign reportDesign) {
+		this.reportDesign = reportDesign;
+	}
 }

@@ -50,13 +50,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Renders a Report using the Birt Runtime Engine and a Birt report design configuration
  * http://www.eclipse.org/birt/phoenix/deploy/reportEngineAPI.php for more information
+ *
+ * TODO: Consider whether or not to expose options automatically for pdf, doc, html, xls
  */
 public class BirtReportRenderer extends ReportDesignRenderer {
 
@@ -66,6 +72,7 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 	public static final String OPENMRS_DATABASE_DATASOURCE_NAME = "openmrs";
 	public static final String RPT_DESIGN_EXTENSION = ".rptdesign";
 	public static final String PROPERTY_OUTPUT_FORMAT = "outputFormat";
+	public static final String OUTPUT_FORMAT_ZIP = "zip"; // This is used to output raw data as a zip of CSV data sets;
 	public static final String OUTPUT_FORMAT_HTML = "html";
 	public static final String OUTPUT_FORMAT_PDF = "pdf";
 	public static final String OUTPUT_FORMAT_DOC = "doc";
@@ -77,6 +84,10 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 
 	public String getOutputFormat(String argument) {
 		ReportDesign design = getDesign(argument);
+		return getOutputFormat(design);
+	}
+
+	public String getOutputFormat(ReportDesign design) {
 		return design.getPropertyValue(PROPERTY_OUTPUT_FORMAT, OUTPUT_FORMAT_HTML);
 	}
 
@@ -91,6 +102,9 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		}
 		else if (OUTPUT_FORMAT_PDF.equals(format)) {
 			return "application/pdf";
+		}
+		else if (OUTPUT_FORMAT_ZIP.equals(format)) {
+			return "application/zip";
 		}
 		else {
 			return "text/html";
@@ -125,10 +139,27 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		log.debug("Rendering report with " + getClass().getSimpleName());
 		try {
 			ReportDesign design = getDesign(argument);
+			String outputFormat = getOutputFormat(design);
 			ReportDesignResource rptDesign = getBirtDesignResource(design);
+			render(reportData, outputFormat, rptDesign.getContents(), out);
+		}
+		catch (Exception e) {
+			throw new RenderingException("Unable to render results due to: " + e, e);
+		}
+	}
+
+	/**
+	 * Convenience method for rendering given a report design, rather than an argument that loads one from the database
+	 */
+	public void render(ReportData reportData, String outputFormat, byte[] rptDesign, OutputStream out) throws IOException, RenderingException {
+		try {
+			if (OUTPUT_FORMAT_ZIP.equals(outputFormat)) {
+				renderOutputToZip(reportData, out);
+				return;
+			}
 
 			IReportEngine birtEngine = BirtRuntime.getReportEngine();
-			IReportRunnable reportRunnable = birtEngine.openReportDesign(new ByteArrayInputStream(rptDesign.getContents()));
+			IReportRunnable reportRunnable = birtEngine.openReportDesign(new ByteArrayInputStream(rptDesign));
 
 			String outputDir = BirtRuntime.getConfiguration().getOutputDirectory();
 			File tempDir = new File(outputDir, UUID.randomUUID().toString());
@@ -148,10 +179,16 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 			if (reportDataSource != null) {
 				reportDataSource.setProperty(CommonConstants.CONN_HOME_DIR_PROP, tempDir.getAbsolutePath());
 				for (String dataSetKey : reportData.getDataSets().keySet()) {
-					File outputFile = new File(tempDir, dataSetKey);
-					Object includeTypeProp = reportDataSource.getProperty(CommonConstants.CONN_INCLTYPELINE_PROP);
-					boolean includeTypeRow = includeTypeProp != null && CommonConstants.INC_TYPE_LINE_YES.equalsIgnoreCase(includeTypeProp.toString());
-					writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), includeTypeRow, outputFile);
+					FileWriter writer = null;
+					try {
+						writer = new FileWriter(new File(tempDir, dataSetKey));
+						Object includeTypeProp = reportDataSource.getProperty(CommonConstants.CONN_INCLTYPELINE_PROP);
+						boolean includeTypeRow = includeTypeProp != null && CommonConstants.INC_TYPE_LINE_YES.equalsIgnoreCase(includeTypeProp.toString());
+						writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), includeTypeRow, writer);
+					}
+					finally {
+						IOUtils.closeQuietly(writer);
+					}
 				}
 			}
 
@@ -173,8 +210,6 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 
 			IRunAndRenderTask task = birtEngine.createRunAndRenderTask(reportRunnable);
 			task.setParameterValues(reportData.getContext().getParameterValues());
-
-			String outputFormat = getOutputFormat(argument);
 
 			IRenderOption option = new RenderOption();
 			option.setOutputFormat(outputFormat);
@@ -202,6 +237,16 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		catch (Exception e) {
 			throw new RenderingException("Unable to render results due to: " + e, e);
 		}
+	}
+
+	protected void renderOutputToZip(ReportData reportData, OutputStream out) throws Exception {
+		ZipOutputStream zip = new ZipOutputStream(out);
+		for (String dataSetKey : reportData.getDataSets().keySet()) {
+			zip.putNextEntry(new ZipEntry(dataSetKey+".csv"));
+			writeDataSetToCsv(reportData.getDataSets().get(dataSetKey), true, new OutputStreamWriter(zip));
+			zip.closeEntry();
+		}
+		zip.finish();
 	}
 
 	/**
@@ -237,37 +282,30 @@ public class BirtReportRenderer extends ReportDesignRenderer {
 		return ObjectUtil.format(value, format);
 	}
 
-	public static void writeDataSetToCsv(DataSet dataSet, boolean includeTypeRow, File outputFile) throws IOException {
-		FileWriter fileWriter = null;
-		try {
-			fileWriter = new FileWriter(outputFile, false);
-			CSVWriter csvWriter = new CSVWriter(fileWriter, ',');
-			DataSetMetaData metadata = dataSet.getMetaData();
-			String[] columns = new String[metadata.getColumns().size()];
+	public static void writeDataSetToCsv(DataSet dataSet, boolean includeTypeRow, Writer writer) throws IOException {
+		CSVWriter csvWriter = new CSVWriter(writer, ',');
+		DataSetMetaData metadata = dataSet.getMetaData();
+		String[] columns = new String[metadata.getColumns().size()];
+		for (int i=0; i<metadata.getColumns().size(); i++) {
+			columns[i] = metadata.getColumns().get(i).getName();
+		}
+		csvWriter.writeNext(columns);
+		if (includeTypeRow) {
+			String[] types = new String[metadata.getColumns().size()];
 			for (int i=0; i<metadata.getColumns().size(); i++) {
-				columns[i] = metadata.getColumns().get(i).getName();
+				types[i] = getBirtDataType(metadata.getColumns().get(i).getDataType());
 			}
-			csvWriter.writeNext(columns);
-			if (includeTypeRow) {
-				String[] types = new String[metadata.getColumns().size()];
-				for (int i=0; i<metadata.getColumns().size(); i++) {
-					types[i] = getBirtDataType(metadata.getColumns().get(i).getDataType());
-				}
-				csvWriter.writeNext(types);
-			}
-			for (DataSetRow dataSetRow : dataSet) {
-				String[] row = new String[metadata.getColumns().size()];
-				for (int i = 0; i < metadata.getColumns().size(); i++) {
-					Class<?> type = metadata.getColumns().get(i).getDataType();
-					Object columnValue = dataSetRow.getColumnValue(metadata.getColumns().get(i));
-					row[i] = getBirtFormattedValue(type, columnValue);
-				}
-				csvWriter.writeNext(row);
-			}
-			csvWriter.close();
+			csvWriter.writeNext(types);
 		}
-		finally {
-			IOUtils.closeQuietly(fileWriter);
+		for (DataSetRow dataSetRow : dataSet) {
+			String[] row = new String[metadata.getColumns().size()];
+			for (int i = 0; i < metadata.getColumns().size(); i++) {
+				Class<?> type = metadata.getColumns().get(i).getDataType();
+				Object columnValue = dataSetRow.getColumnValue(metadata.getColumns().get(i));
+				row[i] = getBirtFormattedValue(type, columnValue);
+			}
+			csvWriter.writeNext(row);
 		}
+		csvWriter.close();
 	}
 }
