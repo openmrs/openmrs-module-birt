@@ -69,7 +69,7 @@
 					<form method="get">				
 						<input type="text" name="filter" size="40"/>
 						<input type="submit" value="Filter" /> 
-						<a href="report.list">Show all reports</a>
+						<a href="report.list"><spring:message code="birt.showAllReports"/></a>
 					</form>					
 				</td>
 			</tr>

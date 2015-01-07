@@ -43,11 +43,11 @@
 						<td class="inputCell" valign="top" colspan="5">
 							<spring:bind path="report.outputFormat">
 								<select name="${status.expression}">
-									<option value="pdf">Acrobat Reader (pdf)</option>
-									<option value="html">Web Page (html)</option>
-									<option value="xls">Microsoft Excel (xls) </option>
-									<option value="doc">Microsoft Word (doc) </option>
-									<option value="html">Show Errors (html) </option>
+									<option value="pdf"><spring:message code="birt.acrobatReader"/></option>
+									<option value="html"><spring:message code="birt.webPage"/></option>
+									<option value="xls"><spring:message code="birt.microsoftExcel"/></option>
+									<option value="doc"><spring:message code="birt.microsoftWord"/></option>
+									<option value="html"><spring:message code="birt.show.errors"/></option>
 								</select>
 							</spring:bind>
 						</td>

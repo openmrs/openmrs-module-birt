@@ -12,7 +12,7 @@
 	<br />
 </spring:hasBindErrors>
 <form method="post">
-<h3>Report Metadata</h3>
+<h3><spring:message code="birt.reportMetadata"/></h3>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -81,23 +81,23 @@
 </table>
 <br />
 
-<h3>Report Design</h3>
+<h3><spring:message code="birt.report.reportDesign"/></h3>
 <div>
-	<h4>Body</h4>
+	<h4><spring:message code="birt.report.body"/></h4>
 	<ul>
 		<c:forEach var="content" items="${report.reportDesign.body.contents}" varStatus="varStatus">
 			<li>${content}</li>
 		</c:forEach>
 	</ul>
 
-	<h4>Parameters</h4>
+	<h4><spring:message code="birt.report.parameters"/></h4>
 	<ul>
 		<c:forEach var="parameter" items="${report.reportDesign.allParameters}" varStatus="varStatus">
 			<li>(${parameter.dataType}) ${parameter.displayName} = [default ${parameter.defaultValue}]</li>
 		</c:forEach>
 	</ul>
 	
-	<h4>Data Sources</h4>
+	<h4><spring:message code="birt.report.datasources"/></h4>
 	<ul>
 		<c:forEach var="dataSource" items="${report.reportDesign.allDataSources}" varStatus="varStatus">
 			<h5>${dataSource.name}</h5>
@@ -108,7 +108,7 @@
 		</c:forEach>
 	</ul>
 		
-	<h4>Data Set</h4>
+	<h4><spring:message code="birt.report.dataset"/></h4>
 	<ul>
 		<c:forEach var="dataSet" items="${report.reportDesign.allDataSets}" varStatus="varStatus">
 			<div>

@@ -16,7 +16,7 @@
 	<input type="hidden" name="_target1" value="true"/>
 
 	<div>
-		<h3>Choose Report</h3>		
+		<h3><spring:message code="birt.runner.wizard.chooseReport.title"/></h3>		
 		<spring:nestedPath path="report">	
 			<spring:bind path="reportDefinition">
 				<select id="${status.expression}" name="${status.expression}">

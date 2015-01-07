@@ -17,7 +17,7 @@
 	<h3><spring:message code="birt.runner.wizard.enterParameters.title"/></h3>
 	
 	<c:if test="${empty report.reportParameters}">
-		There are no report parameters.
+		<spring:message code="birt.reporParameters.error"/>
 	</c:if>
 	<c:forEach var="parameter" items="${report.reportParameters}">
 		param: ${parameter}<br/>
