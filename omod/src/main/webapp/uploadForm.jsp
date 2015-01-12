@@ -12,7 +12,7 @@
 	 */
 	function removeReportParameter(index) { 
 
-		var confirmRemove = confirm("Are you sure you want to delete this parameter?");
+		var confirmRemove = confirm('<spring:message code="birt.removeParameter"/>');
 		if (confirmRemove) { 
 			if (index >= 0) { 
 				var parameterIndexField = document.getElementById("parameterIndex");
@@ -20,7 +20,7 @@
 				document.getElementById("reportForm").submit();
 			}
 			else { 
-				alert("The selected parameter cannot be removed.");
+				alert('<spring:message code="birt.removeSelectedParameter.error"/>');
 			}
 		}
 		return false;
@@ -162,7 +162,7 @@ h4 {
 						</td>
 					</tr>
 					<tr>
-						<td>Report Name*</td>
+						<td><spring:message code="birt.reportName"/></td> 
 						<td>
         					<form method="post" action="upload.form" enctype="multipart/form-data">
             					<input type="file" name="file"/>

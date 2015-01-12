@@ -13,7 +13,7 @@
 	 */
 	function removeReportParameter(index) { 
 
-		var confirmRemove = confirm("Are you sure you want to delete this parameter?");
+		var confirmRemove = confirm('<spring:message code="birt.removeParameter"/>');
 		if (confirmRemove) { 
 			if (index >= 0) { 
 				var parameterIndexField = document.getElementById("parameterIndex");
@@ -21,7 +21,7 @@
 				document.getElementById("reportForm").submit();
 			}
 			else { 
-				alert("The selected parameter cannot be removed.");
+				alert('<spring:message code="birt.removeParameter.error"/>');
 			}
 		}
 		return false;
@@ -44,7 +44,7 @@
 	}	
 	
 	function deleteMapping(keyName) {
-		if (confirm("Please confirm you wish to remove " + keyName)) {
+		if (confirm('<spring:message code="birt.removeConfirmation"/>' + keyName)) {
 		$j.ajax({
 				  type: "POST",
 				  url: "report.form",				  
@@ -80,7 +80,7 @@
 		});
 		
 		$j('#${design.uuid}DesignRemoveLink').click(function(event){					
-			if (confirm('Please confirm you wish to permanantly delete <b>${design.name}</b>')) {
+			if (confirm('<spring:message code="birt.permanentNameRemoving"/>')) {
 				document.location.href='${pageContext.request.contextPath}/module/reporting/reports/deleteReportDesign.form?uuid=${design.uuid}&returnUrl=${pageUrl}';
 			}
 		});
@@ -284,10 +284,10 @@ h4 {
 								<div class="box">
 									<div class="metadataForm">
 										<div class="metadataField">
-											<label class="inline">Name:</label>${report.reportDefinition.name}
+											<label class="inline"><spring:message code="birt.boxName"/></label>${report.reportDefinition.name}
 										</div>			
 										<div class="metadataField">
-											<label class="inline">Description:</label>
+											<label class="inline"><spring:messsage code="birt.boxDescription"/></label>
 											<c:choose>
 												<c:when test="${!empty report.reportDefinition.description}">
 													${report.reportDefinition.description}
@@ -306,11 +306,11 @@ h4 {
 						
 						<div style="margin:0; padding:0; width:100%;">
 							<div class="metadataField">
-								<label class="desc" for="name">Name</label>
+								<label class="desc" for="name"><spring:message code="birt.reportName.header"/></label>
 								<input type="text" id="name" tabindex="1" name="name" value="${report.reportDefinition.name}" size="50"/>
 							</div>
 							<div class="metadataField">
-								<label class="desc" for="description">Description</label>			
+								<label class="desc" for="description"><spring:message code="birt.reportDescription.header"/></label>			
 								<textarea id="description" cols="80" rows="10" tabindex="2" name="description">${report.reportDefinition.description}</textarea>
 							</div>
 						</div>
@@ -327,15 +327,15 @@ h4 {
 							</div>													
 						
 							<br/>
-							<b class="boxHeader">Output Designs</b>
+							<b class="boxHeader"><spring:message code="birt.outputDesigns"/></b>
 							<div class="box">
 							
 							<c:if test="${!empty design.id}">
 									<table width="100%" style="margin-bottom:5px;">
 										<tr>
-											<th style="text-align:left; border-bottom:1px solid black;">Name</th>
-											<th style="text-align:left; border-bottom:1px solid black;">Type</th>
-											<th style="text-align:left; border-bottom:1px solid black;">Download</th>
+											<th style="text-align:left; border-bottom:1px solid black;"><spring:message code="birt.reportName.header"/></th>
+											<th style="text-align:left; border-bottom:1px solid black;"><spring:message code="birt.boxType"/></th>
+											<th style="text-align:left; border-bottom:1px solid black;"><spring:message code="birt.boxType"/></th>
 											<th style="border-bottom:1px solid black;">[X]</th>
 										</tr>
 										
@@ -351,11 +351,11 @@ h4 {
 								<br/>
 						<c:choose>		
 								<c:when test="${!empty design.id}">
-									<a style="font-weight:bold;" href="#" id="editReportDesignPopupLink">[+] Edit</a>
+									<a style="font-weight:bold;" href="#" id="editReportDesignPopupLink"><spring:message code="birt.edit"/></a>
 									<div id="editReportDesignPopup">
 								</c:when>
 								<c:otherwise>
-									<a style="font-weight:bold;" href="#" id="newReportDesignPopupLink">[+] Add</a>
+									<a style="font-weight:bold;" href="#" id="newReportDesignPopupLink"><spring:messsge code="birt.add"/></a>
 									<div id="addReportDesignPopup">
 								</c:otherwise>			
 						</c:choose>	
@@ -373,23 +373,23 @@ h4 {
 								<div style="margin:0; padding:0; width:100%;">
 
 									<div class="metadataField">
-										<label class="desc" for="name">Name</label>								
+										<label class="desc" for="name"><spring:message code="birt.boxName"/></label>								
 										<input type="text" name="name" tabindex="1" value="${design.name}" size="50"/>											
 									</div>									
 									<div class="metadataField">
-										<label class="desc" for="description">Description</label>
+										<label class="desc" for="description"><spring:message code="birt.boxDescription"/></label>
 										<wgt:widget id="description" name="description" object="${design}" property="description" attributes="cols=38|rows=2"/>																			
 									</div>									
 									<div class="metadataField">
-										<label class="desc" for="description">Report Definition</label>										
+										<label class="desc" for="description"><spring:message code="birt.reportDef"/></label>										
 										<span style="color:navy;">${report.reportDefinition.name}</span>																				
 									</div>									
 									<div class="metadataField">
-										<label class="desc" for="description">Renderer Type</label>																																	
+										<label class="desc" for="description"><spring:message code="birt.rendererType"/></label>																																	
 										<wgt:widget id="rendererType" name="rendererType" object="${design}" property="rendererType" attributes="type=org.openmrs.module.reporting.report.renderer.ReportRenderer|simple=true"/>										
 									</div>									
 									<div class="metadataField">
-										<label class="desc" for="description">Resource Files</label>
+										<label class="desc" for="description"><spring:message code="birt.resourceFiles"/></label>
 										<input type="hidden" name="reportId" value="${report.reportDefinition.id}" />
 										<br/><c:if test="${!empty resource}"><a style="color:blue;" href="#">"${resource.name}.${resource.extension}"</a></c:if>
 										<input type="file" name="reportFile" size="40" />																				
@@ -411,7 +411,7 @@ h4 {
 						</td>
 						<td valign="top" style="width:1%;"></td>
 						<td valign="top" style="width:64%;">
-						<b class="boxHeader">Dataset Definitions</b>						
+						<b class="boxHeader"><spring:message code="birt.datasetDefinitions"/></b>						
 						<div id="dataSetDefinitionBox" class="box" style="vertical-align:top;">
 						<c:if test="${!empty reportt.dataSetDefinitions}">	
 							<c:forEach items="${reportt.dataSetDefinitions}" var="dsd" varStatus="dsdStatus">
@@ -419,8 +419,8 @@ h4 {
 									<span>
 										<span style="font-weight:bold;float:left;">${dsd.key}</span>&nbsp;&nbsp;&nbsp;
 										<span>
-											<a style="color:blue;" href="downloadDataSet.form?uuid=${dsd.value.parameterizable.uuid}">Download CSV</a>&nbsp;|&nbsp;
-											<a style="color:blue;" href="javascript:deleteMapping('${dsd.key}');">Delete</a>											
+											<a style="color:blue;" href="downloadDataSet.form?uuid=${dsd.value.parameterizable.uuid}"><spring:message code="birt.downloadCSV"/></a>&nbsp;|&nbsp;
+											<a style="color:blue;" href="javascript:deleteMapping('${dsd.key}');"><spring:message code="birt.delete"/></a>											
 										</span>
 									</span>									
 												
@@ -428,7 +428,7 @@ h4 {
 										<tr>
 											<th colspan="6">
 												${dsd.value.parameterizable.name}
-												(<a href="../reporting/definition/editDefinition.form?type=${dsd.value.parameterizable['class'].name}&uuid=${dsd.value.parameterizable.uuid}">Edit this Definition</a>)
+												(<a href="../reporting/definition/editDefinition.form?type=${dsd.value.parameterizable['class'].name}&uuid=${dsd.value.parameterizable.uuid}"><spring:message code="birt.editDef"/></a>)
 											</th>
 										</tr>										
 									</table>									
@@ -447,6 +447,4 @@ h4 {
 	</div>
 </div>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>							
-							
-							
+<%@ include file="/WEB-INF/template/footer.jsp" %>																					

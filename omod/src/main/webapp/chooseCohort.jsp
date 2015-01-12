@@ -16,7 +16,7 @@
 
 	${report}	
 	
-	<h3>Choose Cohort</h3>
+	<h3><spring:message code="birt.runner.wizard.chooseCohort.title"/></h3>
 		<spring:bind path="report.cohort">
 			<select id="${status.expression}" name="${status.expression}">
 				<c:forEach var="cohort" items="${cohorts}">
