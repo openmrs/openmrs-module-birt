@@ -162,7 +162,7 @@ h4 {
 						</td>
 					</tr>
 					<tr>
-						<td>'<spring:message code="birt.reportName"/>'</td>
+						<td><spring:message code="birt.reportName"/></td> 
 						<td>
         					<form method="post" action="upload.form" enctype="multipart/form-data">
             					<input type="file" name="file"/>
