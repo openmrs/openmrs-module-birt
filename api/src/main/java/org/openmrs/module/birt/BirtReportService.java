@@ -20,46 +20,48 @@ public interface BirtReportService {
 	/**
 	 * Sets the data access object for the report service.
 	 * 
-	 * @param 	dao		the report DAO
+	 * @param dao
+	 *            the report DAO
 	 */
 	public void setBirtReportDAO(BirtReportDAO dao);
-	
+
 	public void prepareDataset(BirtReport report);
-	
+
 	public void createReportDesign(BirtReport report);
 
-	
 	/**
 	 * Gets the data access object used by the report service.
 	 * 
-	 * @return	the report DAO
+	 * @return the report DAO
 	 */
 	public BirtReportDAO getBirtReportDAO();
-	
+
 	public List<ReportDesign> filterReportDesigns(Integer reportId);
-	
+
 	public List<BirtReport> getAllBirtReports();
-	
+
 	public void getDatasets();
-	
+
 	public List<BirtReport> getAllDataSetDefinitions();
-	
-	//public BirtReport getBirtReport();
-	
+
+	// public BirtReport getBirtReport();
+
 	/**
 	 * Gets all reports in the system.
-	 * @return	a list of reports in the database
+	 * 
+	 * @return a list of reports in the database
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<BirtReport> getReports();
-	
+
 	/**
 	 * Gets all report designs in the system.
-	 * @return	a list of report designs in the database
+	 * 
+	 * @return a list of report designs in the database
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<ReportDesign> getReportDesigns();
-	
+
 	/**
 	 * Gets the report design with the given report identifier.
 	 * 
@@ -68,48 +70,52 @@ public interface BirtReportService {
 	 */
 	public ReportDesign getReportDesign(Integer reportId);
 
-    /**
-     * Find reports whose name/title matches the given search term.
-     * @param	searchTerm 	search term to match or "ALL" for all reports
-     * @return	a list of birt report objects 
-     */
-	@Transactional(readOnly=true)
+	/**
+	 * Find reports whose name/title matches the given search term.
+	 * 
+	 * @param searchTerm
+	 *            search term to match or "ALL" for all reports
+	 * @return a list of birt report objects
+	 */
+	@Transactional(readOnly = true)
 	public List<BirtReport> filterReports(String searchTerm);
 
 	/**
 	 * Gets a report
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public BirtReport getReport(Integer id);
-	
+
 	/**
 	 * Gets a report that will be used to render output.
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public BirtReport getReportForRender(Integer id);
-	
+
 	/**
 	 * Saves a report.
 	 * 
-	 * @param	report	the report to save
+	 * @param report
+	 *            the report to save
 	 */
 	public void saveReport(BirtReport report);
 
 	/**
 	 * Deletes a report.
 	 * 
-	 * @param	report	the report to delete
+	 * @param report
+	 *            the report to delete
 	 */
 	public void deleteReport(BirtReport report);
-	
+
 	/**
 	 * Uploads a report.
 	 * 
-	 * @param	report	the report to upload
+	 * @param report
+	 *            the report to upload
 	 */
 	public void uploadReport(BirtReport report);
-	
-	
+
 	/**
 	 * Duplicates the given report design.
 	 * 
@@ -117,14 +123,15 @@ public interface BirtReportService {
 	 * @param newPath
 	 */
 	public void duplicateReportDesign(String oldPath, String newPath) throws IOException;
-	
+
 	/**
-	 * Generates a report. 
+	 * Generates a report.
 	 * 
-	 * @param report	the report to generate
+	 * @param report
+	 *            the report to generate
 	 */
 	public void generateReport(BirtReport report);
-	
+
 	/**
 	 * Adds the report parameters to the report.
 	 * 
@@ -132,96 +139,106 @@ public interface BirtReportService {
 	 */
 	public void fillReportParameters(BirtReport report);
 
-	
 	/**
 	 * Validates the report parameters.
 	 * 
 	 * @param report
 	 */
 	public void validateReportParameters(BirtReport report);
-	
+
 	/**
-	 * Parses and validates the given value.  
+	 * Parses and validates the given value.
 	 * 
 	 * @param paramType
 	 * @param paramValue
 	 */
-	//public Object parseParameterValue(String paramType, String paramValue) throws ParseException;
-	
+	// public Object parseParameterValue(String paramType, String paramValue)
+	// throws ParseException;
+
 	/**
 	 * Previews a report.
 	 * 
-	 * @param report	the report to preview
+	 * @param report
+	 *            the report to preview
 	 */
 	public void previewReport(BirtReport report);
-	
+
 	/**
 	 * Generates a CSV export for the given report.
 	 * 
-	 * @param 	report	the report that contains a definition of data to be exported
-	 * @return	a file reference to the csv export file 
+	 * @param report
+	 *            the report that contains a definition of data to be exported
+	 * @return a file reference to the csv export file
 	 */
 	public File exportFlatfileDataset(BirtReport report);
-	
+
 	/**
 	 * Generates a CSV export for the given the export definition.
 	 * 
-	 * @param 	export	the export definition (columns)
-	 * @param 	cohort	the cohort definition (rows)
-	 * @return	a file reference to the csv export file 
+	 * @param export
+	 *            the export definition (columns)
+	 * @param cohort
+	 *            the cohort definition (rows)
+	 * @return a file reference to the csv export file
 	 */
 
+	/* public File exportFlatfileDataset(DataExportReportObject export); */
 
-/*	public File exportFlatfileDataset(DataExportReportObject export);*/
-
-	
 	/**
 	 * Generates a CSV export for the given the export definition.
 	 * 
-	 * @param 	export	the export definition (columns)
-	 * @param 	cohort	the cohort definition (rows)
-	 * @return	a file reference to the csv export file 
+	 * @param export
+	 *            the export definition (columns)
+	 * @param cohort
+	 *            the cohort definition (rows)
+	 * @return a file reference to the csv export file
 	 */
-	//public File exportFlatfileDataset(DataExportReportObject export, Cohort cohort);	
-	
+	// public File exportFlatfileDataset(DataExportReportObject export, Cohort
+	// cohort);
+
 	/**
-	 * Compares the dataset specified within the report design against the 
+	 * Compares the dataset specified within the report design against the
 	 * dataset defined in the report object to determine whether the columns
-	 * match. 
+	 * match.
 	 */
-	public void compareDatasets(BirtReport report);	
-		
+	public void compareDatasets(BirtReport report);
+
 	/**
 	 * Downlaods a report from the filesystem.
 	 * 
-	 * This is equivalent to BirtReportService.getReport().getReportDesignFile().
+	 * This is equivalent to
+	 * BirtReportService.getReport().getReportDesignFile().
 	 * 
-	 * @param 	id	the identifier of the report to download
-	 * @return	the report design file (.rptdesign) associated with this report
+	 * @param id
+	 *            the identifier of the report to download
+	 * @return the report design file (.rptdesign) associated with this report
 	 */
-	//public File downloadReport(Integer id);
-	
+	// public File downloadReport(Integer id);
+
 	/**
 	 * Get a list of all data exports in the database.
 	 * 
-	 * @return 	list of data export objects
+	 * @return list of data export objects
 	 */
-/*	@Transactional(readOnly=true)
-	public List<AbstractReportObject> getDataExports();*/
-	
+	/*
+	 * @Transactional(readOnly=true) public List<AbstractReportObject>
+	 * getDataExports();
+	 */
+
 	/**
 	 * Get a list of all cohorts in the database.
 	 * 
-	 * @return	cohorts
+	 * @return cohorts
 	 */
 
-	/*	@Transactional(readOnly=true)
-	public List<CohortDefinitionItemHolder> getCohortDefinitions();*/
-
-	
+	/*
+	 * @Transactional(readOnly=true) public List<CohortDefinitionItemHolder>
+	 * getCohortDefinitions();
+	 */
 
 	/**
 	 * Generate and email report to users.
+	 * 
 	 * @param report
 	 */
 	public void generateAndEmailReport(BirtReport report);
@@ -229,18 +246,19 @@ public interface BirtReportService {
 	/**
 	 * Open an existing report
 	 * 
-	 * @param reportPath	path to the report
-	 * @return	a report design handle
+	 * @param reportPath
+	 *            path to the report
+	 * @return a report design handle
 	 */
-	public ReportDesignHandle openReportDesign(String reportPath);	
+	public ReportDesignHandle openReportDesign(String reportPath);
+
 	/**
-	 * Gets a report design file by opening an existing file or creating a new design file).
+	 * Gets a report design file by opening an existing file or creating a new
+	 * design file).
 	 * 
 	 * @param reportPath
 	 * @return
 	 */
 	public ReportDesignHandle getReportDesign(String reportPath);
-	
-	
 
 }

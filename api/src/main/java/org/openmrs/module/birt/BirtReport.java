@@ -101,7 +101,7 @@ public class BirtReport implements Serializable {
 
 	/**
 	 * 
-	 * @return
+	 * @return Integer
 	 */
 	public Integer getId() {
 		return this.reportDefinition.getId();	
@@ -293,14 +293,6 @@ public class BirtReport implements Serializable {
 		this.reportDefinition = reportDefinition;
 	}
 
-	/**
-	 * Sets the default data export object.
-	 * @param dataExport
-	 */
-/*	public void setDataExport(DataExportReportObject dataExport) { 
-		this.dataExport = dataExport;	
-	}*/
-	
 	/** 
 	 * 
 	 * @param cohort

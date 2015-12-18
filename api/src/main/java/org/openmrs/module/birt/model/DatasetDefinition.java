@@ -6,26 +6,26 @@ import java.util.List;
 import org.openmrs.User;
 
 public class DatasetDefinition {
-	
+
 	private int id;
 	private String name;
 	private List<ColumnDefinition> columns;
 	private Integer reportObjectId;
-	
-	
+
 	// Metadata
 	private User creator;
 	private Date dateCreated;
 
 	/**
-	 * @return 		the dataset identifier
+	 * @return the dataset identifier
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
-	 * @param id	the dataset identifier
+	 * @param id
+	 *            the dataset identifier
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -76,7 +76,4 @@ public class DatasetDefinition {
 		this.dateCreated = dateCreated;
 	}
 
-	
-	
-	
 }
