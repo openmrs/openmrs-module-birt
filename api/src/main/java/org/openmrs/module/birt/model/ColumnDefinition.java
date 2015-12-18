@@ -6,26 +6,26 @@ import org.openmrs.User;
 //import org.openmrs.reporting.export.ExportColumn;
 
 public class ColumnDefinition {
-	
+
 	private int id;
 	private String name;
-	private Class dataType; 	// string, int, float, date
-	private Object contents;	// object that holds the contents of the column
-	
-	
+	private Class dataType; // string, int, float, date
+	private Object contents; // object that holds the contents of the column
+
 	// Metadata
 	private User creator;
 	private Date dateCreated;
-	
+
 	/**
-	 * @return 		the dataset identifier
+	 * @return the dataset identifier
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
-	 * @param id	the dataset identifier
+	 * @param id
+	 *            the dataset identifier
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -76,7 +76,4 @@ public class ColumnDefinition {
 		this.dateCreated = dateCreated;
 	}
 
-	
-	
-	
 }

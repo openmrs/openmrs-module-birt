@@ -6,21 +6,20 @@ import java.util.List;
 import org.openmrs.User;
 
 public class ReportDefinition {
-	
+
 	private int id;
 	private String name;
 	private String type;
 	private Boolean isPublic;
 	private Integer reportObjectId;
-	
+
 	// Report design file contents
 	private byte[] reportDesign;
-	
-	// 
+
+	//
 	private List<DatasetDefinition> datasets;
 	private List<ParameterDefinition> parameters;
-	
-	
+
 	// Metadata
 	private User creator;
 	private Date dateCreated;
@@ -29,7 +28,6 @@ public class ReportDefinition {
 	private User uploadedBy;
 	private Date dateUploaded;
 
-	
 	/**
 	 * @return Returns the id.
 	 */
@@ -90,7 +88,4 @@ public class ReportDefinition {
 		this.dateCreated = dateCreated;
 	}
 
-	
-	
-	
 }

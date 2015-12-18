@@ -22,20 +22,21 @@ import org.openmrs.module.reporting.report.renderer.ReportTemplateRenderer;
 //import org.openmrs.api.ReportService;
 
 /**
- * Abstract super-class for all Report Renderer implementation that supports rendering to a BIRT template
+ * Abstract super-class for all Report Renderer implementation that supports
+ * rendering to a BIRT template
  */
 @Handler // problems addding...
 @Localized("reporting.BirtTemplateRenderer")
-public abstract class BirtTemplateRenderer extends ReportTemplateRenderer {	
+public abstract class BirtTemplateRenderer extends ReportTemplateRenderer {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
 	public BirtTemplateRenderer() {
 		super();
 	}
-	
+
 	public String getLinkUrl(ReportDefinition schema) {
 		return null;
-	}	
-	
+	}
+
 }

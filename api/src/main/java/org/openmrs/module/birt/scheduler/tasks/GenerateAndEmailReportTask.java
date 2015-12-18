@@ -31,137 +31,128 @@ import org.openmrs.module.birt.BirtReportUtil;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
- *  Implementation of a task that generates and sends an email 
- *  with a PDF/HTML report attachment.
+ * Implementation of a task that generates and sends an email with a PDF/HTML
+ * report attachment.
  *
  */
-public class GenerateAndEmailReportTask extends AbstractTask { 
-	
-	// Logger 
+public class GenerateAndEmailReportTask extends AbstractTask {
+
+	// Logger
 	private Log log = LogFactory.getLog(GenerateAndEmailReportTask.class);
-	
-	/** 
-	 * Generates the given report and sends it over email to the appropriate people.
+
+	/**
+	 * Generates the given report and sends it over email to the appropriate
+	 * people.
 	 */
-	public void execute() {		
+	public void execute() {
 		log.debug("Executing send report email task ...");
-		if (!Context.isAuthenticated()) 
+		if (!Context.isAuthenticated())
 			authenticate();
-					
-		try { 
+
+		try {
 
 			// Get access to the birt report service
-			BirtReportService service = 
-				(BirtReportService) Context.getService(BirtReportService.class);
-			
-			// Get the parameters need to identify the report 
-			Integer reportId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.REPORT_ID));			
-					
+			BirtReportService service = (BirtReportService) Context.getService(BirtReportService.class);
+
+			// Get the parameters need to identify the report
+			Integer reportId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.REPORT_ID));
+
 			// Get report and populate parameters
-			BirtReport report = service.getReport(reportId);	
+			BirtReport report = service.getReport(reportId);
 			report.addParameters(getReportParameters());
 			report.setOutputFormat(BirtConfiguration.DEFAULT_REPORT_OUTPUT_FORMAT);
 			report.setEmailProperties(getEmailProperties());
-	
+
 			// Add default start date parameter
-			Integer daysFromStartDate = Integer.parseInt(
-					taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_START_DATE));
+			Integer daysFromStartDate = Integer
+					.parseInt(taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_START_DATE));
 			report.addParameter("startDate", BirtReportUtil.addDays(new Date(), daysFromStartDate));
-			
+
 			// Add default end date parameter
-			Integer daysFromEndDate = Integer.parseInt( 
-					taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_END_DATE));			
+			Integer daysFromEndDate = Integer
+					.parseInt(taskDefinition.getProperty(BirtConstants.REPORT_PERIOD_DAYS_FROM_END_DATE));
 			report.addParameter("endDate", BirtReportUtil.addDays(new Date(), daysFromEndDate));
-			
-			try { 
-				Integer cohortId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.COHORT_ID));		
+
+			try {
+				Integer cohortId = Integer.parseInt(taskDefinition.getProperty(BirtConstants.COHORT_ID));
 				report.setCohort(new Cohort(cohortId));
-			} 
-			catch (NumberFormatException e) { 
+			} catch (NumberFormatException e) {
 				log.warn("Unable to parse the cohort task property " + e.getMessage());
 			}
-			
-			// Override the output format if the task defines one 
-			if (taskDefinition.getProperty(BirtConstants.REPORT_FORMAT)!=null) { 
+
+			// Override the output format if the task defines one
+			if (taskDefinition.getProperty(BirtConstants.REPORT_FORMAT) != null) {
 				report.setOutputFormat(taskDefinition.getProperty(BirtConstants.REPORT_FORMAT));
 			}
-			
-		
-			service.generateAndEmailReport(report);		
-		
-		}			
-		catch (BirtReportException e) { 
-			log.error("Unable to send email due to BIRT API exception: " + e.getMessage(), e);			
-		}			
-		catch (Exception e) { 
-			log.warn("Unable to generate report " + e.getMessage());			
+
+			service.generateAndEmailReport(report);
+
+		} catch (BirtReportException e) {
+			log.error("Unable to send email due to BIRT API exception: " + e.getMessage(), e);
+		} catch (Exception e) {
+			log.warn("Unable to generate report " + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
-    public void shutdown() {
-    	log.debug("Shutting down send report email task ...");
-    }
+	public void shutdown() {
+		log.debug("Shutting down send report email task ...");
+	}
 
+	/**
+	 * Get report parameters from the task definition properties.
+	 * 
+	 * @return a map of report parameters
+	 */
+	private Map<String, Object> getReportParameters() {
+		Map<String, Object> parameters = new HashMap<String, Object>();
 
-    
-    /**
-     * Get report parameters from the task definition properties.
-     * @return	a map of report parameters
-     */
-    private Map<String,Object> getReportParameters() { 
-    	Map<String,Object> parameters = new HashMap<String,Object>();
-    	
-    	// If the task property is a report parameter, then we add it to the 
-    	// report parameter map 
-    	for (String key : taskDefinition.getProperties().keySet()) { 
-    		if (key.startsWith(BirtConstants.REPORT_PARAM_PREFIX)) {    			
-    			// We need to remove the parameter prefix ("report.param.")
-    			String paramName = key.substring(BirtConstants.REPORT_PARAM_PREFIX.length());
-    			String paramValue = taskDefinition.getProperty(key);
-    			Object paramObject = null;
-				try { 
-					if (paramValue.startsWith("dateTime:")) { 
-    					paramObject = 
-    						Context.getDateFormat().parse(paramValue.substring("dateTime:".length()));    				
-	    			} else if (paramValue.startsWith("date:")) { 
-	    				paramObject = 
-	    					java.sql.Date.valueOf(paramValue.substring("date:".length()));
-	    			} else if (paramValue.startsWith("integer:")) { 
-	    				paramObject = Integer.parseInt(paramValue.substring("integer:".length())); 
-	    			} else { 
-	    				paramObject = paramValue;
-	    			}					
-				} catch (ParseException e) { 
-					throw new BirtReportException(e); 
-				}    					
-    			
-    			parameters.put(paramName, paramObject);
-    		}
-    	}    	
-    	return parameters;	
-    }
-    
+		// If the task property is a report parameter, then we add it to the
+		// report parameter map
+		for (String key : taskDefinition.getProperties().keySet()) {
+			if (key.startsWith(BirtConstants.REPORT_PARAM_PREFIX)) {
+				// We need to remove the parameter prefix ("report.param.")
+				String paramName = key.substring(BirtConstants.REPORT_PARAM_PREFIX.length());
+				String paramValue = taskDefinition.getProperty(key);
+				Object paramObject = null;
+				try {
+					if (paramValue.startsWith("dateTime:")) {
+						paramObject = Context.getDateFormat().parse(paramValue.substring("dateTime:".length()));
+					} else if (paramValue.startsWith("date:")) {
+						paramObject = java.sql.Date.valueOf(paramValue.substring("date:".length()));
+					} else if (paramValue.startsWith("integer:")) {
+						paramObject = Integer.parseInt(paramValue.substring("integer:".length()));
+					} else {
+						paramObject = paramValue;
+					}
+				} catch (ParseException e) {
+					throw new BirtReportException(e);
+				}
 
-    /**
-     * Get properties needed to send the email to the appropriate people.
-     * @return
-     */
-    private Map<String,String> getEmailProperties() { 
-    	Map<String,String> properties = new HashMap<String,String>();
-    	
-    	// If the task property is a report parameter, then we add it to the 
-    	// report parameter map 
-    	for (String key : taskDefinition.getProperties().keySet()) { 
-    		if (key.startsWith(BirtConstants.REPORT_EMAIL_PREFIX)) {    			
-    			properties.put(key, taskDefinition.getProperty(key));
-    		}
-    	}    	
-    	return properties;
-    }	
-    	
-    	
-    
+				parameters.put(paramName, paramObject);
+			}
+		}
+		return parameters;
+	}
+
+	/**
+	 * Get properties needed to send the email to the appropriate people.
+	 * 
+	 * @return
+	 */
+	private Map<String, String> getEmailProperties() {
+		Map<String, String> properties = new HashMap<String, String>();
+
+		// If the task property is a report parameter, then we add it to the
+		// report parameter map
+		for (String key : taskDefinition.getProperties().keySet()) {
+			if (key.startsWith(BirtConstants.REPORT_EMAIL_PREFIX)) {
+				properties.put(key, taskDefinition.getProperty(key));
+			}
+		}
+		return properties;
+	}
+
 }

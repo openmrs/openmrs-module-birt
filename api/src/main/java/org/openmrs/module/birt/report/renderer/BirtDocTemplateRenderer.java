@@ -61,7 +61,7 @@ import org.springframework.util.FileCopyUtils;
 @Handler
 @Localized("reporting.BirtDocTemplateRenderer")
 public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
-	
+
 	private Log log = LogFactory.getLog(this.getClass());
 
 	public BirtDocTemplateRenderer() {
@@ -75,55 +75,57 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 	public String getFilename(ReportDefinition schema, String argument) {
 		return schema.getName() + ".doc";
 	}
-	
+
 	/**
 	 * @see ReportRenderer#render(ReportData, String, OutputStream)
 	 */
-	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, RenderingException {
+	public void render(ReportData reportData, String argument, OutputStream out)
+			throws IOException, RenderingException {
 		try {
 			log.debug("Attempting to render report with BirtDocTemplateRenderer");
-			
-			ReportDesign design = getDesign(argument);	
-			
+
+			ReportDesign design = getDesign(argument);
+
 			Integer reportId = design.getReportDefinition().getId();
-			
-			ReportDesignResource r = getTemplate(design); 
-			
+
+			ReportDesignResource r = getTemplate(design);
+
 			String pathDir = BirtReportUtil.createTempDirectory("reports").getAbsolutePath() + File.separator;
-			
+
 			String pathName = pathDir + r.getName() + ".rptdesign";
-			
-			BirtReportService reportService = (BirtReportService)Context.getService(BirtReportService.class);
+
+			BirtReportService reportService = (BirtReportService) Context.getService(BirtReportService.class);
 			BirtReport report = reportService.getReport(reportId);
-			
-			report.setReportDesignPath(pathName);			
+
+			report.setReportDesignPath(pathName);
 			report.setReportDesignResource(r);
 			report.setOutputFormat("doc");
 			report.setOutputDirectory(pathDir);
-			
+
 			// Setting the report output file name
-			if (report.getOutputFilename() == null) { 
+			if (report.getOutputFilename() == null) {
 				String name = report.getReportDefinition().getName();
 				String filename = BirtReportUtil.getOutputFilename(name, report.getOutputFormat());
 				report.setOutputFilename(filename);
 			}
-			
-			if (report.getOutputFilename().isEmpty()) { 				
+
+			if (report.getOutputFilename().isEmpty()) {
 				report.setOutputFilename(pathDir + report.getReportDefinition().getName() + ".doc");
 			}
-			
+
 			log.debug("Setting report output filename " + report.getOutputFilename());
-			
+
 			/* Generate a report design file */
 			reportService.createReportDesign(report);
-			
+
 			prepareDatasets(reportData, report);
-						
-			reportService.prepareDataset(report);					
-					
-			executeReport(report);	
-			
-			// Get a reference to the report output file to be copied to the response
+
+			reportService.prepareDataset(report);
+
+			executeReport(report);
+
+			// Get a reference to the report output file to be copied to the
+			// response
 			InputStream fileInputStream = new FileInputStream(new File(report.getOutputFilename()));
 
 			FileCopyUtils.copy(fileInputStream, out);
@@ -132,34 +134,34 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 			throw new RenderingException("Unable to render results due to: " + e, e);
 		}
 	}
-	
-	public void prepareDatasets(ReportData reportData, BirtReport report) {	
-		
+
+	public void prepareDatasets(ReportData reportData, BirtReport report) {
+
 		Iterator<Entry<String, DataSet>> iter = reportData.getDataSets().entrySet().iterator();
-		
+
 		List<String> fileNames = null;
 		while (iter.hasNext()) {
-			Map.Entry<String, DataSet> mEntry = (Map.Entry<String, DataSet>) iter.next();			
-			
+			Map.Entry<String, DataSet> mEntry = (Map.Entry<String, DataSet>) iter.next();
+
 			DataSet dataset = (DataSet) mEntry.getValue();
-						
-			List<DataSetColumn> columns = dataset.getMetaData().getColumns();	
-			
+
+			List<DataSetColumn> columns = dataset.getMetaData().getColumns();
+
 			try {
 				String fileName = mEntry.getKey() + ".csv";
 				FileWriter w = new FileWriter(report.getOutputDirectory() + fileName);
 				fileNames = new ArrayList<String>();
-				fileNames.add(fileName);				
-	
+				fileNames.add(fileName);
+
 				// header row
 				w.append(getBeforeRowDelimiter());
 				for (DataSetColumn column : columns) {
 					w.append(getBeforeColumnDelimiter());
 					w.append(escape(column.getName()));
-					w.append(getAfterColumnDelimiter());					
+					w.append(getAfterColumnDelimiter());
 				}
 				w.append(getAfterRowDelimiter());
-				
+
 				// data rows
 				for (DataSetRow row : dataset) {
 					w.append(getBeforeRowDelimiter());
@@ -171,9 +173,9 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 								w.append(escape(Integer.toString(((Cohort) colValue).size())));
 							} else if (colValue instanceof IndicatorResult) {
 								w.append(((IndicatorResult) colValue).getValue().toString());
-							}
-							else {
-								// this check is because a logic EmptyResult .toString() -> null
+							} else {
+								// this check is because a logic EmptyResult
+								// .toString() -> null
 								String temp = escape(colValue.toString());
 								if (temp != null)
 									w.append(temp);
@@ -183,13 +185,13 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 					}
 					w.append(getAfterRowDelimiter());
 				}
-				
+
 				w.close();
 			} catch (IOException e) {
 				throw new RenderingException("Error: " + e, e);
 			}
 		}
-		
+
 		report.setCsvFileNames(fileNames);
 	}
 
@@ -204,71 +206,73 @@ public class BirtDocTemplateRenderer extends BirtTemplateRenderer {
 	public String getAfterRowDelimiter() {
 		return "\n";
 	}
-	
+
 	/**
 	 * Convenience method used to escape a string of text.
 	 * 
-	 * @param	text 	The text to escape.
-	 * @return	The escaped text.
+	 * @param text
+	 *            The text to escape.
+	 * @return The escaped text.
 	 */
 	public String escape(String text) {
 		if (text == null) {
 			return null;
-		}
-		else {
+		} else {
 			return text.replaceAll("\"", "\\\"");
 		}
-	}	
+	}
 
 	public String getAfterColumnDelimiter() {
 		return "\",";
 	}
-	
+
 	/**
 	 * Generate a report based on the attributes of the given report object.
 	 * 
-	 * @param	report	the report to generate
+	 * @param report
+	 *            the report to generate
 	 */
 	public void executeReport(BirtReport report) {
-		//log.debug("Generating output for report " + designResource + ", hashcode " + designResource.hashCode());
+		// log.debug("Generating output for report " + designResource + ",
+		// hashcode " + designResource.hashCode());
 		IRunAndRenderTask task = null;
-		try {			
-		
+		try {
+
 			// Get the report engine that will be used to render the report
-			IReportEngine engine = BirtConfiguration.getReportEngine();	    		
+			IReportEngine engine = BirtConfiguration.getReportEngine();
 
 			// Open the report design
 			IReportRunnable reportRunnable = engine.openReportDesign(report.getReportDesignPath());
-				
+
 			// Create a report rendering task
 			task = engine.createRunAndRenderTask(reportRunnable);
-			//task.setParameterValues(null);
+			// task.setParameterValues(null);
 			// Validate runtime parameters
 			task.validateParameters();
-			
-			//task.setRenderOption(BirtConfiguration.getRenderOption(report));
-			//Set the RenderOption to create a DOC file into the task.
-			 IRenderOption options = new RenderOption();
-			 options.setOutputFileName(report.getOutputFilename());			
-			 options.setOutputFormat(report.getOutputFormat());
-			 task.setRenderOption(options);			 
 
-			//task.setRenderOption(BirtConfiguration.getRenderOption(report));    
-			
+			// task.setRenderOption(BirtConfiguration.getRenderOption(report));
+			// Set the RenderOption to create a DOC file into the task.
+			IRenderOption options = new RenderOption();
+			options.setOutputFileName(report.getOutputFilename());
+			options.setOutputFormat(report.getOutputFormat());
+			task.setRenderOption(options);
+
+			// task.setRenderOption(BirtConfiguration.getRenderOption(report));
+
 			// Render report design
 			task.run();
-			
-			//log.debug("Output file: " + report.getOutputFile().getAbsolutePath());
-		} 
-		catch (EngineException e) { 
+
+			// log.debug("Output file: " +
+			// report.getOutputFile().getAbsolutePath());
+		} catch (EngineException e) {
 			log.error("Unable to generate report due to a BIRT Exception: " + e.getMessage(), e);
 			throw new BirtReportException("Unable to generate report due to a BIRT Exception: " + e.getMessage(), e);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		finally { 
-			if (task != null) task.close();
+		} finally {
+			if (task != null)
+				task.close();
 		}
 	}
 }
