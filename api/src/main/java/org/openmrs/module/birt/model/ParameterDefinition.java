@@ -14,21 +14,21 @@ import org.openmrs.Form;
 
 /**
  * Report parameter definition.
- * 
+ *
  * @author Justin Miranda
  *
  */
 public class ParameterDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     // Parameter value display types
 	public static final String TEXT_BOX = "text";
 	public static final String LIST_BOX = "select";
 	public static final String RADIO_BUTTON = "radio";
 	public static final String CHECK_BOX = "checkbox";
 	public static final String DATE_CHOOSER = "date";
-	
+
 	// Parameter data types
 	public static final String TYPE_BOOLEAN = "boolean";
 	public static final String TYPE_DATE = "date";
@@ -46,8 +46,8 @@ public class ParameterDefinition implements Serializable {
 	private String helpText;
 	private String controlType;
 	private String dataType;
-	private String parameterType = "simple"; // simple, multi-value
-	private Class targetClass; 	
+	private String parameterType = "simple"; // is either simple or multi-value
+	private Class targetClass;
 	private Object defaultValue;
 	//private Object value;
 	private List<Object> values = new ArrayList<Object>();
@@ -58,38 +58,38 @@ public class ParameterDefinition implements Serializable {
 	private Boolean allowMultiple = false;
 	private Boolean hidden = false;
 	private Boolean conceal = false;
-	
+
 	/**
 	 * Default public constructor.
 	 *
 	 */
 	public ParameterDefinition() { }
 
-	
+
 
 	/**
 	 * Public constructor
 	 * @param name
 	 * @param value
 	 */
-	public ParameterDefinition(String name, Object value) { 
+	public ParameterDefinition(String name, Object value) {
 		this.name = name;
 		this.values.add(value);
 	}
-	
+
 	/**
-	 * Public constructor.
+	 * Public constructor with array of values
 	 */
-	public ParameterDefinition(String name, Object [] values) { 
+	public ParameterDefinition(String name, Object [] values) {
 		this.name = name;
 		this.values = Arrays.asList(values);
 	}
-	
+
 	/**
 	 * Gets the identifier of the report.
 	 * @return
 	 */
-	public Integer getId() { 
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -97,7 +97,7 @@ public class ParameterDefinition implements Serializable {
 	 * Gets the display name of the report.
 	 * @return
 	 */
-	public String getName() { 
+	public String getName() {
 		return this.name;
 	}
 
@@ -105,22 +105,22 @@ public class ParameterDefinition implements Serializable {
 	 * Gets the description.
 	 * @return
 	 */
-	public String getDescription() { 
+	public String getDescription() {
 		return this.description;
-	}	
-	
+	}
+
 	/**
      * Gets the default prompt text of the report.
      */
     public String getPromptText() {
     	return promptText;
     }
-    
+
     /**
-     * 
-     * @return
+     *
+     * @return String of help text
      */
-    public String getHelpText() { 
+    public String getHelpText() {
     	return this.helpText;
     }
 
@@ -130,37 +130,37 @@ public class ParameterDefinition implements Serializable {
     public String getPromptText(Locale locale) {
     	return promptText;
     }
-	
+
     /**
-     * 
+     *
      * @return
      */
-    public String getControlType() { 
+    public String getControlType() {
     	return this.controlType;
     }
-    
+
 	/**
 	 * Gets the data type of the column.
 	 */
-	public String getDataType() { 
+	public String getDataType() {
 		return this.dataType;
 	}
-	
+
 	/**
 	 * Gets the param type of the column.
 	 */
-	public String getParameterType() { 
+	public String getParameterType() {
 		return this.parameterType;
-	}	
-	
+	}
+
 	/**
 	 * Gets the class of the value.
 	 * @return
 	 */
-	public Class getTargetClass() { 
+	public Class getTargetClass() {
 		return this.targetClass;
 	}
-	
+
 	/**
      * Gets the default value.
      */
@@ -178,7 +178,7 @@ public class ParameterDefinition implements Serializable {
 	/**
      * Gets the value, assumes there is only one.
      */
-    public Object getValue() { 
+    public Object getValue() {
     	return this.values.get(0);
     }
     /**
@@ -191,65 +191,65 @@ public class ParameterDefinition implements Serializable {
     public boolean getRequired() {
     	return required;
     }
-    public String getDisplayFormat() { 
+    public String getDisplayFormat() {
     	return displayFormat;
     }
-    public Boolean getAllowNull() { 
+    public Boolean getAllowNull() {
     	return allowNull;
     }
-    public Boolean getAllowMultiple() { 
+    public Boolean getAllowMultiple() {
     	return allowMultiple;
     }
-    public Boolean getHidden() { 
+    public Boolean getHidden() {
     	return hidden;
     }
-    public Boolean getConceal() { 
+    public Boolean getConceal() {
     	return conceal;
     }
-    
-    
-    public void setId(Integer id) { 
+
+
+    public void setId(Integer id) {
     	this.id = id;
     }
-    public void setName(String name) { 
+    public void setName(String name) {
     	this.name = name;
     }
-    public void setControlType(String controlType) { 
-    	this.controlType = controlType;	
+    public void setControlType(String controlType) {
+    	this.controlType = controlType;
     }
-    public void setDataType(String dataType) { 
-    	this.dataType = dataType;	
+    public void setDataType(String dataType) {
+    	this.dataType = dataType;
     }
-    public void setParameterType(String parameterType) { 
-    	this.parameterType = parameterType;	
+    public void setParameterType(String parameterType) {
+    	this.parameterType = parameterType;
     }
-    public void setDefaultValue(Object value) { 
+    public void setDefaultValue(Object value) {
     	this.defaultValue = value;
     }
-    public void setSelectionList(Map<Object, String> values) { 
+    public void setSelectionList(Map<Object, String> values) {
     	this.selectionList = values;
     }
-	public void setDescription(String description) { 
+	public void setDescription(String description) {
 		this.description = description;
-	}	
-	public void setPromptText(String promptText) { 
+	}
+	public void setPromptText(String promptText) {
 		this.promptText = promptText;
-	}	
-	public void setHelpText(String helpText) { 
+	}
+	public void setHelpText(String helpText) {
 		this.helpText = helpText;
 	}
 	public void setTargetClass(Class targetClass) {
 		this.targetClass = targetClass;
-	}	
-	public void setValue(Object value) { 
+	}
+	public void setValue(Object value) {
 		this.values.clear();
 		this.values.add(value);
 	}
-	public void setValues(Object[] values) { 
+	public void setValues(Object[] values) {
 		this.values.clear();
 		this.values.addAll(Arrays.asList(values));
 	}
-	public void setDisplayFormat(String format) { 
+	public void setDisplayFormat(String format) {
 		this.displayFormat = format;
 	}
 	/**
@@ -282,12 +282,12 @@ public class ParameterDefinition implements Serializable {
 	public void setRequired(Boolean required) {
 		this.required = required;
 	}
-    
-    
-    
+
+
+
 	/**
 	 * Compares two objects for similarity
-	 * 
+	 *
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
@@ -302,7 +302,7 @@ public class ParameterDefinition implements Serializable {
 
 	/**
 	 * Returns hash code for object.
-	 * 
+	 *
 	 * @return 	hash code of the object
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -311,13 +311,13 @@ public class ParameterDefinition implements Serializable {
 			return super.hashCode();
 		return this.getName().hashCode();
 	}
-    
-	
+
+
 	/**
 	 * Return string representation of object
 	 * @see org.openmrs.reporting.AbstractReportObject#toString()
 	 */
-	public String toString() {		
+	public String toString() {
 		return new StringBuffer().append("[ ").
 			append("name=").append(getName()).
 			append(", dataType=").append(getDataType()).
@@ -332,6 +332,6 @@ public class ParameterDefinition implements Serializable {
 			append("] ").toString();
 	}
 
-	
-	
+
+
 }
