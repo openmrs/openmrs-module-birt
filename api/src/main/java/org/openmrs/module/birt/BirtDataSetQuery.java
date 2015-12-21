@@ -28,7 +28,7 @@ public class BirtDataSetQuery {
 	
 	
 	/** 
-	 * returns the new 
+	 * @return the new String
 	 */
 	public String getQueryText() {
 		StringBuffer queryText = new StringBuffer().
