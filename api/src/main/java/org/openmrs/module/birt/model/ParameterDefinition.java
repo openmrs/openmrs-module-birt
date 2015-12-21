@@ -46,7 +46,7 @@ public class ParameterDefinition implements Serializable {
 	private String helpText;
 	private String controlType;
 	private String dataType;
-	private String parameterType = "simple"; // simple, multi-value
+	private String parameterType = "simple"; // either simple or multi-value
 	private Class targetClass; 	
 	private Object defaultValue;
 	//private Object value;
@@ -78,7 +78,7 @@ public class ParameterDefinition implements Serializable {
 	}
 	
 	/**
-	 * Public constructor.
+	 * Public constructor with array of values
 	 */
 	public ParameterDefinition(String name, Object [] values) { 
 		this.name = name;
@@ -118,7 +118,7 @@ public class ParameterDefinition implements Serializable {
     
     /**
      * 
-     * @return
+     * @return String of helpText
      */
     public String getHelpText() { 
     	return this.helpText;
