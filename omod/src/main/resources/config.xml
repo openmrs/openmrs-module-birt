@@ -2,13 +2,13 @@
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
-	<id>@MODULE_ID@</id>
-	<name>@MODULE_NAME@</name>
-	<version>@MODULE_VERSION@</version>
-	<package>@MODULE_PACKAGE@</package>
+	<id>${project.parent.artifactId}</id>
+	<name>${project.parent.name}</name>
+	<version>${project.parent.version}</version>
+	<package>${project.parent.groupId}.${project.parent.artifactId}</package>
 	<author>Justin Miranda</author>
 	<description>The BIRT Report Module provides integration between OpenMRS and the BIRT Report and Design Engine APIs.</description>
-	<activator>@MODULE_PACKAGE@.BirtModuleActivator</activator>
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
 	<require_version>1.6.0</require_version>   
 	<!-- /Base Module Properties -->
@@ -26,11 +26,11 @@
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>@MODULE_PACKAGE@.web.extension.BirtAdminListExt</class>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.BirtAdminListExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.patientDashboardTab</point>
-		<class>@MODULE_PACKAGE@.web.extension.BirtPatientDashboardTabExt</class>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.BirtPatientDashboardTabExt</class>
 	</extension>	
 	
 	<!-- /Extensions -->
@@ -46,53 +46,53 @@
 	<!-- Required Global Properties -->
 
 	<globalProperty>
-		<property>@MODULE_ID@.loggingDir</property>
+		<property>${project.parent.artifactId}.loggingDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path for log files written by BIRT Engine.  (ex. C:/tmp/logs)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.loggingLevel</property>
+		<property>${project.parent.artifactId}.loggingLevel</property>
 		<defaultValue>OFF</defaultValue>
 		<description>Specifies the logging level for BIRT Report Engine.  Possible values: OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST and ALL</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.reportDir</property>
+		<property>${project.parent.artifactId}.reportDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path where report design files are uploaded.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.outputDir</property>
+		<property>${project.parent.artifactId}.outputDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path to the report output file when reports are generated. (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.datasetDir</property>
+		<property>${project.parent.artifactId}.datasetDir</property>
 		<defaultValue/>
 		<description>Specifies the absolute path to the reports dataset directory (for CSV/XML data sources). (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/datasets)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.reportOutputFormat</property>
+		<property>${project.parent.artifactId}.reportOutputFormat</property>
 		<defaultValue>pdf</defaultValue>
 		<description>Specifies the absolute path to the reports output format.	(ex. pdf)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.reportOutputFile</property>
+		<property>${project.parent.artifactId}.reportOutputFile</property>
 		<defaultValue/>
 		<description>Specifies the absolute path to the reports output file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportOutput.pdf)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.reportPreviewFile</property>
+		<property>${project.parent.artifactId}.reportPreviewFile</property>
 		<defaultValue/>
 		<description>Specifies the absolute path to the report preview file.  (ex. C:/Documents and Settings/USERNAME/OpenMRS/reports/output/ReportPreview.pdf)</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.defaultReportDesignFile</property>
+		<property>${project.parent.artifactId}.defaultReportDesignFile</property>
 		<defaultValue>default.rptdesign</defaultValue>
 		<description>Specifies the name of the default report design file.
 		Example: default.rptdesign</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.alwaysUseOpenmrsJdbcProperties</property>
+		<property>${project.parent.artifactId}.alwaysUseOpenmrsJdbcProperties</property>
 		<defaultValue>false</defaultValue>
 		<description>
 			If 'true', then the module will always replace the JDBC data source properties with values from OpenMRS runtime properties.  
@@ -105,21 +105,21 @@
 	<dwr>
 		<allow>
 			<create creator="new" javascript="DwrBirtReportService">
-				<param name="class" value="@MODULE_PACKAGE@.web.dwr.DwrBirtReportService"/>
+				<param name="class" value="${project.parent.groupId}.${project.parent.artifactId}.web.dwr.DwrBirtReportService"/>
 				<include method="getReports"/>
 			</create>
 		</allow>
 
 		<signatures>
 			<![CDATA[
-				import @MODULE_PACKAGE@.web.dwr.DwrBirtReportService;
+				import ${project.parent.groupId}.${project.parent.artifactId}.web.dwr.DwrBirtReportService;
 				DwrBirtReportService.getReports();
 			]]>
 		</signatures>	
 	</dwr>
 
 	<!-- Internationalization -->
-	<!-- All message codes should start with @MODULE_ID@.* -->
+	<!-- All message codes should start with ${project.parent.artifactId}.* -->
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
