@@ -10,7 +10,7 @@
 	<description>The BIRT Report Module provides integration between OpenMRS and the BIRT Report and Design Engine APIs.</description>
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.BirtModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/birt/update.rdf</updateURL>	
-	<require_version>1.6.0</require_version>   
+	<require_version>1.7.0</require_version>   
 	<!-- /Base Module Properties -->
 	
 	<!-- Required Modules -->

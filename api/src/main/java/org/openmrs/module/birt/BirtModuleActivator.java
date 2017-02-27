@@ -6,23 +6,23 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.birt.core.exception.BirtException;
+import org.eclipse.birt.core.framework.Platform;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.Activator;
+import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.OpenmrsUtil;
 
-import org.eclipse.birt.core.exception.BirtException;
-import org.eclipse.birt.core.framework.Platform;
 
-
-public class BirtModuleActivator implements Activator {
+public class BirtModuleActivator extends BaseModuleActivator {
 
 	private Log log = LogFactory.getLog(BirtModuleActivator.class);
 
 	/**
-	 * @see org.openmrs.module.Activator#startup()
+	 * @see org.openmrs.module.ModuleActivator#started()
 	 */
-	public void startup() {
+	@Override
+	public void started() {
 		log.debug("Starting BIRT Reporting Module ...");
 
 		// Define global properties
@@ -62,9 +62,10 @@ public class BirtModuleActivator implements Activator {
 	}
 
 	/**
-	 *  @see org.openmrs.module.Activator#shutdown()
+	 *  @see org.openmrs.module.ModuleActivator#willStop()
 	 */
-	public void shutdown() {
+	@Override
+	public void willStop() {
 		log.debug("Shutting down BIRT Reporting Module ...");	
 		Platform.shutdown();
 	}
